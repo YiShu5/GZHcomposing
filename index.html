@@ -8,18 +8,19 @@
 /* ===== Reset & Base ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* 哆啦A梦经典配色 */
-  --dora-blue:#2196F3;
-  --dora-deep:#1565C0;
-  --dora-light:#BBDEFB;
-  --dora-yellow:#F5C518;
-  --dora-red:#E53935;
+  /* 哆啦A梦经典配色 —— 主体蓝 #03ADF0，阴影 #016FAD，高光 #6EDCFF */
+  --dora-blue:#03ADF0;        /* 主体蓝（哆啦A梦身体）*/
+  --dora-deep:#016FAD;        /* 阴影蓝（深色描边、按钮 hover、阴影）*/
+  --dora-highlight:#6EDCFF;   /* 高光蓝（按钮内反光、SVG 高光）*/
+  --dora-light:#BFE7FA;       /* 软淡蓝（边框、分割线）*/
+  --dora-yellow:#F5C518;      /* 金色铃铛 */
+  --dora-red:#E53935;         /* 红色铃铛绳 */
   --dora-white:#FFFFFF;
-  --dora-cream:#FFF8E1;
+  --dora-cream:#FFF8E1;       /* 暖米色（铃铛邻近的软底）*/
   /* 映射到现有变量 */
   --brand:var(--dora-blue);
   --primary:var(--dora-blue);
-  --brand-soft:#E3F2FD;
+  --brand-soft:#E0F4FE;
   --bg:#FFFFFF;
   --white:#FFFFFF;
   --border:var(--dora-light);
@@ -27,7 +28,7 @@
   --text2:#666;
   --text3:#999;
   --radius:50px;
-  --shadow:0 2px 8px rgba(33,150,243,0.15);
+  --shadow:0 2px 8px rgba(3,173,240,0.15);
   --accent:var(--dora-yellow);
 }
 html{font-size:14px}
@@ -41,7 +42,7 @@ input,select,textarea{font-family:inherit;font-size:inherit}
 
 /* ===== Background Decorations ===== */
 body::before{
-  content:'🎀 🪄 🚪 🎈 🍡 🥣 🛎️ 🎭 🧈 ☁️';
+  content:'🔔 🚪 🪄 🍙 🛎️ ☁️ ✨ 🌟 💫 🎈';
   position:fixed;top:0;left:0;right:0;bottom:0;
   pointer-events:none;z-index:0;opacity:0.12;
   font-size:24px;line-height:1.8;
@@ -60,24 +61,35 @@ body::before{
   background:linear-gradient(135deg,var(--dora-blue) 0%,var(--dora-deep) 100%);
   border-bottom:3px solid var(--dora-yellow);
   padding:0 28px;flex-shrink:0;z-index:100;
-  box-shadow:0 3px 12px rgba(21,101,192,0.2);
+  box-shadow:0 3px 12px rgba(1,111,173,0.2);
+  position:relative;overflow:hidden;
+}
+/* 顶部导航斜向高光带（机甲反光） */
+.top-nav::before{
+  content:'';position:absolute;
+  top:-50%;left:-20%;
+  width:140%;height:60%;
+  background:linear-gradient(105deg,transparent 30%,rgba(110,220,255,0.18) 45%,rgba(255,255,255,0.32) 50%,rgba(110,220,255,0.18) 55%,transparent 70%);
+  pointer-events:none;
+  transform:rotate(-2deg);
 }
 .dora-avatar{
   width:42px;height:42px;
-  background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));
+  background:radial-gradient(circle at 30% 25%,var(--dora-highlight) 0%,var(--dora-blue) 38%,var(--dora-deep) 100%);
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:22px;margin-right:12px;
-  box-shadow:0 3px 8px rgba(21,101,192,0.3);
+  box-shadow:0 3px 8px rgba(1,111,173,0.3),inset 0 -2px 6px rgba(1,111,173,0.25);
   border:2px solid var(--dora-yellow);
   animation:dora-breathe 4s ease-in-out infinite;
   flex-shrink:0;
   position:relative;
   cursor:pointer;
+  z-index:2;
 }
 @keyframes dora-breathe{
-  0%,100%{transform:scale(1);box-shadow:0 3px 8px rgba(21,101,192,0.3)}
-  50%{transform:scale(1.05);box-shadow:0 5px 15px rgba(21,101,192,0.4)}
+  0%,100%{transform:scale(1);box-shadow:0 3px 8px rgba(1,111,173,0.3)}
+  50%{transform:scale(1.05);box-shadow:0 5px 15px rgba(1,111,173,0.4)}
 }
 .take-copter{
   position:absolute;
@@ -108,7 +120,7 @@ body::before{
   border-radius:14px;
   font-size:12px;
   font-weight:700;
-  box-shadow:0 4px 14px rgba(21,101,192,0.4);
+  box-shadow:0 4px 14px rgba(1,111,173,0.4);
   white-space:nowrap;
   pointer-events:none;
   z-index:20;
@@ -169,6 +181,50 @@ body::before{
 }
 .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
 .nav-right .nav-btn{font-size:13px}
+/* 任意门按钮 —— 哆啦A梦粉色门 */
+.nav-btn.door{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(145deg,#FFC1DA,#FF8FBF);border:1px solid rgba(255,255,255,0.55);color:#7C2A4F;font-weight:700;box-shadow:0 2px 8px rgba(255,143,191,0.4)}
+.nav-btn.door:hover{background:linear-gradient(145deg,#FFD3E5,#FF9FCB);color:#5A1E3A;transform:translateY(-2px) rotate(-3deg);box-shadow:0 6px 18px rgba(255,143,191,0.55)}
+.nav-btn.door svg{flex-shrink:0}
+/* 任意门 toast */
+.teleport-toast{position:fixed;top:80px;left:50%;background:linear-gradient(145deg,#FFC1DA,#FF8FBF);color:#5A1E3A;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:700;box-shadow:0 8px 32px rgba(255,143,191,0.5);z-index:1000;border:2px solid #FFFFFF;pointer-events:none;opacity:0;transform:translateX(-50%) scale(0.6);transition:all .35s cubic-bezier(0.4,0,0.2,1)}
+.teleport-toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+/* ==== 任意门「全屏传送」轻量版（屏幕扭动 + 单层波纹 + 时光机）==== */
+@keyframes warp-twist{
+  0%{transform:rotate(0) scale(1)}
+  15%{transform:rotate(-1.6deg) scale(0.98)}
+  35%{transform:rotate(1.4deg) scale(1.025)}
+  55%{transform:rotate(-1deg) scale(0.99)}
+  75%{transform:rotate(0.5deg) scale(1.01)}
+  100%{transform:rotate(0) scale(1)}
+}
+body.warp-effect{animation:warp-twist 1.2s cubic-bezier(0.36,0.07,0.19,0.97)}
+
+.warp-overlay{
+  position:fixed;inset:0;z-index:998;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(0,20,50,0.4) 0%,transparent 35%),
+    conic-gradient(from 0deg at 50% 50%,rgba(255,143,191,0.5),rgba(110,220,255,0.5),rgba(255,215,0,0.4),rgba(255,143,191,0.5));
+  opacity:0;
+  animation:warp-fade 1.2s ease-out forwards;
+}
+@keyframes warp-fade{0%{opacity:0}25%{opacity:0.75}70%{opacity:0.6}100%{opacity:0}}
+
+.time-machine{
+  position:fixed;top:50%;left:50%;
+  width:280px;height:240px;
+  z-index:1001;pointer-events:none;
+  animation:tm-pop 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,0.3));
+}
+@keyframes tm-pop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.1) rotate(-180deg)}
+  35%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(15deg)}
+  55%{transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  80%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(-4deg)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.5) rotate(15deg)}
+}
+.time-machine .paddle{transform-origin:70px 40px;animation:paddle-spin 1.2s linear}
+@keyframes paddle-spin{from{transform:rotate(0)}to{transform:rotate(540deg)}}
 
 /* ===== Main Layout ===== */
 .main{display:flex;flex:1;overflow:hidden;position:relative;z-index:1}
@@ -179,25 +235,32 @@ body::before{
 .divider:hover,.divider.active{background:linear-gradient(to bottom,var(--dora-yellow) 0%,var(--dora-deep) 50%,var(--dora-yellow) 100%);width:10px;box-shadow:0 0 10px rgba(245,197,24,0.5)}
 
 /* ===== Editor Toolbar ===== */
-.editor-toolbar{display:flex;align-items:center;gap:4px;padding:10px 16px;background:var(--white);border-bottom:2px solid var(--dora-light);flex-wrap:wrap;flex-shrink:0}
-.tb-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;color:#fff;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));transition:all .2s;font-weight:400;box-shadow:0 2px 6px rgba(21,101,192,0.25);position:relative;overflow:hidden}
-.tb-btn:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(245,197,24,0.4);background:var(--dora-deep)}
-.tb-btn:active{transform:scale(0.95)}
-.tb-btn.active{background:var(--dora-deep);box-shadow:inset 0 0 0 2px var(--dora-yellow)}
+.editor-toolbar{display:flex;align-items:center;gap:6px;padding:10px 16px;background:linear-gradient(180deg,#FFFEF7 0%,var(--white) 100%);border-bottom:2px solid var(--dora-light);flex-wrap:wrap;flex-shrink:0}
+/* 轻量层：高频小操作按钮（白底蓝字）*/
+.tb-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:14px;color:var(--dora-deep);background:#fff;border:1.5px solid var(--dora-light);transition:all .2s;font-weight:600;box-shadow:0 1px 3px rgba(1,111,173,0.08);position:relative;overflow:hidden}
+.tb-btn:hover{transform:translateY(-1px);border-color:var(--dora-yellow);background:#FFFCF0;box-shadow:0 3px 10px rgba(245,197,24,0.28)}
+.tb-btn:active{transform:translateY(0) scale(0.96)}
+.tb-btn.active{background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;border-color:var(--dora-yellow);box-shadow:0 2px 8px rgba(1,111,173,0.32)}
 .tb-btn b{font-size:15px}
-.tb-btn-text{height:36px;display:flex;align-items:center;justify-content:center;border-radius:18px;font-size:12px;color:#fff;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));transition:all .2s;font-weight:500;box-shadow:0 2px 6px rgba(21,101,192,0.25);position:relative;overflow:hidden;padding:0 14px}
-.tb-btn-text:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(245,197,24,0.4);background:var(--dora-deep)}
-.tb-btn-text:active{transform:scale(0.98)}
-.tb-sep{width:2px;height:20px;background:linear-gradient(to bottom,transparent,var(--dora-light),transparent);margin:0 8px}
+/* 中层：功能动作按钮（蓝色 pill，带 top-fade 高光）*/
+.tb-btn-text{height:36px;display:flex;align-items:center;justify-content:center;border-radius:18px;font-size:12px;color:#fff;background:linear-gradient(180deg,rgba(110,220,255,0.28) 0%,rgba(110,220,255,0) 50%),linear-gradient(145deg,var(--dora-blue),var(--dora-deep));transition:all .25s;font-weight:600;box-shadow:0 2px 8px rgba(1,111,173,0.22),inset 0 1px 0 rgba(255,255,255,0.25);position:relative;overflow:hidden;padding:0 14px;letter-spacing:0.02em}
+.tb-btn-text:hover{transform:translateY(-1px);background:linear-gradient(180deg,rgba(110,220,255,0.4) 0%,rgba(110,220,255,0) 55%),linear-gradient(145deg,var(--dora-deep),var(--dora-blue));box-shadow:0 5px 16px rgba(245,197,24,0.32),inset 0 1px 0 rgba(255,255,255,0.35)}
+.tb-btn-text:active{transform:translateY(0) scale(0.97)}
+/* 重量层：哆啦A梦的口袋（黄色，唯一开 dropdown 的入口）*/
+.tb-btn-text.pocket{background:linear-gradient(145deg,#FFE082,var(--dora-yellow));color:#5D2D00;border:1.5px solid #E5B800;box-shadow:0 2px 8px rgba(245,197,24,0.42)}
+.tb-btn-text.pocket:hover{background:linear-gradient(145deg,#FFEDA0,#FFCB1F);transform:translateY(-1px) rotate(-2deg);box-shadow:0 5px 18px rgba(245,197,24,0.55)}
+.tb-btn-text.pocket::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.5),transparent 60%);pointer-events:none}
+.tb-sep{width:1px;height:18px;background:var(--dora-light);margin:0 6px;opacity:0.7}
 .tb-select{padding:6px 10px;border:2px solid var(--dora-light);border-radius:20px;font-size:12px;color:#fff;background:var(--dora-blue);outline:none;cursor:pointer}
 .tb-select:focus{border-color:var(--dora-yellow)}
 .tb-select option{background:#fff;color:#333}
-.tb-heading-select{padding:8px 12px;border:2px solid var(--dora-light);border-radius:12px;font-size:12px;color:#fff;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));outline:none;cursor:pointer;height:36px;box-shadow:0 2px 6px rgba(21,101,192,0.25)}
+.tb-heading-select{padding:0 28px 0 12px;border:1.5px solid var(--dora-light);border-radius:18px;font-size:12px;color:var(--dora-deep);background:#fff;outline:none;cursor:pointer;height:36px;box-shadow:0 1px 3px rgba(1,111,173,0.08);font-weight:600;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 4l3 3 3-3' stroke='%231565C0' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");background-repeat:no-repeat;background-position:right 10px center;transition:all .2s}
+.tb-heading-select:hover{border-color:var(--dora-yellow);background-color:#FFFCF0}
 .tb-heading-select:focus{border-color:var(--dora-yellow)}
 .tb-heading-select option{background:#fff;color:#333}
 
 /* ===== More Dropdown ===== */
-.more-dropdown{position:absolute;top:100%;right:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(21,101,192,0.15);min-width:200px;max-height:300px;overflow-y:auto;z-index:260;display:none;padding:8px}
+.more-dropdown{position:absolute;top:100%;right:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(1,111,173,0.15);min-width:200px;max-height:300px;overflow-y:auto;z-index:260;display:none;padding:8px}
 .more-dropdown.show{display:block}
 .more-dropdown-item{width:100%;padding:10px 14px;border-radius:12px;font-size:13px;color:var(--dora-deep);text-align:left;display:flex;align-items:center;gap:10px;transition:background .15s}
 .more-dropdown-item:hover{background:var(--dora-cream)}
@@ -219,16 +282,16 @@ body::before{
 .mobile-toggle:hover{border-color:var(--dora-yellow);color:var(--dora-deep)}
 .mobile-toggle.active{background:var(--dora-blue);color:#fff;border-color:var(--dora-blue)}
 .preview-wrap{flex:1;overflow-y:auto;background:radial-gradient(circle at 10% 20%,rgba(187,222,251,0.2) 0%,transparent 40%),radial-gradient(circle at 90% 80%,rgba(245,197,24,0.1) 0%,transparent 35%),#F0F1F3;display:flex;justify-content:center;padding:16px}
-.preview-frame{width:100%;max-width:100%;background:var(--white);box-shadow:0 4px 16px rgba(21,101,192,0.1),0 0 0 1px rgba(255,255,255,0.5) inset;transition:max-width .3s,box-shadow .3s;border-radius:16px;border:2px solid var(--dora-light)}
-.preview-frame.mobile{max-width:375px;border-radius:12px;box-shadow:0 8px 32px rgba(21,101,192,0.15)}
+.preview-frame{width:100%;max-width:100%;background:var(--white);box-shadow:0 4px 16px rgba(1,111,173,0.1),0 0 0 1px rgba(255,255,255,0.5) inset;transition:max-width .3s,box-shadow .3s;border-radius:16px;border:2px solid var(--dora-light)}
+.preview-frame.mobile{max-width:375px;border-radius:12px;box-shadow:0 8px 32px rgba(1,111,173,0.15)}
 .preview-content{padding:32px 24px;font-size:15px;line-height:1.75;color:#333;word-wrap:break-word;overflow-wrap:break-word}
 .preview-content img{max-width:100%;height:auto;border-radius:12px}
 .preview-footer{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;background:var(--white);border-top:1px solid var(--dora-light);font-size:12px;color:var(--text3);flex-shrink:0}
 
 /* ===== Bottom Bar ===== */
-.bottom-bar{display:flex;align-items:center;gap:12px;padding:14px 24px;background:linear-gradient(to top,var(--dora-white),#FAFCFF);border-top:2px solid var(--dora-light);flex-shrink:0;box-shadow:0 -2px 12px rgba(21,101,192,0.08)}
+.bottom-bar{display:flex;align-items:center;gap:12px;padding:14px 24px;background:linear-gradient(to top,var(--dora-white),#FAFCFF);border-top:2px solid var(--dora-light);flex-shrink:0;box-shadow:0 -2px 12px rgba(1,111,173,0.08)}
 .bottom-bar .spacer{flex:1}
-.btn-primary{padding:12px 28px;border-radius:25px;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;font-size:14px;font-weight:600;transition:all .2s;box-shadow:0 4px 12px rgba(21,101,192,0.3);border:none}
+.btn-primary{padding:12px 28px;border-radius:25px;background:linear-gradient(180deg,rgba(110,220,255,0.32) 0%,rgba(110,220,255,0) 55%),linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;font-size:14px;font-weight:600;transition:all .2s;box-shadow:0 4px 12px rgba(1,111,173,0.3),inset 0 1px 0 rgba(255,255,255,0.3);border:none;position:relative;overflow:hidden}
 .btn-primary:hover{background:linear-gradient(145deg,var(--dora-yellow),#E5B800);color:var(--dora-deep);transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,197,24,0.4);text-shadow:0 0 10px rgba(255,255,255,0.5)}
 .btn-primary.success{background:#4CAF50;color:#FFF;border-color:#4CAF50}
 .btn-secondary{padding:10px 18px;border-radius:20px;background:var(--dora-white);border:2px solid var(--dora-light);color:var(--dora-deep);font-size:13px;transition:all .2s}
@@ -276,17 +339,17 @@ body::before{
 .mode-card .mc-desc{font-size:10px;color:var(--text3);margin-top:2px}
 
 /* ===== Modal ===== */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(21,101,192,.5);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(1,111,173,.5);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-overlay.show{display:flex}
-.modal{background:var(--white);border-radius:20px;padding:24px;width:440px;max-width:90vw;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(21,101,192,0.25),0 0 0 1px rgba(255,255,255,0.5) inset;border:2px solid var(--dora-light);position:relative}
-.modal::before{content:'🎀';position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:36px}
+.modal{background:var(--white);border-radius:20px;padding:24px;width:440px;max-width:90vw;max-height:80vh;overflow-y:auto;scrollbar-gutter:stable both-edges;box-shadow:0 20px 60px rgba(1,111,173,0.25),0 0 0 1px rgba(255,255,255,0.5) inset;border:2px solid var(--dora-light);position:relative}
+.modal::before{content:'🔔';position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:36px}
 .modal h3{font-size:18px;margin-bottom:16px;color:var(--dora-deep);font-weight:700}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .modal input[type=text]{width:100%;padding:10px 14px;border:2px solid var(--dora-light);border-radius:20px;font-size:13px;outline:none;background:#fff}
 .modal input[type=text]:focus{border-color:var(--dora-yellow)}
 
 /* ===== Saved Styles Dropdown ===== */
-.styles-dropdown{position:absolute;top:100%;right:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(21,101,192,0.15);min-width:260px;max-height:360px;overflow-y:auto;z-index:150;display:none}
+.styles-dropdown{position:absolute;top:100%;right:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(1,111,173,0.15);min-width:260px;max-height:360px;overflow-y:auto;z-index:150;display:none}
 .styles-dropdown.show{display:block}
 .sd-item{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--dora-cream);transition:background .15s}
 .sd-item:hover{background:var(--dora-cream)}
@@ -298,7 +361,7 @@ body::before{
 .sd-empty{padding:20px;text-align:center;color:var(--text3);font-size:13px}
 
 /* Image Insert Panel */
-.img-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(21,101,192,0.15);width:370px;padding:16px;z-index:250;display:none}
+.img-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(1,111,173,0.15);width:370px;padding:16px;z-index:250;display:none}
 .img-panel.show{display:block}
 .img-panel h4{font-size:14px;margin-bottom:10px;color:var(--dora-deep);font-weight:600}
 .img-panel .tab-row{display:flex;gap:4px;margin-bottom:12px}
@@ -307,19 +370,19 @@ body::before{
 .img-panel input[type=text]{width:100%;padding:8px 12px;border:2px solid var(--dora-light);border-radius:12px;font-size:12px;margin-bottom:10px;background:#fff}
 .img-panel .img-options{display:flex;gap:8px;align-items:center;margin-bottom:10px}
 .img-panel .img-options select,.img-panel .img-options input{padding:6px 10px;border:2px solid var(--dora-light);border-radius:20px;font-size:12px;background:#fff}
-.img-panel .img-insert-btn{padding:10px 16px;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;border:none;border-radius:25px;font-size:13px;width:100%;font-weight:600;box-shadow:0 4px 12px rgba(33,150,243,0.3);transition:all .2s}
+.img-panel .img-insert-btn{padding:10px 16px;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;border:none;border-radius:25px;font-size:13px;width:100%;font-weight:600;box-shadow:0 4px 12px rgba(3,173,240,0.3);transition:all .2s}
 .img-panel .img-insert-btn:hover{background:linear-gradient(145deg,var(--dora-yellow),#E5B800);color:var(--dora-deep);transform:translateY(-1px)}
 .img-upload-area{border:2px dashed var(--dora-light);border-radius:16px;padding:24px;text-align:center;color:var(--text3);font-size:12px;cursor:pointer;transition:all .2s;margin-bottom:10px;background:linear-gradient(135deg,#F8FCFF,#F0F7FF)}
 .img-upload-area:hover{border-color:var(--dora-yellow);color:var(--dora-deep);background:var(--dora-cream)}
 .img-upload-area input[type=file]{display:none}
 .img-layout-note{font-size:11px;color:var(--text3);line-height:1.5;margin:-2px 0 10px}
-.hr-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(21,101,192,0.15);width:220px;padding:12px;z-index:240;display:none}
+.hr-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(1,111,173,0.15);width:220px;padding:12px;z-index:240;display:none}
 .hr-panel.show{display:block}
 .hr-option{width:100%;padding:10px 12px;border-radius:12px;color:var(--dora-deep);font-size:12px;text-align:left;display:block;transition:all .15s}
 .hr-option:hover{background:var(--dora-cream)}
 .hr-preview{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--text3)}
 .hr-preview span{display:inline-block}
-.align-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(21,101,192,0.15);width:140px;padding:8px;z-index:245;display:none}
+.align-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(1,111,173,0.15);width:140px;padding:8px;z-index:245;display:none}
 .align-panel.show{display:block}
 .align-option{width:100%;height:34px;display:flex;align-items:center;gap:8px;padding:0 10px;border-radius:12px;color:var(--dora-deep);font-size:12px;text-align:left;transition:all .15s}
 .align-option:hover,.align-option.active{background:var(--dora-cream)}
@@ -330,6 +393,21 @@ body::before{
 .help-content h4{color:var(--dora-deep);margin:12px 0 4px;font-size:14px;font-weight:600}
 .help-content kbd{padding:2px 8px;background:var(--dora-cream);border:1px solid var(--dora-light);border-radius:12px;font-size:12px;font-family:monospace}
 .help-content ul{padding-left:16px;margin:4px 0}
+/* 让帮助弹窗高度固定，避免切 tab 时铃铛位置漂 */
+.modal:has(.help-tabs){min-height:640px;display:flex;flex-direction:column}
+.modal:has(.help-tabs) .help-content,
+.modal:has(.help-tabs) .help-contact{flex:1;min-height:0}
+.help-tabs{display:flex;gap:6px;border-bottom:2px solid var(--dora-light);margin-bottom:16px;margin-top:12px;flex-shrink:0}
+.help-tab{padding:10px 20px;background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500;transition:all .2s}
+.help-tab:hover{color:var(--dora-deep)}
+.help-tab.active{color:var(--dora-deep);font-weight:700;border-bottom-color:var(--dora-deep)}
+.help-contact{padding:20px 0;text-align:center;display:flex;align-items:center;justify-content:center}
+.help-contact-card{display:inline-block;padding:24px 28px;background:linear-gradient(160deg,var(--dora-cream) 0%,#fff 100%);border:2px solid var(--dora-light);border-radius:24px;box-shadow:0 6px 24px rgba(1,111,173,0.08)}
+.help-contact-title{font-size:18px;font-weight:700;color:var(--dora-deep);margin-bottom:6px}
+.help-contact-sub{font-size:13px;color:var(--text3);margin-bottom:18px}
+.help-contact img{width:300px;height:300px;object-fit:contain;border-radius:16px;background:#fff;display:block;margin:0 auto}
+.help-contact-tagline{margin-top:14px;font-size:13px;color:var(--text2);font-weight:500}
+.help-contact-hint{margin-top:6px;font-size:11px;color:var(--text3)}
 .help-qr{margin-top:18px;padding-top:16px;border-top:2px solid var(--dora-light);text-align:center;border-radius:0 0 16px 16px}
 .help-qr-title{font-size:14px;font-weight:700;color:var(--dora-deep);margin-bottom:10px}
 .help-qr img{width:180px;height:180px;object-fit:contain;border-radius:16px;border:3px solid var(--dora-light);background:#fff}
@@ -379,6 +457,14 @@ body::before{
   <div class="nav-right" style="position:relative">
     <button class="nav-btn" onclick="toggleStylesDropdown()" id="btnMyStyles">我的样式 ▾</button>
     <div class="styles-dropdown" id="stylesDropdown"></div>
+    <button class="nav-btn door" onclick="teleportRandomStyle()" title="任意门 · 随机传送到一套样式 + 配色">
+      <svg viewBox="0 0 24 32" width="18" height="24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="20" height="28" rx="2" fill="#FF8FBF" stroke="#C71585" stroke-width="1.4"/>
+        <rect x="4" y="4" width="16" height="24" rx="1" fill="#FFC1DA"/>
+        <line x1="4" y1="11" x2="20" y2="11" stroke="#C71585" stroke-width="0.6" opacity="0.4"/>
+        <circle cx="17" cy="17" r="1.5" fill="#FFD700" stroke="#C77700" stroke-width="0.6"/>
+      </svg>任意门
+    </button>
     <button class="nav-btn" onclick="showHelp()">帮助</button>
   </div>
 </nav>
@@ -403,27 +489,28 @@ body::before{
       <button class="tb-btn" title="文字高亮" onclick="applyTextHighlight()" id="btnHighlight">🖍</button>
       <!-- 分隔 -->
       <span class="tb-sep"></span>
-      <!-- 文字按钮区 -->
-      <button class="tb-btn-text" title="插入提示卡片" onclick="insertTipCard()">📋提示</button>
-      <button class="tb-btn-text" title="设计排版组件" onclick="showDesignLayoutPanel()">🎛设计</button>
+      <!-- 文字按钮区（按写作流程顺序：先预处理 → 中间设计 → 最后结尾）-->
       <button class="tb-btn-text" title="智能预处理" onclick="smartPreprocess()">✨预处理</button>
+      <button class="tb-btn-text" title="设计排版组件" onclick="showDesignLayoutPanel()">🎛设计</button>
+      <button class="tb-btn-text" title="插入结尾" onclick="showEndingPanel()">📝结尾</button>
       <!-- 分隔 -->
       <span class="tb-sep"></span>
       <!-- 更多区 -->
       <div style="position:relative">
-        <button class="tb-btn-text" id="btnMore" title="更多功能" onclick="toggleMoreDropdown()">更多 ▾</button>
+        <button class="tb-btn-text pocket" id="btnMore" title="哆啦A梦的口袋 · 更多工具" onclick="toggleMoreDropdown()"><svg viewBox="0 0 26 18" width="22" height="15" style="display:inline-block;vertical-align:middle;margin-right:6px;flex-shrink:0" xmlns="http://www.w3.org/2000/svg"><path d="M 2 5 L 24 5 A 11 8 0 0 1 2 5 Z" fill="#FFFFFF" stroke="#016FAD" stroke-width="1.6" stroke-linejoin="round"/><path d="M 4.5 6 L 21.5 6 A 8.5 5.5 0 0 1 4.5 6 Z" fill="#016FAD" fill-opacity="0.35"/><circle cx="8" cy="3" r="0.8" fill="#FFFFFF" opacity="0.95"/><circle cx="19" cy="2.2" r="1" fill="#FFFFFF" opacity="0.95"/></svg>哆啦A梦的口袋 ▾</button>
         <div class="more-dropdown" id="moreDropdown">
+          <!-- 文本块 -->
           <button class="more-dropdown-item" onclick="execCmd('formatBlock','BLOCKQUOTE');toggleMoreDropdown()"><span class="icon">❝</span>引用</button>
+          <button class="more-dropdown-item" onclick="insertTipCard();toggleMoreDropdown()"><span class="icon">📋</span>提示卡片</button>
           <button class="more-dropdown-item" onclick="insertCodeBlock();toggleMoreDropdown()"><span class="icon">⟨/⟩</span>代码块</button>
           <div class="more-dropdown-sep"></div>
+          <!-- 排版 -->
           <button class="more-dropdown-item" onclick="toggleAlignPanel();toggleMoreDropdown()"><span class="icon">↔</span>对齐方式</button>
-          <button class="more-dropdown-item" onclick="execCmd('insertUnorderedList');toggleMoreDropdown()"><span class="icon">•≡</span>无序列表</button>
-          <button class="more-dropdown-item" onclick="execCmd('insertOrderedList');toggleMoreDropdown()"><span class="icon">1.</span>有序列表</button>
+          <button class="more-dropdown-item" onclick="insertNumberedHeading();toggleMoreDropdown()"><span class="icon">01§</span>编号标题</button>
           <div class="more-dropdown-sep"></div>
+          <!-- 插入元素 -->
           <button class="more-dropdown-item" onclick="toggleMoreDropdown();toggleImgPanel()"><span class="icon">📷</span>插入图片</button>
           <button class="more-dropdown-item" onclick="toggleMoreDropdown();toggleHrPanel()"><span class="icon">─</span>分割线</button>
-          <button class="more-dropdown-item" onclick="insertNumberedHeading();toggleMoreDropdown()"><span class="icon">01§</span>编号标题</button>
-          <button class="more-dropdown-item" onclick="showEndingPanel();toggleMoreDropdown()"><span class="icon">📝</span>插入结尾</button>
         </div>
       </div>
       <!-- Hidden panels that need to stay -->
@@ -752,12 +839,12 @@ const $ = id => document.getElementById(id);
 // 哆啦A梦四次元口袋彩蛋：点击头像随机掏出一件道具
 const DORA_GADGETS = [
   '任意门', '时光机', '竹蜻蜓', '缩小灯', '记忆面包',
-  '翻译蒟蒻', '隐身斗篷', '如意笔', '空气炮', '取物口袋',
-  '桃太郎饭团', '月光宝盒', '复制镜', '说谎800', '万能修理喷雾'
+  '隐身斗篷', '空气炮', '四次元口袋', '桃太郎印饭团',
+  '时光布', '立体复印机', '入梦机', '说谎机800号', '万能照相机'
 ];
-const DORA_HIDDEN_5 = ['🎉 大雄出现了！', '😅 又是大雄……', '🍙 大雄又来蹭饭'];
-const DORA_HIDDEN_10 = ['💪 胖虎来了！快跑！', '🎤 胖虎要开演唱会了'];
-const DORA_HIDDEN_15 = ['😈 小夫炫富中…', '✨ 静香在洗澡（误）'];
+const DORA_HIDDEN_5 = ['🤓 大雄又来抱大腿了', '😴 大雄正在睡午觉', '🍙 大雄抢走了饭团'];
+const DORA_HIDDEN_10 = ['💪 胖虎登场，请绕道', '🎤 胖虎要开演唱会，快捂耳朵', '👊 胖虎拳头预热中……'];
+const DORA_HIDDEN_15 = ['💰 小夫又在炫耀新玩具', '😏 小夫笑得贼贼的', '🎻 静香在练小提琴（捂耳）', '🌸 静香路过，留下一阵清香'];
 let doraClickCount = 0;
 let doraClickTimer = null;
 function showDoraBubble(avatar, text, special) {
@@ -771,6 +858,134 @@ function showDoraBubble(avatar, text, special) {
   setTimeout(() => bubble.remove(), special ? 2400 : 1700);
 }
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// 任意门：随机传送到一套样式 + 配色
+let doorClickCount = 0;
+let doorClickTimer = null;
+function teleportRandomStyle() {
+  doorClickCount++;
+  clearTimeout(doorClickTimer);
+  doorClickTimer = setTimeout(() => { doorClickCount = 0; }, 2500);
+
+  // 排版模式：避开当前的
+  const otherModes = MODES.filter(m => m.id !== STATE.mode);
+  const newMode = otherModes[Math.floor(Math.random() * otherModes.length)] || MODES[0];
+  applyMode(newMode);
+  // 配色：避开当前的
+  const otherColorIdxs = COLOR_SCHEMES.map((_, i) => i).filter(i => i !== STATE.colorScheme);
+  const newColorIdx = otherColorIdxs[Math.floor(Math.random() * otherColorIdxs.length)];
+  STATE.colorScheme = newColorIdx;
+  STATE.customColors = null;
+  // 随机背景
+  if (typeof BG_TEXTURES !== 'undefined' && BG_TEXTURES.length) {
+    const otherBgs = BG_TEXTURES.filter(b => b.id !== STATE.bg);
+    const newBg = otherBgs[Math.floor(Math.random() * otherBgs.length)] || BG_TEXTURES[0];
+    STATE.bg = newBg.id;
+  }
+  updatePreview();
+
+  // 连点 3+ 次：全屏扭动 + 粉蓝波纹
+  if (doorClickCount >= 3) {
+    triggerWarpEffect();
+    showTeleportToast(`🌀 全屏传送！— ${newMode.name} · ${COLOR_SCHEMES[newColorIdx].name}`);
+  } else {
+    showTeleportToast(`✨ 任意门已开 — ${newMode.name} · ${COLOR_SCHEMES[newColorIdx].name}`);
+  }
+}
+function triggerWarpEffect() {
+  const body = document.body;
+  body.classList.remove('warp-effect');
+  document.querySelectorAll('.warp-overlay,.time-machine').forEach(el => el.remove());
+  void body.offsetWidth;
+
+  // 1. 屏幕扭动
+  body.classList.add('warp-effect');
+  setTimeout(() => body.classList.remove('warp-effect'), 1200);
+
+  // 2. 单层粉蓝波纹覆盖
+  const overlay = document.createElement('div');
+  overlay.className = 'warp-overlay';
+  body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), 1300);
+
+  // 3. 屏幕中央大时光机
+  const tm = document.createElement('div');
+  tm.className = 'time-machine';
+  tm.innerHTML = `
+    <svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.4))">
+      <!-- 能量环 -->
+      <ellipse cx="160" cy="220" rx="155" ry="32" fill="none" stroke="#6EDCFF" stroke-width="2.5" stroke-dasharray="10 5" opacity="0.7"/>
+      <ellipse cx="160" cy="225" rx="135" ry="20" fill="none" stroke="#FF8FBF" stroke-width="1.8" stroke-dasharray="4 6" opacity="0.6"/>
+
+      <!-- 金色长杆（弯曲伸向左上）-->
+      <path d="M 130 145 Q 95 100 70 50" stroke="#F5C518" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M 132 145 Q 97 100 72 50" stroke="#FFD54F" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+      <!-- 顶部红黄旋转标记（旋转动画）-->
+      <g class="paddle">
+        <circle cx="70" cy="40" r="26" fill="#FFD54F" stroke="#3D1F00" stroke-width="2.5"/>
+        <path d="M 70 40 L 70 14 A 26 26 0 0 1 96 40 Z" fill="#E53935"/>
+        <path d="M 70 40 L 96 40 A 26 26 0 0 1 70 66 Z" fill="#F5C518"/>
+        <path d="M 70 40 L 70 66 A 26 26 0 0 1 44 40 Z" fill="#E53935"/>
+        <path d="M 70 40 L 44 40 A 26 26 0 0 1 70 14 Z" fill="#F5C518"/>
+        <circle cx="70" cy="40" r="4" fill="#3D1F00"/>
+      </g>
+
+      <!-- 飞碟船体下方阴影 -->
+      <ellipse cx="160" cy="248" rx="135" ry="12" fill="rgba(0,0,30,0.3)"/>
+
+      <!-- 主体上半（圆顶舱体，哆啦A梦坐这里）-->
+      <path d="M 90 175 Q 90 130 130 130 L 230 130 Q 270 130 270 175 Z" fill="#3A4F75" stroke="#13203A" stroke-width="2.5"/>
+      <ellipse cx="170" cy="145" rx="60" ry="8" fill="#5A75AA" opacity="0.5"/>
+
+      <!-- 主体下半（飞碟扁底盘）-->
+      <path d="M 35 195 Q 35 175 60 175 L 260 175 Q 285 175 285 195 L 285 215 Q 285 235 260 235 L 60 235 Q 35 235 35 215 Z" fill="#2C3E5E" stroke="#13203A" stroke-width="2.5"/>
+
+      <!-- 两侧翼形圆鼓 -->
+      <ellipse cx="50" cy="210" rx="28" ry="26" fill="#2C3E5E" stroke="#13203A" stroke-width="2.5"/>
+      <ellipse cx="270" cy="210" rx="28" ry="26" fill="#2C3E5E" stroke="#13203A" stroke-width="2.5"/>
+      <ellipse cx="48" cy="200" rx="14" ry="6" fill="#5A7AA8" opacity="0.6"/>
+      <ellipse cx="268" cy="200" rx="14" ry="6" fill="#5A7AA8" opacity="0.6"/>
+
+      <!-- 米色控制台（前倾梯形）-->
+      <path d="M 130 175 L 220 175 L 240 215 L 110 215 Z" fill="#E8D5A8" stroke="#5D2D00" stroke-width="2.5"/>
+      <line x1="125" y1="190" x2="225" y2="190" stroke="#5D2D00" stroke-width="1.5" opacity="0.55"/>
+      <line x1="120" y1="200" x2="230" y2="200" stroke="#5D2D00" stroke-width="1.5" opacity="0.55"/>
+
+      <!-- 哆啦A梦从舱体探出来 -->
+      <ellipse cx="180" cy="125" rx="32" ry="30" fill="#03ADF0" stroke="#016FAD" stroke-width="2"/>
+      <ellipse cx="180" cy="135" rx="25" ry="22" fill="#FFFFFF"/>
+      <ellipse cx="170" cy="118" rx="6" ry="7" fill="#FFFFFF" stroke="#000" stroke-width="1.5"/>
+      <ellipse cx="190" cy="118" rx="6" ry="7" fill="#FFFFFF" stroke="#000" stroke-width="1.5"/>
+      <circle cx="172" cy="121" r="1.8" fill="#000"/>
+      <circle cx="188" cy="121" r="1.8" fill="#000"/>
+      <circle cx="180" cy="130" r="3" fill="#E53935"/>
+      <line x1="180" y1="133" x2="180" y2="143" stroke="#000" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M 172 142 Q 180 148 188 142" stroke="#000" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <line x1="158" y1="130" x2="166" y2="129" stroke="#000" stroke-width="0.8" stroke-linecap="round"/>
+      <line x1="158" y1="135" x2="166" y2="135" stroke="#000" stroke-width="0.8" stroke-linecap="round"/>
+      <line x1="194" y1="129" x2="202" y2="130" stroke="#000" stroke-width="0.8" stroke-linecap="round"/>
+      <line x1="194" y1="135" x2="202" y2="135" stroke="#000" stroke-width="0.8" stroke-linecap="round"/>
+      <rect x="160" y="153" width="40" height="4" fill="#E53935" rx="1"/>
+    </svg>
+  `;
+  body.appendChild(tm);
+  setTimeout(() => tm.remove(), 1300);
+}
+function showTeleportToast(text) {
+  const old = document.getElementById('teleportToast');
+  if (old) old.remove();
+  const toast = document.createElement('div');
+  toast.id = 'teleportToast';
+  toast.className = 'teleport-toast';
+  toast.textContent = text;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
+  }, 1800);
+}
 function doraGadget(e) {
   const avatar = e.currentTarget;
   doraClickCount++;
@@ -1957,9 +2172,80 @@ function prepareWechatCompatibility(root) {
   normalizeWechatInlineLayouts(root);
   normalizeWechatPositioning(root);
   normalizeWechatTipCards(root);
+  normalizeWechatEndingIconRowsToTable(root); // 必须在 flex 通用转换前
   normalizeWechatFlexLayouts(root);
   normalizeWechatCodeBlocks(root);
   normalizeWechatColorModeCompatibility(root);
+}
+// 把 ending card 整段 normalize 成 WeChat 友好的结构：
+// 1. 所有 div → section（WeChat 对 section 的内联样式宽容很多，对 div 几乎全剥离）
+// 2. icon 横排 → table（公众号编辑器原生支持）
+// 3. table 加 border:0 防止 WeChat 注入默认边框
+function normalizeWechatEndingIconRowsToTable(root) {
+  // 步骤 1：先把 ending block 内所有 div 替换成 section（保留属性 + 样式 + 子节点）
+  Array.from(root.querySelectorAll('[data-theme-component="ending"]')).forEach(block => {
+    // 子节点先转，再转外壳，避免引用断链
+    Array.from(block.querySelectorAll('div')).forEach(convertDivToSection);
+    convertDivToSection(block);
+  });
+  // 步骤 2：处理 icon 横排 → table
+  Array.from(root.querySelectorAll('[data-theme-component="ending"]')).forEach(block => {
+    const card = block.querySelector('[data-ending-type]') || block;
+    Array.from(card.children).forEach(rowEl => {
+      // section 或 div 都看
+      if (rowEl.tagName !== 'SECTION' && rowEl.tagName !== 'DIV') return;
+      const icons = Array.from(rowEl.children).filter(c =>
+        (c.tagName === 'SECTION' || c.tagName === 'DIV') &&
+        (c.getAttribute('data-theme-role') || '').startsWith('icon-')
+      );
+      if (icons.length < 2) return;
+      if (rowEl.querySelector('table[data-icons-table]')) return;
+      const table = document.createElement('table');
+      table.setAttribute('data-icons-table', 'true');
+      table.style.cssText = 'margin:0 auto 24px;border-collapse:collapse;border-spacing:0;border:0';
+      const tr = document.createElement('tr');
+      icons.forEach(icon => {
+        const td = document.createElement('td');
+        td.style.cssText = 'padding:0 12px;vertical-align:middle;border:0';
+        const clone = icon.cloneNode(true);
+        if (clone.style) {
+          // 清残留 flex/居中相关属性
+          clone.style.alignItems = '';
+          clone.style.justifyContent = '';
+          clone.style.margin = '';
+          // 强制 inline-block 让圆形 + line-height 居中起作用
+          clone.style.display = 'inline-block';
+          if (!clone.style.lineHeight && clone.style.height) {
+            clone.style.lineHeight = clone.style.height;
+          }
+          if (!clone.style.textAlign) clone.style.textAlign = 'center';
+          if (!clone.style.verticalAlign) clone.style.verticalAlign = 'middle';
+        }
+        td.appendChild(clone);
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+      rowEl.replaceWith(table);
+    });
+  });
+  // 步骤 3：给所有 ending block 内的 table 强制 border:0，防止 WeChat 注入默认边框
+  Array.from(root.querySelectorAll('[data-theme-component="ending"] table')).forEach(table => {
+    if (!table.style.borderCollapse) table.style.borderCollapse = 'collapse';
+    if (!table.style.borderSpacing) table.style.borderSpacing = '0';
+    table.style.border = '0';
+    Array.from(table.querySelectorAll('td')).forEach(td => { td.style.border = '0'; });
+  });
+}
+// 把一个 <div> 元素原地替换成 <section>，保留所有属性、样式和子节点
+function convertDivToSection(el) {
+  if (!el || el.tagName !== 'DIV') return el;
+  const section = document.createElement('section');
+  for (const attr of Array.from(el.attributes)) {
+    section.setAttribute(attr.name, attr.value);
+  }
+  while (el.firstChild) section.appendChild(el.firstChild);
+  el.replaceWith(section);
+  return section;
 }
 // WeChat editor drops display:flex on divs. Convert any centered flex container
 // (used for hr decorations, ending card icon rows, etc.) to inline-block layout.
@@ -3018,16 +3304,16 @@ function insertEnding(type) {
   let html = '';
   switch(type) {
     case 1:
-      html = `<div data-ending-type="1" style="background:${subColor};border-radius:16px;padding:32px;text-align:center;margin:2em 0">
-        <div data-theme-role="title" style="font-size:18px;font-weight:700;color:${mainColor};margin-bottom:8px">既然看到这里了</div>
-        <div data-theme-role="body" style="font-size:14px;color:${textColor};opacity:0.72;margin-bottom:24px;line-height:1.7">觉得有启发，记得点赞、爱心、转发给同样需要的人。</div>
-        <div style="text-align:center;margin-bottom:24px;font-size:0">
-          <div data-theme-role="icon-main" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;vertical-align:middle;margin:0 12px">👍</div>
-          <div data-theme-role="icon-sub" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;vertical-align:middle;margin:0 12px">❤️</div>
-          <div data-theme-role="icon-accent" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;vertical-align:middle;margin:0 12px">↗️</div>
-        </div>
-        <div data-theme-role="meta" style="font-size:13px;color:${mainColor};opacity:0.62;font-weight:500;line-height:1.7">关注意疏，我们一起把看见的机会，变成撑起自己的能力。</div>
-      </div>`;
+      html = `<section data-ending-type="1" style="background:${subColor};border-radius:16px;padding:32px;text-align:center;margin:2em 0">
+        <section data-theme-role="title" style="display:block;font-size:18px;font-weight:700;color:${mainColor};margin-bottom:8px">既然看到这里了</section>
+        <section data-theme-role="body" style="display:block;font-size:14px;color:${textColor};opacity:0.72;margin-bottom:24px;line-height:1.7">觉得有启发，记得点赞、爱心、转发给同样需要的人。</section>
+        <table style="margin:0 auto 24px;border-collapse:collapse;border-spacing:0;border:0"><tr>
+          <td style="padding:0 12px;vertical-align:middle;border:0"><section data-theme-role="icon-main" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center">👍</section></td>
+          <td style="padding:0 12px;vertical-align:middle;border:0"><section data-theme-role="icon-sub" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center">❤️</section></td>
+          <td style="padding:0 12px;vertical-align:middle;border:0"><section data-theme-role="icon-accent" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center">↗️</section></td>
+        </tr></table>
+        <section data-theme-role="meta" style="display:block;font-size:13px;color:${mainColor};opacity:0.62;font-weight:500;line-height:1.7">关注意疏，我们一起把看见的机会，变成撑起自己的能力。</section>
+      </section>`;
       break;
     case 2:
       html = `<div data-ending-type="2" style="text-align:center;margin:2em 0">
@@ -3055,8 +3341,8 @@ function insertEnding(type) {
   // Remove any existing ending block first
   const existing = editor.querySelector('[data-ending-block]');
   if (existing) existing.remove();
-  // Wrap in a container with marker attribute
-  html = `<div data-ending-block="true" data-theme-component="ending" data-ending-type="${type}" style="margin-top:2em">${html}</div>`;
+  // Wrap in a container with marker attribute. 用 section 而不是 div，让 WeChat 编辑器保留外层样式
+  html = `<section data-ending-block="true" data-theme-component="ending" data-ending-type="${type}" style="display:block;margin-top:2em">${html}</section>`;
   // Insert at end of editor
   editor.focus();
   const sel = window.getSelection();
@@ -5249,55 +5535,87 @@ $('modalOverlay').addEventListener('click', e => {
 // ===================================================================
 function showHelp() {
   showModal(`
-    <h3>使用帮助</h3>
-    <div class="help-content">
-      <h4>📝 编辑</h4>
+    <h3>意疏的 AI 口袋</h3>
+    <div class="help-tabs">
+      <button class="help-tab active" onclick="switchHelpTab('docs', this)">📝 使用说明</button>
+      <button class="help-tab" onclick="switchHelpTab('contact', this)">👋 联系作者</button>
+    </div>
+    <div id="helpTabDocs" class="help-content">
+      <h4>📝 写作</h4>
       <ul>
-        <li>直接在左侧编辑区输入或粘贴内容</li>
-        <li>支持粘贴 Markdown 格式文本自动解析</li>
-        <li>「预处理」可按保守整理、长文分层、教程步骤、种草清单、口播转图文整理纯文本</li>
-        <li>工具栏提供加粗、斜体、标题、引用等功能</li>
+        <li>左侧编辑、右侧实时预览，<strong>支持 Markdown 直接粘贴</strong>自动解析</li>
+        <li><strong>✨ 预处理</strong>（工具栏左二）：5 种文章类型一键梳理结构 —— 保守整理、长文分层、教程步骤、种草清单、口播转图文</li>
+        <li><strong>🎛 设计</strong>（工具栏中部）：插入大型设计组件（开篇引导、章节卡、结尾签名等）</li>
+        <li>底部状态栏显示<strong>字数 + 预估阅读时长 + 黄金长度提示</strong>（🟢 1200-2000 / 🟡 略长 / 🔴 太长）</li>
       </ul>
-      <h4>🎨 排版</h4>
+      <h4>🎨 排版样式</h4>
       <ul>
-        <li><strong>排版模式</strong>：9种预设模式一键切换</li>
-        <li><strong>字体</strong>：独立设置标题和正文字体</li>
-        <li><strong>配色</strong>：${COLOR_SCHEMES.length}种预设 + 自定义配色</li>
-        <li><strong>行距/段距</strong>：5档预设 + 自定义数值</li>
+        <li><strong>排版模式</strong>：${MODES.length} 种预设风格一键切换</li>
+        <li><strong>配色</strong>：${COLOR_SCHEMES.length} 种预设 + 自定义颜色</li>
+        <li><strong>字体</strong>：标题和正文字体可独立设置</li>
+        <li><strong>行距 / 段距</strong>：5 档预设 + 自定义数值</li>
+        <li><strong>背景纹理</strong>：纯色 / 米色 / 格纹等，公众号兼容</li>
       </ul>
-      <h4>📋 复制</h4>
+      <h4>🖼️ 图片 & 装饰</h4>
       <ul>
-        <li>点击"一键复制到公众号"将排版后的内容复制到剪贴板</li>
-        <li>所有样式自动转为内联样式，兼容公众号编辑器</li>
-        <li>直接在公众号后台 <kbd>Ctrl</kbd>+<kbd>V</kbd> 粘贴</li>
+        <li><strong>插入图片</strong>（👜哆啦A梦的口袋→📷 插入图片）：本地上传或 URL，支持双图并排</li>
+        <li><strong>自动压缩</strong>：超 1200px 自动缩放转 JPEG，单张不超过 200KB（GIF 不压）</li>
+        <li><strong>分割线 + 段间空</strong>（👜哆啦A梦的口袋→─ 分割线）：3 种横线 + 3 档可控空隙（小/中/大 12/24/48px）</li>
+        <li><strong>提示卡片</strong>（👜哆啦A梦的口袋→📋 提示卡片）：插入带强调色的提示块</li>
+        <li><strong>结尾卡片</strong>（顶部工具栏 📝结尾）：4 种风格，自动跟随主题色</li>
+        <li>点击图片选中，按 <kbd>Delete</kbd> 删除（双图并排会连同表格一起删）</li>
       </ul>
-      <h4>💾 样式管理</h4>
+      <h4>📋 复制 & 导出</h4>
       <ul>
-        <li>保存当前配置为"我的样式"，下次一键复用</li>
-        <li>支持导出/导入 JSON 文件分享样式</li>
-        <li>最多保存20个自定义样式</li>
+        <li><strong>一键复制到公众号</strong>：所有样式自动转内联样式，公众号后台直接 <kbd>Ctrl</kbd>+<kbd>V</kbd></li>
+        <li><strong>💬 微信预览</strong>（预览栏右上）：提前看到「粘到公众号会变什么样」，flex 转 inline-block 等兼容处理实时显示</li>
+        <li><strong>导出 HTML</strong> / <strong>导出 MD</strong>：备份原稿，给 AI 改稿，跨工具迁移</li>
+        <li><strong>复制为 HTML</strong>：直接拿到一段排版好的 HTML 代码</li>
+      </ul>
+      <h4>💾 自动保存 & 撤销</h4>
+      <ul>
+        <li>每 5 秒自动存到本地浏览器，关页面前还会再存一次</li>
+        <li>刷新或重开页面，<strong>7 天内的草稿会问是否恢复</strong></li>
+        <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> 撤销 / <kbd>Ctrl</kbd>+<kbd>Y</kbd>（或 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>）重做，60 步历史栈</li>
+      </ul>
+      <h4>💎 样式管理</h4>
+      <ul>
+        <li>保存当前配置为「我的样式」，下次一键复用，最多 20 个</li>
+        <li>支持导出 / 导入 JSON 文件，跨设备分享</li>
       </ul>
       <h4>✍️ Markdown 语法</h4>
       <ul>
         <li><kbd>#</kbd> <kbd>##</kbd> <kbd>###</kbd> 标题</li>
-        <li><kbd>**文字**</kbd> 加粗</li>
-        <li><kbd>*文字*</kbd> 斜体</li>
+        <li><kbd>**文字**</kbd> 加粗 / <kbd>*文字*</kbd> 斜体</li>
         <li><kbd>> 文字</kbd> 引用</li>
-        <li><kbd>- 文字</kbd> 无序列表</li>
-        <li><kbd>1. 文字</kbd> 有序列表</li>
+        <li><kbd>- 文字</kbd> 无序列表 / <kbd>1. 文字</kbd> 有序列表</li>
         <li><kbd>\`\`\`代码\`\`\`</kbd> 代码块</li>
         <li><kbd>---</kbd> 分割线</li>
       </ul>
-      <div class="help-qr">
-        <div class="help-qr-title">扫码加意疏微信</div>
+      <h4>🔔 小彩蛋</h4>
+      <ul>
+        <li>左上角的哆啦A梦戳一下试试，连点更有惊喜</li>
+      </ul>
+    </div>
+    <div id="helpTabContact" class="help-contact" style="display:none">
+      <div class="help-contact-card">
+        <div class="help-contact-title">👋 我是意疏</div>
+        <div class="help-contact-sub">这个排版器是我做的，欢迎一起聊聊</div>
         <img src="assets/qrcode.jpg" alt="意疏的微信二维码" loading="lazy">
-        <div class="help-qr-note">扫一扫，添加我为朋友</div>
+        <div class="help-contact-tagline">扫码加我微信</div>
+        <div class="help-contact-hint">做产品、做内容、聊 AI，都可以</div>
       </div>
     </div>
     <div class="modal-actions">
       <button class="btn-primary" onclick="hideModal()">知道了</button>
     </div>
   `);
+}
+function switchHelpTab(which, btn) {
+  $('helpTabDocs').style.display = which === 'docs' ? '' : 'none';
+  $('helpTabContact').style.display = which === 'contact' ? '' : 'none';
+  btn.parentNode.querySelectorAll('.help-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 </script>
 </body>
