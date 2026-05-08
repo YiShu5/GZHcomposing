@@ -72,10 +72,83 @@ body::before{
   border:2px solid var(--dora-yellow);
   animation:dora-breathe 4s ease-in-out infinite;
   flex-shrink:0;
+  position:relative;
+  cursor:pointer;
 }
 @keyframes dora-breathe{
   0%,100%{transform:scale(1);box-shadow:0 3px 8px rgba(21,101,192,0.3)}
   50%{transform:scale(1.05);box-shadow:0 5px 15px rgba(21,101,192,0.4)}
+}
+.take-copter{
+  position:absolute;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  pointer-events:none;
+  z-index:2;
+}
+.take-copter .propeller{
+  transform-origin:30px 18px;
+  animation:take-copter-spin 1.8s linear infinite;
+}
+.dora-avatar:hover .take-copter .propeller{
+  animation-duration:0.35s;
+}
+@keyframes take-copter-spin{
+  to{transform:rotate(360deg)}
+}
+.dora-gadget-bubble{
+  position:absolute;
+  left:100%;
+  top:50%;
+  margin-left:10px;
+  background:#fff;
+  color:#1565C0;
+  padding:5px 12px;
+  border-radius:14px;
+  font-size:12px;
+  font-weight:700;
+  box-shadow:0 4px 14px rgba(21,101,192,0.4);
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:20;
+  border:2px solid var(--dora-yellow);
+  opacity:0;
+  transform:translateY(-50%);
+}
+.dora-gadget-bubble.show{
+  animation:dora-gadget-pop 1.7s ease-out forwards;
+}
+@keyframes dora-gadget-pop{
+  0%{opacity:0;transform:translate(-10px,-50%) scale(0.5)}
+  20%{opacity:1;transform:translate(0,-50%) scale(1.1)}
+  40%{transform:translate(0,-50%) scale(1)}
+  100%{opacity:0;transform:translate(24px,-50%) scale(1)}
+}
+.dora-gadget-bubble.special{
+  background:linear-gradient(135deg,#FFE082,#FFB74D);
+  color:#BF360C;
+  font-size:13px;
+  padding:6px 14px;
+  border-color:#FF6F00;
+  box-shadow:0 4px 20px rgba(230,90,0,0.55);
+}
+.dora-gadget-bubble.special.show{
+  animation:dora-gadget-special 2.4s ease-out forwards;
+}
+@keyframes dora-gadget-special{
+  0%{opacity:0;transform:translate(-12px,-50%) scale(0.4) rotate(-6deg)}
+  12%{opacity:1;transform:translate(0,-50%) scale(1.25) rotate(3deg)}
+  24%{transform:translate(0,-50%) scale(1.1) rotate(-2deg)}
+  36%{transform:translate(0,-50%) scale(1.18) rotate(1deg)}
+  50%{transform:translate(0,-50%) scale(1.1) rotate(0deg)}
+  100%{opacity:0;transform:translate(36px,-50%) scale(1)}
+}
+.dora-avatar.shake{animation:dora-shake 0.5s ease-in-out}
+@keyframes dora-shake{
+  0%,100%{transform:rotate(0)}
+  25%{transform:rotate(-8deg)}
+  75%{transform:rotate(8deg)}
 }
 .logo{font-size:24px;font-weight:800;color:var(--dora-white);margin-right:36px;white-space:nowrap;letter-spacing:0;text-shadow:0 1px 2px rgba(0,0,0,0.1)}
 .logo span{font-size:13px;font-weight:500;color:var(--dora-yellow);opacity:1;margin-left:8px}
@@ -273,7 +346,32 @@ body::before{
 
 <!-- ===== Top Nav ===== -->
 <nav class="top-nav">
-  <div class="dora-avatar">🧈</div>
+  <div class="dora-avatar" title="戳一下试试" onclick="doraGadget(event)">
+    <svg class="take-copter" viewBox="0 0 60 30" width="50" height="22" xmlns="http://www.w3.org/2000/svg">
+      <rect x="29" y="22" width="2" height="8" fill="#FFC107" rx="1"/>
+      <g class="propeller">
+        <ellipse cx="30" cy="18" rx="22" ry="3" fill="#F5C518"/>
+        <ellipse cx="30" cy="18" rx="3" ry="22" fill="#F5C518" opacity="0.55"/>
+      </g>
+      <circle cx="30" cy="18" r="2.8" fill="#FF6F00"/>
+    </svg>
+    <svg viewBox="0 0 100 100" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="58" rx="36" ry="32" fill="#FFFFFF"/>
+      <ellipse cx="40" cy="33" rx="9" ry="11" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
+      <ellipse cx="60" cy="33" rx="9" ry="11" fill="#FFFFFF" stroke="#000" stroke-width="2"/>
+      <circle cx="42.5" cy="36" r="2.8" fill="#000"/>
+      <circle cx="57.5" cy="36" r="2.8" fill="#000"/>
+      <circle cx="50" cy="49" r="5" fill="#E53935"/>
+      <line x1="50" y1="54" x2="50" y2="73" stroke="#000" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M 35 71 Q 50 84 65 71" stroke="#000" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <line x1="17" y1="50" x2="33" y2="48" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="17" y1="57" x2="33" y2="57" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="17" y1="64" x2="33" y2="66" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="83" y1="50" x2="67" y2="48" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="83" y1="57" x2="67" y2="57" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="83" y1="64" x2="67" y2="66" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
   <div class="logo">意疏的 AI 口袋</div>
   <div class="nav-group">
     <button class="nav-btn" onclick="openSettings('mode')" id="btnMode">样式设置</button>
@@ -379,12 +477,16 @@ body::before{
         </div>
         <button class="img-insert-btn" onclick="doInsertImage()">插入图片</button>
       </div>
-      <div class="hr-panel" id="hrPanel" style="display:none">
+      <div class="hr-panel" id="hrPanel">
         <button class="hr-option" onclick="insertDivider('basic-line')">基础横线<span class="hr-preview"><span style="width:100%;height:1px;background:#CBD5E1"></span></span></button>
         <button class="hr-option" onclick="insertDivider('dot-line')">短线圆点<span class="hr-preview"><span style="flex:1;height:1px;background:#CBD5E1"></span><span style="width:6px;height:6px;border-radius:50%;background:#94A3B8"></span><span style="flex:1;height:1px;background:#CBD5E1"></span></span></button>
         <button class="hr-option" onclick="insertDivider('ornament-line')">居中装饰<span class="hr-preview"><span style="flex:1;height:1px;background:#CBD5E1"></span><span style="font-size:12px;color:#94A3B8">✦</span><span style="flex:1;height:1px;background:#CBD5E1"></span></span></button>
+        <div style="border-top:1px dashed #e5e7eb;margin:6px 0"></div>
+        <button class="hr-option" onclick="insertSpacer('sm')">段间空（小）<span style="margin-left:auto;font-size:11px;color:#999">12px</span></button>
+        <button class="hr-option" onclick="insertSpacer('md')">段间空（中）<span style="margin-left:auto;font-size:11px;color:#999">24px</span></button>
+        <button class="hr-option" onclick="insertSpacer('lg')">段间空（大）<span style="margin-left:auto;font-size:11px;color:#999">48px</span></button>
       </div>
-      <div class="align-panel" id="alignPanel" style="display:none">
+      <div class="align-panel" id="alignPanel">
         <button class="align-option" id="alignOptionLeft" onclick="chooseTextAlign('left')"><span class="icon">↤</span>左对齐</button>
         <button class="align-option" id="alignOptionCenter" onclick="chooseTextAlign('center')"><span class="icon">↔</span>居中</button>
         <button class="align-option" id="alignOptionRight" onclick="chooseTextAlign('right')"><span class="icon">↦</span>右对齐</button>
@@ -407,6 +509,7 @@ body::before{
     <div class="preview-toolbar">
       <span class="label">预览效果</span>
       <span class="spacer"></span>
+      <button class="mobile-toggle" id="wechatPreviewToggle" onclick="toggleWechatPreview()" title="模拟微信粘贴后的样子（flex 转 inline-block 等）">💬 微信预览</button>
       <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobile()">📱 手机预览</button>
     </div>
     <div class="preview-wrap" id="previewWrap">
@@ -427,6 +530,7 @@ body::before{
   <button class="btn-secondary" onclick="importStyleJSON()">📥 导入样式JSON</button>
   <span class="spacer"></span>
   <button class="btn-secondary" onclick="exportHTML()">导出HTML</button>
+  <button class="btn-secondary" onclick="exportMarkdown()">导出MD</button>
   <button class="btn-secondary" id="copyHtmlBtn" onclick="copyHTMLCode()">复制为HTML</button>
   <button class="btn-primary" id="copyBtn" onclick="copyToWechat()">📋 一键复制到公众号</button>
 </div>
@@ -644,6 +748,57 @@ const DEFAULT_HTML = `<p>支持 <strong>8种排版模式</strong>、6种标题�
 // DOM REFS
 // ===================================================================
 const $ = id => document.getElementById(id);
+
+// 哆啦A梦四次元口袋彩蛋：点击头像随机掏出一件道具
+const DORA_GADGETS = [
+  '任意门', '时光机', '竹蜻蜓', '缩小灯', '记忆面包',
+  '翻译蒟蒻', '隐身斗篷', '如意笔', '空气炮', '取物口袋',
+  '桃太郎饭团', '月光宝盒', '复制镜', '说谎800', '万能修理喷雾'
+];
+const DORA_HIDDEN_5 = ['🎉 大雄出现了！', '😅 又是大雄……', '🍙 大雄又来蹭饭'];
+const DORA_HIDDEN_10 = ['💪 胖虎来了！快跑！', '🎤 胖虎要开演唱会了'];
+const DORA_HIDDEN_15 = ['😈 小夫炫富中…', '✨ 静香在洗澡（误）'];
+let doraClickCount = 0;
+let doraClickTimer = null;
+function showDoraBubble(avatar, text, special) {
+  const old = avatar.querySelector('.dora-gadget-bubble');
+  if (old) old.remove();
+  const bubble = document.createElement('div');
+  bubble.className = 'dora-gadget-bubble' + (special ? ' special' : '');
+  bubble.textContent = text;
+  avatar.appendChild(bubble);
+  requestAnimationFrame(() => bubble.classList.add('show'));
+  setTimeout(() => bubble.remove(), special ? 2400 : 1700);
+}
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function doraGadget(e) {
+  const avatar = e.currentTarget;
+  doraClickCount++;
+  clearTimeout(doraClickTimer);
+  doraClickTimer = setTimeout(() => { doraClickCount = 0; }, 1500);
+  // 隐藏彩蛋：连点 5/10/15 次召唤朋友
+  if (doraClickCount === 15) {
+    avatar.classList.add('shake');
+    setTimeout(() => avatar.classList.remove('shake'), 500);
+    showDoraBubble(avatar, pickRandom(DORA_HIDDEN_15), true);
+    doraClickCount = 0;
+    return;
+  }
+  if (doraClickCount === 10) {
+    avatar.classList.add('shake');
+    setTimeout(() => avatar.classList.remove('shake'), 500);
+    showDoraBubble(avatar, pickRandom(DORA_HIDDEN_10), true);
+    return;
+  }
+  if (doraClickCount === 5) {
+    avatar.classList.add('shake');
+    setTimeout(() => avatar.classList.remove('shake'), 500);
+    showDoraBubble(avatar, pickRandom(DORA_HIDDEN_5), true);
+    return;
+  }
+  showDoraBubble(avatar, '✨ ' + pickRandom(DORA_GADGETS) + '！', false);
+}
+
 const editor = $('editor');
 const preview = $('preview');
 const previewFrame = $('previewFrame');
@@ -656,7 +811,16 @@ const divider = $('divider');
 // INIT
 // ===================================================================
 window.addEventListener('DOMContentLoaded', () => {
-  editor.innerHTML = DEFAULT_HTML;
+  // 草稿恢复优先于默认内容
+  const draft = loadDraft();
+  if (draft && draft.html && draft.html.trim() && draft.html !== DEFAULT_HTML) {
+    const minutesAgo = Math.max(1, Math.round((Date.now() - draft.savedAt) / 60000));
+    const ok = confirm(`检测到 ${minutesAgo} 分钟前的未保存草稿（约 ${draft.chars} 字），是否恢复？\n\n点「确定」恢复草稿。\n点「取消」加载默认范例（草稿会被覆盖）。`);
+    if (ok) editor.innerHTML = draft.html;
+    else editor.innerHTML = DEFAULT_HTML;
+  } else {
+    editor.innerHTML = DEFAULT_HTML;
+  }
   applyMode(MODES.find(m => m.id === DEFAULT_MODE_ID) || MODES[0]);
   updatePreview();
   setupDivider();
@@ -664,7 +828,90 @@ window.addEventListener('DOMContentLoaded', () => {
   setupEditorEvents();
   setupRichCopyEvents();
   updateToolbarStates();
+  startAutosave();
+  pushHistorySnapshot(); // 初始快照
 });
+
+// ===================================================================
+// UNDO / REDO 历史栈
+// ===================================================================
+const HISTORY_MAX = 60;
+let historyStack = [];
+let historyIndex = -1;
+let historyPushTimer = null;
+let suppressHistory = false;
+function pushHistorySnapshot() {
+  if (suppressHistory) return;
+  const html = editor.innerHTML;
+  if (historyStack[historyIndex] === html) return;
+  // 截断 redo 部分
+  if (historyIndex < historyStack.length - 1) {
+    historyStack = historyStack.slice(0, historyIndex + 1);
+  }
+  historyStack.push(html);
+  if (historyStack.length > HISTORY_MAX) {
+    historyStack.shift();
+  } else {
+    historyIndex++;
+  }
+}
+function debouncedPushSnapshot() {
+  clearTimeout(historyPushTimer);
+  historyPushTimer = setTimeout(pushHistorySnapshot, 600);
+}
+function undoEditor() {
+  // 立即把还没入栈的当前状态推入，再回退
+  clearTimeout(historyPushTimer);
+  pushHistorySnapshot();
+  if (historyIndex <= 0) return;
+  historyIndex--;
+  suppressHistory = true;
+  editor.innerHTML = historyStack[historyIndex];
+  suppressHistory = false;
+  scheduleUpdate();
+}
+function redoEditor() {
+  if (historyIndex >= historyStack.length - 1) return;
+  historyIndex++;
+  suppressHistory = true;
+  editor.innerHTML = historyStack[historyIndex];
+  suppressHistory = false;
+  scheduleUpdate();
+}
+
+// ===================================================================
+// AUTOSAVE / DRAFT RECOVERY
+// ===================================================================
+const DRAFT_KEY = 'gzhcomposing.draft.v1';
+function saveDraft() {
+  try {
+    const html = editor.innerHTML || '';
+    const chars = (editor.innerText || '').replace(/\s/g, '').length;
+    if (chars < 5) return; // 内容太少不存
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ html, chars, savedAt: Date.now() }));
+  } catch (err) {
+    // 配额满 / 隐身模式：静默跳过
+  }
+}
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    // 7 天前的草稿就别问了
+    if (!draft.savedAt || Date.now() - draft.savedAt > 7 * 24 * 60 * 60 * 1000) {
+      localStorage.removeItem(DRAFT_KEY);
+      return null;
+    }
+    return draft;
+  } catch { return null; }
+}
+function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch {} }
+function startAutosave() {
+  setInterval(saveDraft, 5000);
+  // 关页面前最后存一次
+  window.addEventListener('beforeunload', saveDraft);
+}
 
 // ===================================================================
 // EDITOR COMMANDS
@@ -1710,8 +1957,56 @@ function prepareWechatCompatibility(root) {
   normalizeWechatInlineLayouts(root);
   normalizeWechatPositioning(root);
   normalizeWechatTipCards(root);
+  normalizeWechatFlexLayouts(root);
   normalizeWechatCodeBlocks(root);
   normalizeWechatColorModeCompatibility(root);
+}
+// WeChat editor drops display:flex on divs. Convert any centered flex container
+// (used for hr decorations, ending card icon rows, etc.) to inline-block layout.
+function normalizeWechatFlexLayouts(root) {
+  Array.from(root.querySelectorAll('div')).forEach(div => {
+    if ((div.style.display || '').toLowerCase() !== 'flex') return;
+    const jc = (div.style.justifyContent || '').toLowerCase();
+    // Only normalize centered or unset flex (decorative patterns).
+    // Skip flex layouts the user intentionally aligned to start/end/space-between.
+    if (jc && jc !== 'center') return;
+
+    const gapPx = parseInt(div.style.gap || '0', 10) || 0;
+    div.style.display = 'block';
+    div.style.justifyContent = '';
+    div.style.alignItems = '';
+    div.style.gap = '';
+    if (!div.style.textAlign) div.style.textAlign = 'center';
+    // Collapse whitespace between inline-block children
+    if (gapPx > 0) div.style.fontSize = '0';
+
+    Array.from(div.children).forEach(child => {
+      if (!child.style) return;
+      const childDisplay = (child.style.display || '').toLowerCase();
+      // Inner flex (e.g. icon circle centering its emoji): convert to inline-block + line-height
+      if (childDisplay === 'flex') {
+        const h = child.style.height || '';
+        child.style.display = 'inline-block';
+        child.style.alignItems = '';
+        child.style.justifyContent = '';
+        if (h) child.style.lineHeight = h;
+        if (!child.style.textAlign) child.style.textAlign = 'center';
+      } else if (!childDisplay || childDisplay === 'block' || childDisplay === 'inline') {
+        child.style.display = 'inline-block';
+      }
+      child.style.verticalAlign = child.style.verticalAlign || 'middle';
+      // Convert gap → margin
+      if (gapPx > 0 && !child.style.margin) {
+        child.style.margin = `0 ${gapPx / 2}px`;
+      }
+      // If parent set font-size:0 to kill whitespace, ensure text children have own font-size
+      if (gapPx > 0 && !child.style.fontSize) {
+        // Only set if there's text content to render (avoid touching empty spans with bg color)
+        const hasText = (child.textContent || '').trim().length > 0;
+        if (hasText) child.style.fontSize = '14px';
+      }
+    });
+  });
 }
 function sanitizeContentHTML(html) {
   const tpl = document.createElement('template');
@@ -1744,10 +2039,45 @@ function getValidImageFiles(files, limit = Infinity) {
   }
   return list;
 }
+// 客户端压缩：超 1200px 自动缩放，统一转 JPEG（quality 0.85）
+// 已经够小的不动，避免重复压损画质。GIF 保留原图（避免动图变静图）。
+function compressImageDataURL(dataURL, maxDim = 1200, quality = 0.85, sizeThresholdKB = 200) {
+  return new Promise(resolve => {
+    if (typeof dataURL !== 'string' || !dataURL.startsWith('data:image/')) {
+      resolve(dataURL); return;
+    }
+    if (dataURL.startsWith('data:image/gif')) { resolve(dataURL); return; } // 不压动图
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const max = Math.max(img.width, img.height);
+        const sizeKB = (dataURL.length * 3 / 4) / 1024;
+        if (max <= maxDim && sizeKB < sizeThresholdKB) { resolve(dataURL); return; }
+        const scale = max > maxDim ? maxDim / max : 1;
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        // 透明 PNG 转 JPEG 会变黑底，先铺白底
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        const out = canvas.toDataURL('image/jpeg', quality);
+        resolve(out.length < dataURL.length ? out : dataURL);
+      } catch { resolve(dataURL); }
+    };
+    img.onerror = () => resolve(dataURL);
+    img.src = dataURL;
+  });
+}
 function readImageFiles(files) {
   return Promise.all(files.map(file => new Promise(resolve => {
     const reader = new FileReader();
-    reader.onload = e => resolve({ file, src: sanitizeImageSrc(e.target.result) });
+    reader.onload = async e => {
+      const compressed = await compressImageDataURL(e.target.result);
+      resolve({ file, src: sanitizeImageSrc(compressed) });
+    };
     reader.onerror = () => resolve({ file, src: '' });
     reader.readAsDataURL(file);
   })));
@@ -1776,13 +2106,17 @@ function toggleMoreDropdown() {
   $('alignPanel')?.classList.remove('show');
 }
 function toggleImgPanel() {
+  const p = $('imgPanel');
+  const willClose = p.classList.contains('show');
   // Save cursor position before opening panel
   const sel = window.getSelection();
   if (sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
     savedEditorRange = sel.getRangeAt(0).cloneRange();
   }
-  const p = $('imgPanel');
   p.classList.toggle('show');
+  // If user is closing the panel without inserting, drop the badge target
+  // so the next normal image insert doesn't accidentally land in an old badge.
+  if (willClose) targetBadgeForImage = null;
   $('hrPanel')?.classList.remove('show');
   $('alignPanel')?.classList.remove('show');
 }
@@ -1796,10 +2130,20 @@ function toggleHrPanel() {
   $('imgPanel')?.classList.remove('show');
   $('alignPanel')?.classList.remove('show');
 }
+function insertSpacer(size) {
+  const heights = { sm: 12, md: 24, lg: 48 };
+  const h = heights[size] || 24;
+  restoreEditorRange(savedEditorRange);
+  savedEditorRange = null;
+  insertSafeHTML(`<div data-theme-role="spacer" style="height:${h}px;line-height:${h}px"><br></div>`);
+  $('hrPanel')?.classList.remove('show');
+  editor.focus();
+  scheduleUpdate();
+}
 function insertDivider(style) {
   restoreEditorRange(savedEditorRange);
   savedEditorRange = null;
-  insertSafeHTML(`<hr data-hr-style="${escapeAttr(style)}"><p><br></p>`);
+  insertSafeHTML(`<hr data-hr-style="${escapeAttr(style)}">`);
   $('hrPanel')?.classList.remove('show');
   editor.focus();
   scheduleUpdate();
@@ -2677,10 +3021,10 @@ function insertEnding(type) {
       html = `<div data-ending-type="1" style="background:${subColor};border-radius:16px;padding:32px;text-align:center;margin:2em 0">
         <div data-theme-role="title" style="font-size:18px;font-weight:700;color:${mainColor};margin-bottom:8px">既然看到这里了</div>
         <div data-theme-role="body" style="font-size:14px;color:${textColor};opacity:0.72;margin-bottom:24px;line-height:1.7">觉得有启发，记得点赞、爱心、转发给同样需要的人。</div>
-        <div style="display:flex;justify-content:center;gap:24px;margin-bottom:24px">
-          <div data-theme-role="icon-main" style="width:48px;height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};display:flex;align-items:center;justify-content:center;font-size:20px">👍</div>
-          <div data-theme-role="icon-sub" style="width:48px;height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};display:flex;align-items:center;justify-content:center;font-size:20px">❤️</div>
-          <div data-theme-role="icon-accent" style="width:48px;height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};display:flex;align-items:center;justify-content:center;font-size:20px">↗️</div>
+        <div style="text-align:center;margin-bottom:24px;font-size:0">
+          <div data-theme-role="icon-main" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;vertical-align:middle;margin:0 12px">👍</div>
+          <div data-theme-role="icon-sub" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;vertical-align:middle;margin:0 12px">❤️</div>
+          <div data-theme-role="icon-accent" style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;vertical-align:middle;margin:0 12px">↗️</div>
         </div>
         <div data-theme-role="meta" style="font-size:13px;color:${mainColor};opacity:0.62;font-weight:500;line-height:1.7">关注意疏，我们一起把看见的机会，变成撑起自己的能力。</div>
       </div>`;
@@ -2927,8 +3271,15 @@ function setupEditorEvents() {
     const plain = e.clipboardData.getData('text/plain');
     const html = e.clipboardData.getData('text/html');
     e.preventDefault();
-    // Detect markdown
-    if (plain && (plain.includes('# ') || plain.includes('**') || plain.includes('```') || plain.includes('> ') || plain.match(/^-\s/m))) {
+    // Detect markdown — require line-anchored markers, not loose ** matches
+    const looksLikeMarkdown = plain && (
+      /^#{1,6}\s/m.test(plain) ||
+      /^>\s/m.test(plain) ||
+      /^```/m.test(plain) ||
+      /^[-*]\s/m.test(plain) ||
+      (plain.match(/\*\*[^*\n]+\*\*/g) || []).length >= 2
+    );
+    if (looksLikeMarkdown) {
       const parsed = parseMD(plain);
       insertPasteHTML(parsed, pasteBeforeEnding);
       ensureEndingBlockAtEnd();
@@ -2954,14 +3305,48 @@ function setupEditorEvents() {
   editor.addEventListener('input', () => {
     ensureEndingBlockAtEnd();
     scheduleUpdate();
+    debouncedPushSnapshot();
   });
   editor.addEventListener('keyup', updateToolbarStates);
   editor.addEventListener('mouseup', updateToolbarStates);
   editor.addEventListener('focus', updateToolbarStates);
   editor.addEventListener('keydown', e => {
+    // 自定义 Undo/Redo 覆盖浏览器默认（contenteditable 自带 undo 在自定义 DOM 操作下不可靠）
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+      e.preventDefault();
+      undoEditor();
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && ((e.shiftKey && (e.key === 'z' || e.key === 'Z')) || e.key === 'y' || e.key === 'Y')) {
+      e.preventDefault();
+      redoEditor();
+      return;
+    }
     if (e.key === 'Tab') {
       e.preventDefault();
       document.execCommand('insertText', false, '    ');
+      return;
+    }
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const range = sel.getRangeAt(0);
+      if (range.collapsed) return;
+      if (range.startContainer !== range.endContainer) return;
+      if (range.endOffset - range.startOffset !== 1) return;
+      const img = range.startContainer.childNodes[range.startOffset];
+      if (!img || img.tagName !== 'IMG') return;
+      e.preventDefault();
+      // If image is inside a side-by-side table layout, drop the whole table
+      const table = img.closest('table');
+      if (table && editor.contains(table)) {
+        table.remove();
+      } else {
+        const next = img.nextSibling;
+        img.remove();
+        if (next && next.tagName === 'BR') next.remove();
+      }
+      editor.dispatchEvent(new Event('input', { bubbles: true }));
     }
   });
   document.addEventListener('selectionchange', () => {
@@ -2977,8 +3362,19 @@ function setupEditorEvents() {
       // Store reference to this badge and open image panel
       targetBadgeForImage = badge;
       toggleImgPanel();
+      return;
+    }
+    // Click an inserted image to select it so Delete/Backspace removes it
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+      const range = document.createRange();
+      range.selectNode(e.target);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
   });
+
 }
 
 function setupRichCopyEvents() {
@@ -3046,6 +3442,11 @@ function updatePreview() {
   applyUserAlignmentOverrides(preview);
   applyBgTexture();
   updateCounts();
+  // 如果当前在「微信预览」模式，编辑后也要重跑兼容管道
+  if (wechatPreviewActive) {
+    wechatPreviewBackup = preview.innerHTML;
+    preview.innerHTML = buildWechatHTMLFromElement(preview, false);
+  }
 }
 
 function applyUserAlignmentOverrides(root) {
@@ -3062,10 +3463,17 @@ function applyUserAlignmentOverrides(root) {
 function updateCounts() {
   const edText = editor.innerText || '';
   const prText = preview.innerText || '';
+  const edChars = edText.replace(/\s/g, '').length;
   const chars = prText.replace(/\s/g, '').length;
   const imgs = preview.querySelectorAll('img').length;
   const readMin = Math.max(1, Math.ceil(chars / 400));
-  $('editorCount').textContent = `字数：${edText.replace(/\s/g,'').length}`;
+  // 公众号最佳长度提示：1200-2000 字之间为黄金区间
+  let zoneTag = '';
+  if (edChars >= 1200 && edChars <= 2000) zoneTag = ' · 🟢 黄金长度';
+  else if (edChars > 2000 && edChars <= 3000) zoneTag = ' · 🟡 略长';
+  else if (edChars > 3000) zoneTag = ' · 🔴 太长';
+  else if (edChars > 0 && edChars < 600) zoneTag = ' · ⚪ 偏短';
+  $('editorCount').textContent = `字数：${edChars} · 预估阅读 ${readMin} 分钟${zoneTag}`;
   $('previewStats').textContent = `字数：${chars} | 图片：${imgs} | 预估阅读：${readMin}分钟`;
 }
 
@@ -4312,6 +4720,25 @@ function toggleMobile() {
   $('mobileToggle').classList.toggle('active', STATE.isMobile);
 }
 
+// 微信兼容预览：跑一遍粘贴前的全套 normalize（flex→inline-block 等），让你提前看到「粘到公众号会变什么样」
+let wechatPreviewActive = false;
+let wechatPreviewBackup = null;
+function toggleWechatPreview() {
+  wechatPreviewActive = !wechatPreviewActive;
+  $('wechatPreviewToggle').classList.toggle('active', wechatPreviewActive);
+  if (wechatPreviewActive) {
+    wechatPreviewBackup = preview.innerHTML;
+    // 跑一遍微信兼容管道，得到预期的粘贴结果
+    const html = buildWechatHTMLFromElement(preview, false);
+    preview.innerHTML = html;
+  } else if (wechatPreviewBackup !== null) {
+    preview.innerHTML = wechatPreviewBackup;
+    wechatPreviewBackup = null;
+    // 重新跑正常的样式应用
+    scheduleUpdate();
+  }
+}
+
 // ===================================================================
 // COPY TO WECHAT - Inline all styles
 // ===================================================================
@@ -4503,6 +4930,98 @@ function normalizeWechatSpacingParity(container) {
 // ===================================================================
 // EXPORT HTML
 // ===================================================================
+// 把编辑器内容转回 Markdown 文本（保留主要结构：标题/列表/引用/强调/代码/链接/分割线/图片）
+function htmlToMarkdown(rootEl) {
+  const lines = [];
+  function walkBlock(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      lines.push(node.textContent);
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+    const tag = node.tagName;
+    const inline = (el) => Array.from(el.childNodes).map(c => inlineToMd(c)).join('');
+    if (tag === 'H1') { lines.push('# ' + inline(node), ''); return; }
+    if (tag === 'H2') { lines.push('## ' + inline(node), ''); return; }
+    if (tag === 'H3') { lines.push('### ' + inline(node), ''); return; }
+    if (tag === 'H4') { lines.push('#### ' + inline(node), ''); return; }
+    if (tag === 'BLOCKQUOTE') {
+      const inner = inline(node).trim().split('\n').map(l => '> ' + l).join('\n');
+      lines.push(inner, '');
+      return;
+    }
+    if (tag === 'UL' || tag === 'OL') {
+      Array.from(node.children).forEach((li, i) => {
+        if (li.tagName !== 'LI') return;
+        const prefix = tag === 'OL' ? `${i + 1}. ` : '- ';
+        lines.push(prefix + inline(li));
+      });
+      lines.push('');
+      return;
+    }
+    if (tag === 'PRE') {
+      const code = node.textContent.replace(/\n+$/, '');
+      lines.push('```', code, '```', '');
+      return;
+    }
+    if (tag === 'HR') { lines.push('---', ''); return; }
+    if (tag === 'P' || tag === 'DIV' || tag === 'SECTION') {
+      // 判断是不是被装饰过的 hr 占位（包含一根线 + 装饰，不含真实文本）
+      const txt = node.textContent.trim();
+      if (!txt && node.querySelector('img') === null) {
+        lines.push(''); return;
+      }
+      // 单纯的 div/section 包文本：当段落处理
+      lines.push(inline(node), '');
+      return;
+    }
+    if (tag === 'IMG') {
+      const alt = node.getAttribute('alt') || 'image';
+      const src = node.getAttribute('src') || '';
+      const mark = src.startsWith('data:') ? '[image]' : `![${alt}](${src})`;
+      lines.push(mark, '');
+      return;
+    }
+    if (tag === 'BR') { lines.push(''); return; }
+    // 兜底：递归子节点
+    Array.from(node.childNodes).forEach(walkBlock);
+  }
+  function inlineToMd(node) {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent;
+    if (node.nodeType !== Node.ELEMENT_NODE) return '';
+    const tag = node.tagName;
+    const inner = Array.from(node.childNodes).map(inlineToMd).join('');
+    if (tag === 'STRONG' || tag === 'B') return `**${inner}**`;
+    if (tag === 'EM' || tag === 'I') return `*${inner}*`;
+    if (tag === 'CODE') return '`' + inner + '`';
+    if (tag === 'A') {
+      const href = node.getAttribute('href') || '';
+      return `[${inner}](${href})`;
+    }
+    if (tag === 'IMG') {
+      const alt = node.getAttribute('alt') || 'image';
+      const src = node.getAttribute('src') || '';
+      return src.startsWith('data:') ? '[image]' : `![${alt}](${src})`;
+    }
+    if (tag === 'BR') return '\n';
+    if (tag === 'S' || tag === 'DEL') return `~~${inner}~~`;
+    return inner;
+  }
+  Array.from(rootEl.childNodes).forEach(walkBlock);
+  // 折叠多余空行
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+}
+function exportMarkdown() {
+  const md = htmlToMarkdown(editor);
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  // 用文章首个 h1/h2 / 第一行做文件名
+  const firstHeading = (editor.querySelector('h1,h2,h3')?.textContent || '公众号草稿').trim().slice(0, 40);
+  a.download = firstHeading.replace(/[\\/:*?"<>|]/g, '_') + '.md';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 function exportHTML() {
   const clone = preview.cloneNode(true);
   inlineAllStyles(clone);
