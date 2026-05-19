@@ -63,13 +63,13 @@ body::before{
   border-bottom:3px solid var(--dora-yellow);
   padding:0 28px;flex-shrink:0;z-index:100;
   box-shadow:0 3px 12px rgba(1,111,173,0.2);
-  position:relative;overflow:hidden;
+  position:relative;
 }
 /* 顶部导航斜向高光带（机甲反光） */
 .top-nav::before{
   content:'';position:absolute;
-  top:-50%;left:-20%;
-  width:140%;height:60%;
+  top:-50%;left:-3%;
+  width:106%;height:60%;
   background:linear-gradient(105deg,transparent 30%,rgba(110,220,255,0.18) 45%,rgba(255,255,255,0.32) 50%,rgba(110,220,255,0.18) 55%,transparent 70%);
   pointer-events:none;
   transform:rotate(-2deg);
@@ -474,7 +474,11 @@ body::before{
   </div>
   <div class="logo">意疏的 AI 口袋</div>
   <div class="nav-group">
-    <button class="nav-btn" onclick="openSettings('mode')" id="btnMode">样式设置</button>
+    <button class="nav-btn" onclick="openSettings('mode')" id="btnMode">排版</button>
+    <button class="nav-btn" onclick="openSettings('font')">字体</button>
+    <button class="nav-btn" onclick="openSettings('color')">配色</button>
+    <button class="nav-btn" onclick="openSettings('spacing')">间距</button>
+    <button class="nav-btn" onclick="openSettings('bg')">背景</button>
   </div>
   <div class="nav-right" style="position:relative">
     <button class="nav-btn" onclick="toggleStylesDropdown()" id="btnMyStyles">我的样式 ▾</button>
