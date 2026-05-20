@@ -352,8 +352,8 @@ body::before{
 .settings-panel.show{transform:translateX(0)}
 .sp-header{display:flex;align-items:center;padding:16px 20px;background:linear-gradient(135deg,var(--dora-blue),var(--dora-deep));border-bottom:3px solid var(--dora-yellow)}
 .sp-header h3{font-size:16px;flex:1;color:#fff}
-.sp-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:18px;color:#fff;background:var(--dora-red);transition:all .3s}
-.sp-close:hover{background:var(--dora-yellow);color:var(--dora-deep);transform:rotate(90deg)}
+.sp-close{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:18px;color:var(--dora-deep);background:var(--dora-yellow);transition:all .3s}
+.sp-close:hover{background:var(--dora-red);color:#fff;transform:rotate(90deg)}
 .sp-body{flex:1;overflow-y:auto;padding:16px 20px}
 .sp-section{margin-bottom:20px}
 .sp-section h4{font-size:13px;font-weight:600;color:var(--dora-deep);margin-bottom:8px;border-left:3px solid var(--dora-yellow);padding-left:8px}
@@ -697,7 +697,7 @@ body::before{
 <div class="settings-panel" id="settingsPanel">
   <div class="sp-header">
     <h3 id="spTitle">排版模式</h3>
-    <button class="sp-close" onclick="closeSettings()">🎃</button>
+    <button class="sp-close" onclick="closeSettings()">🐯</button>
   </div>
   <div class="sp-body" id="spBody"></div>
 </div>
@@ -1079,6 +1079,9 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   applyMode(MODES.find(m => m.id === DEFAULT_MODE_ID) || MODES[0]);
   updatePreview();
+  // 同步「微信预览」按钮的初始 active 态（wechatPreviewActive 默认为 true）
+  const wcBtn = $('wechatPreviewToggle');
+  if (wcBtn) wcBtn.classList.toggle('active', wechatPreviewActive);
   setupDivider();
   setupScrollSync();
   setupEditorEvents();
@@ -1886,7 +1889,8 @@ function normalizeWechatInlineLayouts(root) {
   Array.from(root.querySelectorAll('[data-theme-component="tip-card"], [data-theme-component="design-heading"], [data-theme-component="design-intro"], [data-theme-component="design-ending"]')).forEach(el => {
     if ((el.style.display || '').toLowerCase().includes('flex')) el.style.display = 'block';
     el.style.width = '100%';
-    el.style.maxWidth = '100%';
+    // 只在元素没有自定义 max-width 时才设为 100%，保留 design-heading 等组件的 600px 约束
+    if (!el.style.maxWidth) el.style.maxWidth = '100%';
     el.style.boxSizing = 'border-box';
   });
 
@@ -2220,10 +2224,12 @@ function normalizeWechatColorModeCompatibility(root) {
 function prepareWechatCompatibility(root) {
   normalizeImagePairs(root);
   normalizeWechatLists(root);
+  normalizeWechatDesignComponents(root);      // 必须在 InlineLayouts/Flex 通用转换前
   normalizeWechatInlineLayouts(root);
   normalizeWechatPositioning(root);
   normalizeWechatTipCards(root);
   normalizeWechatEndingIconRowsToTable(root); // 必须在 flex 通用转换前
+  normalizeWechatNumberedHeadings(root);      // 必须在 flex 通用转换前
   normalizeWechatFlexLayouts(root);
   normalizeWechatCodeBlocks(root);
   normalizeWechatColorModeCompatibility(root);
@@ -2297,6 +2303,149 @@ function convertDivToSection(el) {
   while (el.firstChild) section.appendChild(el.firstChild);
   el.replaceWith(section);
   return section;
+}
+// design-heading / design-intro / design-ending: 把内部 flex 布局转成 table，公众号才能横向显示
+function normalizeWechatDesignComponents(root) {
+  // 1. design-heading 外壳：左编号列 + 右标题列
+  Array.from(root.querySelectorAll('[data-theme-component="design-heading"]')).forEach(el => {
+    convertTwoColumnFlexToTable(el, { leftWidth: '60px', gap: 16, margin: el.style.margin || '36px auto 24px', maxWidth: el.style.maxWidth || '', flattenWraps: true, keepDataAttr: 'design-heading' });
+  });
+
+  // 2. design-intro 内部：主行（title + badge）+ 底栏 bar（左右两端文字）
+  Array.from(root.querySelectorAll('[data-theme-component="design-intro"]')).forEach(intro => {
+    Array.from(intro.querySelectorAll('section')).forEach(sec => {
+      if ((sec.style.display || '').toLowerCase() !== 'flex') return;
+      const kids = Array.from(sec.children).filter(c => c.tagName === 'SECTION');
+      // 主行：两个 section，其中之一是 badge
+      if (kids.length === 2 && kids.some(c => c.getAttribute('data-theme-role') === 'badge')) {
+        // 把右侧的 badge 设为固定宽度，左侧 auto
+        const badgeIdx = kids.findIndex(c => c.getAttribute('data-theme-role') === 'badge');
+        const rightWidth = (kids[badgeIdx].style.width || '108px');
+        if (badgeIdx === 1) {
+          convertTwoColumnFlexToTable(sec, { leftWidth: 'auto', rightWidth, gap: 18 });
+        } else {
+          convertTwoColumnFlexToTable(sec, { leftWidth: rightWidth, rightWidth: 'auto', gap: 18 });
+        }
+      }
+    });
+    // 底栏 bar：保留背景/内边距，里面塞 table 做左右两端
+    const bar = intro.querySelector('[data-theme-role="bar"]');
+    if (bar && (bar.style.display || '').toLowerCase() === 'flex') {
+      convertJustifyBetweenToInnerTable(bar);
+    }
+  });
+
+  // 3. design-ending 内部：编号行（/// LAST + 标题）
+  Array.from(root.querySelectorAll('[data-theme-component="design-ending"]')).forEach(ending => {
+    Array.from(ending.children).forEach(child => {
+      if (child.tagName !== 'SECTION') return;
+      if ((child.style.display || '').toLowerCase() !== 'flex') return;
+      const kids = Array.from(child.children).filter(c => c.tagName === 'SECTION');
+      if (kids.length !== 2) return;
+      // 跳过含 badge 的（design-intro 处理过类似），这里专门处理编号列在左的情况
+      if (kids.some(c => c.getAttribute('data-theme-role') === 'badge')) return;
+      const firstStyle = (kids[0].getAttribute('style') || '').toLowerCase();
+      if (/text-align\s*:\s*center/.test(firstStyle) && /(flex-shrink|min-width)/.test(firstStyle)) {
+        convertTwoColumnFlexToTable(child, { leftWidth: '70px', gap: 16, marginBottom: child.style.marginBottom || '', flattenWraps: true });
+      }
+    });
+  });
+}
+
+function convertTwoColumnFlexToTable(flexEl, opts) {
+  const children = Array.from(flexEl.children).filter(c => c.nodeType === 1);
+  if (children.length !== 2) return;
+  const leftWidth = opts.leftWidth || 'auto';
+  const rightWidth = opts.rightWidth || 'auto';
+  const gap = opts.gap || 0;
+  const table = document.createElement('table');
+  if (opts.keepDataAttr) table.setAttribute('data-theme-component', opts.keepDataAttr);
+  // 显式 display:table 防止微信把 table 降级成 block 导致两列竖向堆叠
+  let css = 'display:table;width:100%;border-collapse:collapse;border-spacing:0;border:0;table-layout:fixed';
+  if (opts.maxWidth) css += ';max-width:' + opts.maxWidth;
+  if (opts.margin) css += ';margin:' + opts.margin;
+  if (opts.marginBottom && !opts.margin) css += ';margin-bottom:' + opts.marginBottom;
+  table.style.cssText = css;
+  const tr = document.createElement('tr');
+  tr.style.cssText = 'display:table-row';
+  const widths = [leftWidth, rightWidth];
+  children.forEach((child, i) => {
+    const td = document.createElement('td');
+    // display:table-cell + padding:0 防止微信加默认间距
+    let tdCss = 'display:table-cell;border:0;vertical-align:middle;padding:0';
+    if (widths[i] && widths[i] !== 'auto') tdCss += ';width:' + widths[i];
+    else tdCss += ';width:100%';
+    if (i === 1 && gap > 0) tdCss += ';padding-left:' + gap + 'px';
+    // 把内层包裹元素（section/div）的有效样式提到 td，子元素直接放入 td
+    // 避免 flex:1 等属性在非 flex 上下文里被微信误处理
+    if (opts.flattenWraps && child.style) {
+      if (child.style.textAlign) tdCss += ';text-align:' + child.style.textAlign;
+    }
+    td.style.cssText = tdCss;
+    if (opts.flattenWraps) {
+      while (child.firstChild) td.appendChild(child.firstChild);
+    } else {
+      td.appendChild(child);
+    }
+    tr.appendChild(td);
+  });
+  table.appendChild(tr);
+  flexEl.replaceWith(table);
+}
+
+function convertJustifyBetweenToInnerTable(flexEl) {
+  const children = Array.from(flexEl.children).filter(c => c.nodeType === 1);
+  if (children.length < 2) return;
+  // 外壳保留背景/内边距，去掉 flex
+  flexEl.style.display = 'block';
+  flexEl.style.justifyContent = '';
+  flexEl.style.alignItems = '';
+  flexEl.style.gap = '';
+  const table = document.createElement('table');
+  table.style.cssText = 'width:100%;border-collapse:collapse;border-spacing:0;border:0';
+  const tr = document.createElement('tr');
+  children.forEach((child, i) => {
+    const td = document.createElement('td');
+    let align = 'center';
+    if (i === 0) align = 'left';
+    else if (i === children.length - 1) align = 'right';
+    td.style.cssText = 'border:0;vertical-align:middle;text-align:' + align;
+    td.appendChild(child);
+    tr.appendChild(td);
+  });
+  table.appendChild(tr);
+  while (flexEl.firstChild) flexEl.firstChild.remove();
+  flexEl.appendChild(table);
+}
+
+// numbered-heading: flex 横排（数字|竖线|标题）→ table，避免公众号剥离 flex 后竖向堆叠
+function normalizeWechatNumberedHeadings(root) {
+  Array.from(root.querySelectorAll('[data-theme-component="numbered-heading"]')).forEach(el => {
+    const children = Array.from(el.children);
+    if (children.length < 2) return;
+    const borderBottom = el.style.borderBottom || '';
+    const margin = el.style.margin || '1.2em 0 0.6em';
+    const table = document.createElement('table');
+    table.setAttribute('data-theme-component', 'numbered-heading');
+    table.style.cssText = `width:100%;border-collapse:collapse;border-spacing:0;border:0;${borderBottom ? 'border-bottom:' + borderBottom + ';' : ''}margin:${margin}`;
+    const tr = document.createElement('tr');
+    children.forEach((child, i) => {
+      const td = document.createElement('td');
+      td.setAttribute('style', child.getAttribute('style') || '');
+      td.style.flexShrink = '';
+      td.style.flex = '';
+      td.style.display = '';
+      td.style.border = '0';
+      td.style.verticalAlign = 'middle';
+      td.style.paddingTop = '14px';
+      td.style.paddingBottom = '14px';
+      if (i === children.length - 1) td.style.width = '100%';
+      while (child.firstChild) td.appendChild(child.firstChild);
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+    el.replaceWith(table);
+  });
 }
 // WeChat editor drops display:flex on divs. Convert any centered flex container
 // (used for hr decorations, ending card icon rows, etc.) to inline-block layout.
@@ -2877,12 +3026,12 @@ function insertDesignHeading() {
   const main = c.main || '#059669';
   const text = c.text || '#111827';
   const num = String(_designSectionCounter).padStart(2, '0');
-  const html = `<section data-theme-component="design-heading" style="display:flex;align-items:center;gap:16px;margin:36px 0 24px;">
-    <section style="text-align:center;flex-shrink:0;min-width:44px;">
+  const html = `<section data-theme-component="design-heading" style="display:flex;align-items:center;gap:16px;margin:36px auto 24px;max-width:600px;box-sizing:border-box;">
+    <section style="text-align:center;flex-shrink:0;width:60px;">
       <p data-theme-role="number" style="margin:0;font-size:28px;font-weight:900;color:${main};line-height:1;letter-spacing:-1px;">${num}</p>
-      <p data-theme-role="label" style="margin:0;font-size:8px;font-weight:800;color:#D1D5DB;letter-spacing:2px;">PART</p>
+      <p data-theme-role="label" style="margin:0;font-size:8px;font-weight:800;color:#D1D5DB;letter-spacing:2px;line-height:1.4;">PART</p>
     </section>
-    <section style="min-width:0;">
+    <section style="min-width:0;flex:1;">
       <p data-theme-role="title" style="margin:0 0 1px;font-size:17px;font-weight:900;color:${text};letter-spacing:0.3px;line-height:1.45;">在此输入小标题</p>
       <p data-theme-role="subtitle" style="margin:0;font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;line-height:1.5;">KEYWORD · 在此输入副标题</p>
     </section>
@@ -3913,6 +4062,9 @@ function applyPreviewStyles() {
   // Paragraphs
   const allPs = preview.querySelectorAll('p');
   allPs.forEach((p, idx) => {
+    // 跳过 design 组件内部的 p 元素：它们有自己的 font-size / line-height / letter-spacing / margin
+    // 被全局段落样式覆写后会导致左侧编辑区与右侧预览显示不一致
+    if (p.closest('[data-theme-component]')) return;
     p.style.marginBottom = STATE.paraSpacing + 'em';
     p.style.color = c.text;
     p.style.lineHeight = STATE.lineHeight;
@@ -5145,7 +5297,8 @@ function toggleMobile() {
 }
 
 // 微信兼容预览：跑一遍粘贴前的全套 normalize（flex→inline-block 等），让你提前看到「粘到公众号会变什么样」
-let wechatPreviewActive = false;
+// 默认开启：右侧预览始终是「粘到公众号的真实样子」，避免编辑器里好看、粘出来塌房
+let wechatPreviewActive = true;
 let wechatPreviewBackup = null;
 function toggleWechatPreview() {
   wechatPreviewActive = !wechatPreviewActive;
@@ -5331,6 +5484,8 @@ function getMarginPx(fontPx, marginValue, fallbackEm) {
 
 function normalizeWechatSpacingParity(container) {
   container.querySelectorAll('p,li,blockquote').forEach(el => {
+    // design 组件内部的 p 有专属 line-height / margin，不能被全局段落节奏覆盖
+    if (el.closest('[data-theme-component]')) return;
     const fontPx = getElementFontPx(el, 15);
     const linePx = getLineHeightPx(fontPx, el.style.lineHeight || STATE.lineHeight);
     el.style.lineHeight = `${linePx}px`;
