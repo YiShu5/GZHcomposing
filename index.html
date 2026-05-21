@@ -1889,8 +1889,8 @@ function normalizeWechatInlineLayouts(root) {
   Array.from(root.querySelectorAll('[data-theme-component="tip-card"], [data-theme-component="design-heading"], [data-theme-component="design-intro"], [data-theme-component="design-ending"]')).forEach(el => {
     if ((el.style.display || '').toLowerCase().includes('flex')) el.style.display = 'block';
     el.style.width = '100%';
-    // 只在元素没有自定义 max-width 时才设为 100%，保留 design-heading 等组件的 600px 约束
-    if (!el.style.maxWidth) el.style.maxWidth = '100%';
+    // 强制 max-width:100%，避免 600px 在 Word 中转后被转写为 width:600px 触发微信「宽度异常」
+    el.style.maxWidth = '100%';
     el.style.boxSizing = 'border-box';
   });
 
@@ -2308,7 +2308,7 @@ function convertDivToSection(el) {
 function normalizeWechatDesignComponents(root) {
   // 1. design-heading 外壳：左编号列 + 右标题列
   Array.from(root.querySelectorAll('[data-theme-component="design-heading"]')).forEach(el => {
-    convertTwoColumnFlexToTable(el, { leftWidth: '60px', gap: 16, margin: el.style.margin || '36px auto 24px', maxWidth: el.style.maxWidth || '', flattenWraps: true, keepDataAttr: 'design-heading' });
+    convertTwoColumnFlexToTable(el, { leftWidth: 'auto', gap: 16, margin: el.style.margin || '36px 0 24px', flattenWraps: true, keepDataAttr: 'design-heading' });
   });
 
   // 2. design-intro 内部：主行（title + badge）+ 底栏 bar（左右两端文字）
@@ -2346,7 +2346,7 @@ function normalizeWechatDesignComponents(root) {
       if (kids.some(c => c.getAttribute('data-theme-role') === 'badge')) return;
       const firstStyle = (kids[0].getAttribute('style') || '').toLowerCase();
       if (/text-align\s*:\s*center/.test(firstStyle) && /(flex-shrink|min-width)/.test(firstStyle)) {
-        convertTwoColumnFlexToTable(child, { leftWidth: '70px', gap: 16, marginBottom: child.style.marginBottom || '', flattenWraps: true });
+        convertTwoColumnFlexToTable(child, { leftWidth: 'auto', gap: 16, marginBottom: child.style.marginBottom || '', flattenWraps: true });
       }
     });
   });
@@ -2361,8 +2361,8 @@ function convertTwoColumnFlexToTable(flexEl, opts) {
   const table = document.createElement('table');
   if (opts.keepDataAttr) table.setAttribute('data-theme-component', opts.keepDataAttr);
   // 显式 display:table 防止微信把 table 降级成 block 导致两列竖向堆叠
-  let css = 'display:table;width:100%;border-collapse:collapse;border-spacing:0;border:0;table-layout:fixed';
-  if (opts.maxWidth) css += ';max-width:' + opts.maxWidth;
+  // 不写 max-width / table-layout:fixed，避免 Word 中转后变 width:600px 触发微信「宽度异常」
+  let css = 'display:table;width:100%;border-collapse:collapse;border-spacing:0;border:0';
   if (opts.margin) css += ';margin:' + opts.margin;
   if (opts.marginBottom && !opts.margin) css += ';margin-bottom:' + opts.marginBottom;
   table.style.cssText = css;
@@ -2373,8 +2373,11 @@ function convertTwoColumnFlexToTable(flexEl, opts) {
     const td = document.createElement('td');
     // display:table-cell + padding:0 防止微信加默认间距
     let tdCss = 'display:table-cell;border:0;vertical-align:middle;padding:0';
-    if (widths[i] && widths[i] !== 'auto') tdCss += ';width:' + widths[i];
-    else tdCss += ';width:100%';
+    // 微信检测要求 width 只能是 auto / 100% / 百分比，px 值直接丢弃，靠 white-space:nowrap 控制窄列
+    if (widths[i] === '100%') tdCss += ';width:100%';
+    else if (widths[i] && widths[i] !== 'auto' && !/px\s*$/i.test(widths[i])) tdCss += ';width:' + widths[i];
+    else if (i === 1) tdCss += ';width:100%';
+    else tdCss += ';white-space:nowrap';
     if (i === 1 && gap > 0) tdCss += ';padding-left:' + gap + 'px';
     // 把内层包裹元素（section/div）的有效样式提到 td，子元素直接放入 td
     // 避免 flex:1 等属性在非 flex 上下文里被微信误处理
@@ -3021,26 +3024,24 @@ function insertDesignIntro() {
   const html = `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#fff;border:1.5px solid ${alphaColor(main,0.16,'#d1fae5')};border-radius:16px;overflow:hidden;width:100%;">
     <section style="padding:24px 20px 20px;">
       <table style="width:100%;border-collapse:collapse;border-spacing:0;margin-bottom:18px;"><tbody><tr>
-        <td style="width:16px;padding:0;vertical-align:middle;border:0;">
-          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${main};"></span>
+        <td style="padding:0;vertical-align:middle;border:0;">
+          <span style="display:inline-block;border-radius:50%;background:${main};padding:4px;font-size:0;line-height:0;vertical-align:middle;margin-right:8px;"></span>
+          <span data-theme-role="meta" style="vertical-align:middle;font-size:11px;color:${main};font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">DESIGN · CASE STUDY</span>
         </td>
-        <td style="padding:0 0 0 8px;vertical-align:middle;border:0;">
-          <span data-theme-role="meta" style="font-size:11px;color:${main};font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">DESIGN · CASE STUDY</span>
-        </td>
-        <td style="padding:0;text-align:right;vertical-align:middle;border:0;white-space:nowrap;">
+        <td style="padding:0;text-align:right;vertical-align:middle;border:0;white-space:nowrap;width:100%;">
           <span style="font-size:11px;color:#9CA3AF;">2026</span>
         </td>
       </tr></tbody></table>
       <table style="width:100%;border-collapse:collapse;border-spacing:0;"><tbody><tr>
-        <td style="padding:0;vertical-align:top;border:0;">
+        <td style="padding:0;vertical-align:top;border:0;width:100%;">
           <p style="font-size:13px;color:#D1D5DB;margin:0 0 6px;text-decoration:line-through;letter-spacing:0.5px;">把内容散着写？</p>
           <p data-theme-role="title" style="font-size:22px;font-weight:900;color:${text};margin:0;line-height:1.1;letter-spacing:0;">一篇文章</p>
           <p data-theme-role="highlight" style="font-size:22px;font-weight:900;color:${main};margin:0 0 12px;line-height:1.1;letter-spacing:0;">讲清一个流程</p>
           <p data-theme-role="body" style="font-size:12px;color:#9CA3AF;margin:0;line-height:1.7;letter-spacing:0.5px;">节点 · 关键词 · 结论</p>
         </td>
-        <td style="width:116px;padding:0 0 0 16px;vertical-align:middle;border:0;">
-          <section data-theme-role="badge" style="width:108px;height:108px;border-radius:16px;background:linear-gradient(135deg,${alphaColor(main,0.14,sub)},${alphaColor(accent,0.12,'#fff')});text-align:center;display:block;cursor:pointer;overflow:hidden;" title="点击插入图片">
-            <span data-badge-text="true" style="display:block;padding-top:40px;font-size:14px;font-weight:900;color:${main};line-height:1.4;">插入图片</span>
+        <td style="padding:0 0 0 16px;vertical-align:middle;border:0;white-space:nowrap;">
+          <section data-theme-role="badge" style="border-radius:16px;background:linear-gradient(135deg,${alphaColor(main,0.14,sub)},${alphaColor(accent,0.12,'#fff')});text-align:center;padding:40px 24px;" title="点击插入图片">
+            <span data-badge-text="true" style="font-size:14px;font-weight:900;color:${main};line-height:1.4;">插入图片</span>
           </section>
         </td>
       </tr></tbody></table>
@@ -3067,12 +3068,13 @@ function insertDesignHeading() {
   const text = c.text || '#111827';
   const num = String(_designSectionCounter).padStart(2, '0');
   // 直接输出 table，微信公众号无需 normalize 即可正确横排
-  const html = `<table data-theme-component="design-heading" style="width:100%;max-width:600px;margin:36px auto 24px;border-collapse:collapse;border-spacing:0;table-layout:fixed;display:table;"><tbody><tr style="display:table-row;">
-    <td style="display:table-cell;width:60px;text-align:center;vertical-align:middle;padding:0 16px 0 0;border:0;">
+  // 不写 max-width / margin auto / td width:px，避免触发「宽度异常」检测
+  const html = `<table data-theme-component="design-heading" style="width:100%;border-collapse:collapse;border-spacing:0;margin:36px 0 24px;display:table;"><tbody><tr style="display:table-row;">
+    <td style="display:table-cell;text-align:center;vertical-align:middle;padding:0 16px 0 0;border:0;white-space:nowrap;">
       <p data-theme-role="number" style="margin:0;font-size:28px;font-weight:900;color:${main};line-height:1;letter-spacing:-1px;">${num}</p>
       <p data-theme-role="label" style="margin:0;font-size:8px;font-weight:800;color:#D1D5DB;letter-spacing:2px;line-height:1.4;">PART</p>
     </td>
-    <td style="display:table-cell;vertical-align:middle;padding:0;border:0;">
+    <td style="display:table-cell;vertical-align:middle;padding:0;border:0;width:100%;">
       <p data-theme-role="title" style="margin:0 0 1px;font-size:17px;font-weight:900;color:${text};letter-spacing:0.3px;line-height:1.45;">在此输入小标题</p>
       <p data-theme-role="subtitle" style="margin:0;font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;line-height:1.5;">KEYWORD · 在此输入副标题</p>
     </td>
