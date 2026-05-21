@@ -520,6 +520,11 @@ function sanitizeImageSrc(src) {
     const u = new URL(raw, window.location.href);
     if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
   } catch {}
+  if (raw.startsWith('data:image/')) {
+    console.warn('[IMG-DEBUG] sanitizeImageSrc REJECTED data URL; prefix:', raw.slice(0, 80), '| total len:', raw.length);
+  } else if (raw) {
+    console.warn('[IMG-DEBUG] sanitizeImageSrc REJECTED non-data src; prefix:', raw.slice(0, 80));
+  }
   return '';
 }
 
@@ -1612,7 +1617,9 @@ function sanitizeContentHTML(html) {
   return tpl.innerHTML;
 }
 function insertSafeHTML(html) {
+  if (/<img\b/i.test(html)) console.log('[IMG-DEBUG] insertSafeHTML input has <img>; len=' + html.length + '; first 200:', html.slice(0, 200));
   const safeHtml = sanitizeContentHTML(html);
+  if (/<img\b/i.test(html)) console.log('[IMG-DEBUG] insertSafeHTML after sanitize has <img>?', /<img\b/i.test(safeHtml), '; len=' + safeHtml.length + '; first 200:', safeHtml.slice(0, 200));
   const sel = window.getSelection();
   let range;
   if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
@@ -3072,7 +3079,10 @@ function scheduleUpdate() {
 }
 
 function updatePreview() {
+  const editorHasImg = /<img\b/i.test(editor.innerHTML);
+  if (editorHasImg) console.log('[IMG-DEBUG] updatePreview start; editor.innerHTML has <img> (count=' + (editor.innerHTML.match(/<img\b/gi) || []).length + ')');
   const content = sanitizeContentHTML(editor.innerHTML);
+  if (editorHasImg) console.log('[IMG-DEBUG] updatePreview sanitized; result has <img>?', /<img\b/i.test(content), '(count=' + (content.match(/<img\b/gi) || []).length + ')');
   // Apply to preview with styling
   preview.innerHTML = content;
   applyPreviewStyles();
@@ -3084,6 +3094,7 @@ function updatePreview() {
     wechatPreviewBackup = preview.innerHTML;
     preview.innerHTML = buildWechatHTMLFromElement(preview, false);
   }
+  if (editorHasImg) console.log('[IMG-DEBUG] updatePreview end; preview.innerHTML <img> count:', (preview.innerHTML.match(/<img\b/gi) || []).length);
 }
 
 function applyUserAlignmentOverrides(root) {
