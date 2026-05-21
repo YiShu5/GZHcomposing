@@ -3017,37 +3017,45 @@ function insertDesignIntro() {
   const accent = c.accent || main;
   const sub = c.sub || '#ECFDF5';
   const text = c.text || '#374151';
-  const html = `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#fff;border:1.5px solid ${alphaColor(main,0.16,'#d1fae5')};border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.06);width:100%;">
-    <section style="padding:28px 24px 24px;">
-      <section style="display:flex;align-items:center;gap:8px;margin-bottom:22px;">
-        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${main};"></span>
-        <span data-theme-role="meta" style="font-size:11px;color:${main};font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">DESIGN · CASE STUDY</span>
-        <span style="margin-left:auto;font-size:11px;color:#9CA3AF;">2026</span>
-      </section>
-      <section style="display:flex;align-items:center;gap:18px;">
-        <section style="flex:1;min-width:0;">
-          <p style="font-size:14px;color:#D1D5DB;margin:0 0 6px;text-decoration:line-through;letter-spacing:0.5px;">把内容散着写？</p>
-          <p data-theme-role="title" style="font-size:24px;font-weight:900;color:${text};margin:0;line-height:1.08;letter-spacing:0;">一篇文章</p>
-          <p data-theme-role="highlight" style="font-size:24px;font-weight:900;color:${main};margin:0 0 14px;line-height:1.08;letter-spacing:0;">讲清一个流程</p>
-          <p data-theme-role="body" style="font-size:13px;color:#9CA3AF;margin:0;line-height:1.7;letter-spacing:0.5px;">节点 · 关键词 · 结论</p>
-        </section>
-        <section data-theme-role="badge" style="width:108px;height:108px;border-radius:18px;background:linear-gradient(135deg,${alphaColor(main,0.14,sub)},${alphaColor(accent,0.12,'#fff')});display:flex;align-items:center;justify-content:center;text-align:center;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;" title="点击插入图片">
-          <span data-badge-text="true" style="font-size:15px;font-weight:900;color:${main};line-height:1.4;">插入图片</span>
-        </section>
-      </section>
+  // 用 table 替代所有 flex，chips 用 inline-block，兼容微信公众号
+  const html = `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#fff;border:1.5px solid ${alphaColor(main,0.16,'#d1fae5')};border-radius:16px;overflow:hidden;width:100%;">
+    <section style="padding:24px 20px 20px;">
+      <table style="width:100%;border-collapse:collapse;border-spacing:0;margin-bottom:18px;"><tbody><tr>
+        <td style="width:16px;padding:0;vertical-align:middle;border:0;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${main};"></span>
+        </td>
+        <td style="padding:0 0 0 8px;vertical-align:middle;border:0;">
+          <span data-theme-role="meta" style="font-size:11px;color:${main};font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">DESIGN · CASE STUDY</span>
+        </td>
+        <td style="padding:0;text-align:right;vertical-align:middle;border:0;white-space:nowrap;">
+          <span style="font-size:11px;color:#9CA3AF;">2026</span>
+        </td>
+      </tr></tbody></table>
+      <table style="width:100%;border-collapse:collapse;border-spacing:0;"><tbody><tr>
+        <td style="padding:0;vertical-align:top;border:0;">
+          <p style="font-size:13px;color:#D1D5DB;margin:0 0 6px;text-decoration:line-through;letter-spacing:0.5px;">把内容散着写？</p>
+          <p data-theme-role="title" style="font-size:22px;font-weight:900;color:${text};margin:0;line-height:1.1;letter-spacing:0;">一篇文章</p>
+          <p data-theme-role="highlight" style="font-size:22px;font-weight:900;color:${main};margin:0 0 12px;line-height:1.1;letter-spacing:0;">讲清一个流程</p>
+          <p data-theme-role="body" style="font-size:12px;color:#9CA3AF;margin:0;line-height:1.7;letter-spacing:0.5px;">节点 · 关键词 · 结论</p>
+        </td>
+        <td style="width:116px;padding:0 0 0 16px;vertical-align:middle;border:0;">
+          <section data-theme-role="badge" style="width:108px;height:108px;border-radius:16px;background:linear-gradient(135deg,${alphaColor(main,0.14,sub)},${alphaColor(accent,0.12,'#fff')});text-align:center;display:block;cursor:pointer;overflow:hidden;" title="点击插入图片">
+            <span data-badge-text="true" style="display:block;padding-top:40px;font-size:14px;font-weight:900;color:${main};line-height:1.4;">插入图片</span>
+          </section>
+        </td>
+      </tr></tbody></table>
     </section>
-    <section data-theme-role="bar" style="background:linear-gradient(135deg,${main},${accent});padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">
-      <span style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:700;letter-spacing:0.5px;">文章节点</span>
-      <span style="font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:1px;">KEYWORDS</span>
+    <section data-theme-role="bar" style="background:linear-gradient(135deg,${main},${accent});padding:11px 20px;border-radius:0 0 14px 14px;">
+      <table style="width:100%;border-collapse:collapse;border-spacing:0;"><tbody><tr>
+        <td style="padding:0;vertical-align:middle;border:0;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:700;letter-spacing:0.5px;">文章节点</span>
+        </td>
+        <td style="padding:0;text-align:right;vertical-align:middle;border:0;">
+          <span style="font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:1px;">KEYWORDS</span>
+        </td>
+      </tr></tbody></table>
     </section>
-    <section style="padding:16px 20px 20px;">
-      <section style="display:flex;gap:8px;flex-wrap:wrap;">
-        <span data-theme-role="chip-main" style="display:inline-block;background:${main};color:#fff;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;">PART 01 · 背景</span>
-        <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};">PART 02 · 方法</span>
-        <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};">PART 03 · 案例</span>
-        <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};">OUTRO · 总结</span>
-      </section>
-    </section>
+    <section style="padding:14px 18px 18px;"><span data-theme-role="chip-main" style="display:inline-block;background:${main};color:#fff;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;margin:0 6px 6px 0;">PART 01 · 背景</span><span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:${text};margin:0 6px 6px 0;">PART 02 · 方法</span><span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:${text};margin:0 6px 6px 0;">PART 03 · 案例</span><span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:${text};margin:0 6px 6px 0;">OUTRO · 总结</span></section>
   </section><p><br></p>`;
   insertDesignHTML(html);
 }
