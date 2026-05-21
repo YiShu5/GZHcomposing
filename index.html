@@ -4473,8 +4473,10 @@ function applyPreviewStyles() {
   preview.querySelectorAll('em').forEach(e => { e.style.color = c.main; e.style.fontStyle = 'italic'; });
   preview.querySelectorAll('img').forEach(img => {
     img.style.maxWidth = img.style.maxWidth || '100%';
-    img.style.borderRadius = '12px';
+    if (!img.style.borderRadius) img.style.borderRadius = '12px';
     img.style.height = 'auto';
+    if (!img.style.margin) img.style.margin = '8px 0';
+    if (!img.style.display) img.style.display = 'block';
     if (mode.id === 'mario-theme') {
       img.style.border = `3px solid ${themePipe}`;
       img.style.boxShadow = `0 6px 0 ${alphaColor(themeSky, 0.18, 'rgba(30,136,229,0.18)')}`;
@@ -5467,6 +5469,28 @@ function fallbackCopyText(text) {
   document.execCommand('copy');
   document.body.removeChild(ta);
 }
+function fallbackCopyHTML(html) {
+  const div = document.createElement('div');
+  div.contentEditable = 'true';
+  div.innerHTML = html;
+  div.style.position = 'fixed';
+  div.style.left = '-9999px';
+  div.style.top = '0';
+  div.style.opacity = '0';
+  div.style.pointerEvents = 'none';
+  document.body.appendChild(div);
+  const range = document.createRange();
+  range.selectNodeContents(div);
+  const sel = window.getSelection();
+  const savedRanges = [];
+  for (let i = 0; i < sel.rangeCount; i++) savedRanges.push(sel.getRangeAt(i));
+  sel.removeAllRanges();
+  sel.addRange(range);
+  try { document.execCommand('copy'); } catch {}
+  sel.removeAllRanges();
+  savedRanges.forEach(r => sel.addRange(r));
+  document.body.removeChild(div);
+}
 function copyToWechat() {
   const html = buildWechatHTMLSnippet();
 
@@ -5479,22 +5503,27 @@ function copyToWechat() {
     const btn = $('copyBtn');
     setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号');
   }).catch(err => {
-    fallbackCopyText(html);
+    fallbackCopyHTML(html);
     const btn = $('copyBtn');
-    setButtonCopied(btn, '✅ 已复制(文本)', '🚀 一键复制到公众号');
+    setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号');
   });
 }
 function copyHTMLCode() {
   const html = buildWechatHTMLSnippet();
   const btn = $('copyHtmlBtn');
-  const done = () => setButtonCopied(btn, '✅ HTML已复制', '复制为HTML');
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(html).then(done).catch(() => {
-      fallbackCopyText(html);
+  const done = () => setButtonCopied(btn, '✅ HTML已复制', '复制为 HTML');
+  if (navigator.clipboard?.write && typeof ClipboardItem !== 'undefined') {
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], {type: 'text/html'}),
+        'text/plain': new Blob([html], {type: 'text/plain'})
+      })
+    ]).then(done).catch(() => {
+      fallbackCopyHTML(html);
       done();
     });
   } else {
-    fallbackCopyText(html);
+    fallbackCopyHTML(html);
     done();
   }
 }
