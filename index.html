@@ -1739,30 +1739,46 @@ function normalizeWechatInlineLayouts(root) {
       h.style.borderRadius = '10px';
       h.style.padding = h.tagName === 'H1' ? '12px 14px' : '10px 12px';
       h.style.fontWeight = '800';
+      // 用 CSS table 模型替代 flex：H 设 display:table 让 3 个 span 横排，
+      // 第 2 列 width:100% 撑满，第 3 列 text-align:right 把横线推到行末
+      h.style.display = 'table';
+      h.style.width = '100%';
+      h.style.boxSizing = 'border-box';
+      h.style.borderCollapse = 'collapse';
       if (spans[0]) {
-        spans[0].style.display = 'inline-block';
-        spans[0].style.width = '28px';
-        spans[0].style.height = '28px';
-        spans[0].style.lineHeight = '28px';
-        spans[0].style.textAlign = 'center';
+        spans[0].style.display = 'table-cell';
         spans[0].style.verticalAlign = 'middle';
-        spans[0].style.marginRight = '10px';
+        spans[0].style.whiteSpace = 'nowrap';
         spans[0].style.background = main;
         spans[0].style.color = '#FFFFFF';
         spans[0].style.borderRadius = '8px';
+        spans[0].style.textAlign = 'center';
+        spans[0].style.padding = '6px 8px';
+        spans[0].style.width = '';
+        spans[0].style.height = '';
+        spans[0].style.lineHeight = '1';
+        spans[0].style.marginRight = '';
       }
       if (spans[1]) {
-        spans[1].style.display = 'inline';
+        spans[1].style.display = 'table-cell';
         spans[1].style.verticalAlign = 'middle';
         spans[1].style.color = text;
+        spans[1].style.width = '100%';
+        spans[1].style.padding = '0 10px';
       }
       if (spans[2]) {
-        spans[2].style.display = 'inline-block';
-        spans[2].style.width = '30px';
-        spans[2].style.height = '1px';
-        spans[2].style.marginLeft = '14px';
+        spans[2].style.display = 'table-cell';
         spans[2].style.verticalAlign = 'middle';
-        spans[2].style.background = accent;
+        spans[2].style.textAlign = 'right';
+        spans[2].style.whiteSpace = 'nowrap';
+        spans[2].style.background = '';
+        spans[2].style.width = '';
+        spans[2].style.height = '';
+        spans[2].style.marginLeft = '';
+        spans[2].style.padding = '0';
+        // 横线本身用内嵌 inline-block + border-top + padding 撑长度，
+        // 避免空 span 在公众号被 max-width 压缩为 0
+        spans[2].innerHTML = `<span style="display:inline-block;border-top:1px solid ${accent};opacity:.55;padding:0 14px;line-height:0;font-size:0;vertical-align:middle;">&nbsp;</span>`;
       }
     }
 
