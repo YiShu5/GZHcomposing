@@ -556,7 +556,13 @@ function sanitizeStyleText(styleText) {
   for (let i = 0; i < probe.style.length; i++) {
     const prop = probe.style[i].toLowerCase();
     const value = probe.style.getPropertyValue(prop).trim();
-    if (SAFE_STYLE_PROPS.has(prop) && isSafeCssValue(value)) safe.push(`${prop}:${value}`);
+    if (!SAFE_STYLE_PROPS.has(prop)) continue;
+    if (!isSafeCssValue(value)) continue;
+    // 禁用 position:fixed / sticky —— 从公众号 / 第三方网页粘贴时
+    // 常带这种用作布局占位的空 div，pasted 后会变成屏幕级 overlay 抢点击
+    // 设计组件用的 position:absolute 保留（会被 normalizeWechatPositioning 兜底转成 static）
+    if (prop === 'position' && (value === 'fixed' || value === 'sticky')) continue;
+    safe.push(`${prop}:${value}`);
   }
   return safe.join(';');
 }
