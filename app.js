@@ -539,7 +539,7 @@ const SAFE_STYLE_PROPS = new Set([
   'border-top-left-radius','border-top-right-radius','border-bottom-right-radius','border-bottom-left-radius',
   'box-shadow','box-sizing','display','align-items','justify-content','gap','column-gap','flex','flex-shrink','flex-wrap',
   'border-collapse','border-spacing','table-layout',
-  'width','height','max-width','min-width','max-height','margin','margin-top','margin-right','margin-bottom','margin-left',
+  'width','height','max-width','min-width','max-height','min-height','object-fit','margin','margin-top','margin-right','margin-bottom','margin-left',
   'padding','padding-top','padding-right','padding-bottom','padding-left','text-align','font-size','font-weight',
   'font-style','font-family','line-height','letter-spacing','text-indent','text-decoration','opacity','position','left','right','top','bottom',
   'vertical-align','overflow','overflow-x','overflow-y','overflow-wrap','word-wrap','white-space','white-space-collapse','text-wrap-mode','text-transform'
@@ -1872,15 +1872,20 @@ function doInsertImage() {
     // background-image:url(...)，必须用 <img> 才能在复制后保留图片显示
     // 给 badge 明确的 W×H，否则 td 是 white-space:nowrap + section 无显式宽度
     // + img width:100% 形成环形依赖 → 浏览器把列宽算成 0，整个 badge 视觉消失
+    // 同时设 min-width / min-height —— 微信兼容管道会把 width:Npx 转 max-width:Npx
+    // 而 max-width + min-width 同值 = 强制锁死尺寸，badge 在两种模式下都稳
     const imgSrc = srcList[0];
     const badgeW = clampNumber($('imgBadgeW')?.value, 40, 320, 120);
     const badgeH = clampNumber($('imgBadgeH')?.value, 40, 320, 120);
     const radius = clampNumber($('imgRadius')?.value, 0, 50, 14);
-    badge.innerHTML = `<img src="${escapeAttr(imgSrc)}" alt="image" style="display:block;width:${badgeW}px;height:${badgeH}px;border-radius:${radius}px;object-fit:cover;">`;
+    badge.innerHTML = `<img src="${escapeAttr(imgSrc)}" alt="image" style="display:block;width:${badgeW}px;min-width:${badgeW}px;height:${badgeH}px;min-height:${badgeH}px;border-radius:${radius}px;object-fit:cover;">`;
     badge.setAttribute('data-badge-has-image', '1');
     badge.style.padding = '0';
     badge.style.width = badgeW + 'px';
+    badge.style.minWidth = badgeW + 'px';
     badge.style.height = badgeH + 'px';
+    badge.style.minHeight = badgeH + 'px';
+    badge.style.border = '';
     badge.style.background = '';
     badge.style.backgroundImage = '';
     badge.style.backgroundSize = '';
