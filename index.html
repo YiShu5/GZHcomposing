@@ -253,6 +253,57 @@
   <div class="modal" id="modalContent"></div>
 </div>
 
+<!-- ===== Brand promotion toast (after copy success) ===== -->
+<div class="promote-toast" id="promoteToast">
+  <span class="promote-icon">💡</span>
+  <span class="promote-text">想学 AI 产品怎么做？关注「意疏的 AI 口袋」公众号</span>
+  <button class="promote-close" onclick="closePromote()" aria-label="关闭">✕</button>
+</div>
+
+<!-- ===== First-run onboarding overlay ===== -->
+<div class="onboarding-overlay" id="onboardingOverlay">
+  <div class="ob-card" id="obCard">
+    <div class="ob-step" data-ob-step="1">
+      <div class="ob-icon">📝</div>
+      <h2 class="ob-title">欢迎使用「意疏的 AI 口袋」</h2>
+      <p class="ob-desc">3 步搞定公众号排版，从此告别手动调格式</p>
+      <div class="ob-actions">
+        <button class="ob-btn ob-btn-primary" onclick="obNext()">开始引导</button>
+      </div>
+    </div>
+    <div class="ob-step" data-ob-step="2" style="display:none">
+      <div class="ob-icon">✍️</div>
+      <div class="ob-step-num">第 1 步</div>
+      <h2 class="ob-title">写内容</h2>
+      <p class="ob-desc">在左侧编辑区粘贴或输入文章，支持 Markdown 语法（# 标题、加粗、&gt; 引用）</p>
+      <div class="ob-actions">
+        <button class="ob-btn ob-btn-skip" onclick="obSkip()">跳过</button>
+        <button class="ob-btn ob-btn-primary" onclick="obNext()">下一步</button>
+      </div>
+    </div>
+    <div class="ob-step" data-ob-step="3" style="display:none">
+      <div class="ob-icon">🎨</div>
+      <div class="ob-step-num">第 2 步</div>
+      <h2 class="ob-title">选风格</h2>
+      <p class="ob-desc">点击顶部「排版模式」按钮，选一个喜欢的风格，右侧会实时预览效果</p>
+      <div class="ob-actions">
+        <button class="ob-btn ob-btn-skip" onclick="obSkip()">跳过</button>
+        <button class="ob-btn ob-btn-primary" onclick="obNext()">下一步</button>
+      </div>
+    </div>
+    <div class="ob-step" data-ob-step="4" style="display:none">
+      <div class="ob-icon">🚀</div>
+      <div class="ob-step-num">第 3 步</div>
+      <h2 class="ob-title">一键复制</h2>
+      <p class="ob-desc">点底部蓝色按钮，直接粘贴到公众号后台，搞定！</p>
+      <div class="ob-actions">
+        <button class="ob-btn ob-btn-skip" onclick="obSkip()">跳过</button>
+        <button class="ob-btn ob-btn-primary" onclick="obFinish()">开始使用</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="themes.js"></script>
 <script src="app.js"></script>
 </body>

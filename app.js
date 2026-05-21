@@ -4554,10 +4554,12 @@ function copyToWechat() {
   ]).then(() => {
     const btn = $('copyBtn');
     setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号');
+    showPromote();
   }).catch(err => {
     fallbackCopyHTML(html);
     const btn = $('copyBtn');
     setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号');
+    showPromote();
   });
 }
 function copyHTMLCode() {
@@ -5202,4 +5204,55 @@ function closeDropdowns() {
 }
 document.addEventListener('click', e => {
   if (!e.target.closest('.dropdown-wrap')) closeDropdowns();
+});
+
+// ===================================================================
+// BRAND PROMOTION TOAST (after WeChat copy success)
+// ===================================================================
+let promoteTimer = null;
+function showPromote() {
+  const toast = $('promoteToast');
+  if (!toast) return;
+  toast.classList.add('show');
+  if (promoteTimer) clearTimeout(promoteTimer);
+  promoteTimer = setTimeout(closePromote, 6000);
+}
+function closePromote() {
+  const toast = $('promoteToast');
+  if (!toast) return;
+  toast.classList.remove('show');
+  if (promoteTimer) { clearTimeout(promoteTimer); promoteTimer = null; }
+}
+
+// ===================================================================
+// FIRST-RUN ONBOARDING (4 steps, gated by localStorage)
+// ===================================================================
+const OB_DONE_KEY = 'gzh-ob-done';
+let obCurrentStep = 1;
+function obShow(step) {
+  obCurrentStep = step;
+  const overlay = $('onboardingOverlay');
+  if (!overlay) return;
+  overlay.classList.add('show');
+  overlay.querySelectorAll('.ob-step').forEach(el => {
+    const n = parseInt(el.getAttribute('data-ob-step') || '0', 10);
+    el.style.display = (n === step) ? '' : 'none';
+  });
+}
+function obNext() {
+  if (obCurrentStep < 4) obShow(obCurrentStep + 1);
+  else obFinish();
+}
+function obSkip() { obFinish(); }
+function obFinish() {
+  const overlay = $('onboardingOverlay');
+  if (overlay) overlay.classList.remove('show');
+  try { localStorage.setItem(OB_DONE_KEY, '1'); } catch {}
+}
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (!localStorage.getItem(OB_DONE_KEY)) {
+      setTimeout(() => obShow(1), 500);
+    }
+  } catch {}
 });
