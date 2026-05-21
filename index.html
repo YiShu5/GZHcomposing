@@ -3066,16 +3066,17 @@ function insertDesignHeading() {
   const main = c.main || '#059669';
   const text = c.text || '#111827';
   const num = String(_designSectionCounter).padStart(2, '0');
-  const html = `<section data-theme-component="design-heading" style="display:flex;align-items:center;gap:16px;margin:36px auto 24px;max-width:600px;box-sizing:border-box;">
-    <section style="text-align:center;flex-shrink:0;width:60px;">
+  // 直接输出 table，微信公众号无需 normalize 即可正确横排
+  const html = `<table data-theme-component="design-heading" style="width:100%;max-width:600px;margin:36px auto 24px;border-collapse:collapse;border-spacing:0;table-layout:fixed;display:table;"><tbody><tr style="display:table-row;">
+    <td style="display:table-cell;width:60px;text-align:center;vertical-align:middle;padding:0 16px 0 0;border:0;">
       <p data-theme-role="number" style="margin:0;font-size:28px;font-weight:900;color:${main};line-height:1;letter-spacing:-1px;">${num}</p>
       <p data-theme-role="label" style="margin:0;font-size:8px;font-weight:800;color:#D1D5DB;letter-spacing:2px;line-height:1.4;">PART</p>
-    </section>
-    <section style="min-width:0;flex:1;">
+    </td>
+    <td style="display:table-cell;vertical-align:middle;padding:0;border:0;">
       <p data-theme-role="title" style="margin:0 0 1px;font-size:17px;font-weight:900;color:${text};letter-spacing:0.3px;line-height:1.45;">在此输入小标题</p>
       <p data-theme-role="subtitle" style="margin:0;font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;line-height:1.5;">KEYWORD · 在此输入副标题</p>
-    </section>
-  </section>`;
+    </td>
+  </tr></tbody></table>`;
   insertDesignHTML(html);
 }
 function insertDesignEnding() {
