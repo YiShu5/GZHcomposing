@@ -520,11 +520,6 @@ function sanitizeImageSrc(src) {
     const u = new URL(raw, window.location.href);
     if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
   } catch {}
-  if (raw.startsWith('data:image/')) {
-    console.warn('[IMG-DEBUG] sanitizeImageSrc REJECTED data URL; prefix:', raw.slice(0, 80), '| total len:', raw.length);
-  } else if (raw) {
-    console.warn('[IMG-DEBUG] sanitizeImageSrc REJECTED non-data src; prefix:', raw.slice(0, 80));
-  }
   return '';
 }
 
@@ -1617,9 +1612,7 @@ function sanitizeContentHTML(html) {
   return tpl.innerHTML;
 }
 function insertSafeHTML(html) {
-  if (/<img\b/i.test(html)) console.log('[IMG-DEBUG] insertSafeHTML input has <img>; len=' + html.length + '; first 200:', html.slice(0, 200));
   const safeHtml = sanitizeContentHTML(html);
-  if (/<img\b/i.test(html)) console.log('[IMG-DEBUG] insertSafeHTML after sanitize has <img>?', /<img\b/i.test(safeHtml), '; len=' + safeHtml.length + '; first 200:', safeHtml.slice(0, 200));
   const sel = window.getSelection();
   let range;
   if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
@@ -1858,10 +1851,14 @@ function doInsertImage() {
     const badge = targetBadgeForImage;
     // 用 <img> 标签替代 background-image：微信公众号会剥离 inline style 里的
     // background-image:url(...)，必须用 <img> 才能在复制后保留图片显示
+    // 给 badge 一个明确的 120px 方形尺寸，否则 td 是 white-space:nowrap + section 无显式宽度
+    // + img width:100% 形成环形依赖 → 浏览器把列宽算成 0，整个 badge 视觉消失
     const imgSrc = srcList[0];
-    badge.innerHTML = `<img src="${escapeAttr(imgSrc)}" alt="image" style="display:block;width:100%;height:auto;border-radius:14px;">`;
+    badge.innerHTML = `<img src="${escapeAttr(imgSrc)}" alt="image" style="display:block;width:120px;height:120px;border-radius:14px;object-fit:cover;">`;
     badge.setAttribute('data-badge-has-image', '1');
     badge.style.padding = '0';
+    badge.style.width = '120px';
+    badge.style.height = '120px';
     badge.style.background = '';
     badge.style.backgroundImage = '';
     badge.style.backgroundSize = '';
@@ -3079,10 +3076,7 @@ function scheduleUpdate() {
 }
 
 function updatePreview() {
-  const editorHasImg = /<img\b/i.test(editor.innerHTML);
-  if (editorHasImg) console.log('[IMG-DEBUG] updatePreview start; editor.innerHTML has <img> (count=' + (editor.innerHTML.match(/<img\b/gi) || []).length + ')');
   const content = sanitizeContentHTML(editor.innerHTML);
-  if (editorHasImg) console.log('[IMG-DEBUG] updatePreview sanitized; result has <img>?', /<img\b/i.test(content), '(count=' + (content.match(/<img\b/gi) || []).length + ')');
   // Apply to preview with styling
   preview.innerHTML = content;
   applyPreviewStyles();
@@ -3094,7 +3088,6 @@ function updatePreview() {
     wechatPreviewBackup = preview.innerHTML;
     preview.innerHTML = buildWechatHTMLFromElement(preview, false);
   }
-  if (editorHasImg) console.log('[IMG-DEBUG] updatePreview end; preview.innerHTML <img> count:', (preview.innerHTML.match(/<img\b/gi) || []).length);
 }
 
 function applyUserAlignmentOverrides(root) {
