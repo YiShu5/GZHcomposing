@@ -429,6 +429,10 @@ body::before{
 .img-panel .img-options{display:flex;gap:8px;align-items:center;margin-bottom:10px}
 .img-panel .img-options select,.img-panel .img-options input{padding:6px 10px;border:2px solid var(--dora-light);border-radius:20px;font-size:12px;background:#fff}
 .img-panel .img-insert-btn{padding:10px 16px;background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;border:none;border-radius:25px;font-size:13px;width:100%;font-weight:600;box-shadow:0 4px 12px rgba(3,173,240,0.3);transition:all .2s}
+.badge-preset{font-size:11px;padding:5px 14px;border:1.5px solid var(--dora-blue);background:#fff;color:var(--dora-blue);border-radius:14px;cursor:pointer;font-weight:700;transition:all .15s;letter-spacing:0.5px}
+.badge-preset:hover{background:var(--dora-cream);border-color:var(--dora-deep);color:var(--dora-deep);transform:translateY(-1px);box-shadow:0 2px 6px rgba(3,173,240,0.2)}
+.badge-preset.active{background:linear-gradient(145deg,var(--dora-blue),var(--dora-deep));color:#fff;border-color:var(--dora-deep);box-shadow:0 2px 8px rgba(1,111,173,0.3)}
+.badge-preset.active:hover{transform:translateY(-1px)}
 .img-panel .img-insert-btn:hover{background:linear-gradient(145deg,var(--dora-yellow),#E5B800);color:var(--dora-deep);transform:translateY(-1px)}
 .img-upload-area{border:2px dashed var(--dora-light);border-radius:16px;padding:24px;text-align:center;color:var(--text3);font-size:12px;cursor:pointer;transition:all .2s;margin-bottom:10px;background:linear-gradient(135deg,#F8FCFF,#F0F7FF)}
 .img-upload-area:hover{border-color:var(--dora-yellow);color:var(--dora-deep);background:var(--dora-cream)}

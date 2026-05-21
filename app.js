@@ -1750,14 +1750,8 @@ function setBadgePreset(w, h, btn) {
   if (wInput) wInput.value = w;
   if (hInput) hInput.value = h;
   if (btn && btn.parentElement) {
-    btn.parentElement.querySelectorAll('.badge-preset').forEach(b => {
-      b.style.background = '#fff';
-      b.style.border = '1px solid var(--border)';
-      b.style.color = '';
-    });
-    btn.style.background = 'var(--dora-cream)';
-    btn.style.border = '1.5px solid var(--dora-blue)';
-    btn.style.color = 'var(--dora-deep)';
+    btn.parentElement.querySelectorAll('.badge-preset').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
 }
 function toggleHrPanel() {
