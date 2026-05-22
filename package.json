@@ -1,0 +1,15 @@
+{
+  "name": "gzhcomposing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "微信公众号排版器 — 冒烟测试套件",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "serve": "^14.2.4"
+  }
+}
