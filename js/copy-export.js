@@ -63,22 +63,19 @@ function setButtonCopied(btn, copiedText, originalText, ms = 2000) {
 function fallbackCopyText(text) {
   const ta = document.createElement('textarea');
   ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.left = '-9999px';
+  ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
   document.body.appendChild(ta);
   ta.select();
-  document.execCommand('copy');
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch {}
   document.body.removeChild(ta);
+  return ok;
 }
 function fallbackCopyHTML(html) {
   const div = document.createElement('div');
   div.contentEditable = 'true';
   div.innerHTML = html;
-  div.style.position = 'fixed';
-  div.style.left = '-9999px';
-  div.style.top = '0';
-  div.style.opacity = '0';
-  div.style.pointerEvents = 'none';
+  div.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none';
   document.body.appendChild(div);
   const range = document.createRange();
   range.selectNodeContents(div);
@@ -87,44 +84,43 @@ function fallbackCopyHTML(html) {
   for (let i = 0; i < sel.rangeCount; i++) savedRanges.push(sel.getRangeAt(i));
   sel.removeAllRanges();
   sel.addRange(range);
-  try { document.execCommand('copy'); } catch {}
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch {}
   sel.removeAllRanges();
   savedRanges.forEach(r => sel.addRange(r));
   document.body.removeChild(div);
+  return ok;
 }
 function copyToWechat() {
   const html = buildWechatHTMLSnippet();
   const btn = $('copyBtn');
   const done = () => { setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号'); showPromote(); };
+  const fail = () => alert('复制失败，请手动全选预览区内容后按 Ctrl+C 复制');
   if (navigator.clipboard?.write && typeof ClipboardItem !== 'undefined') {
     navigator.clipboard.write([
       new ClipboardItem({
         'text/html': new Blob([html], {type: 'text/html'}),
         'text/plain': new Blob([preview.innerText], {type: 'text/plain'})
       })
-    ]).then(done).catch(() => { fallbackCopyHTML(html); done(); });
+    ]).then(done).catch(() => { fallbackCopyHTML(html) ? done() : fail(); });
   } else {
-    fallbackCopyHTML(html);
-    done();
+    fallbackCopyHTML(html) ? done() : fail();
   }
 }
 function copyHTMLCode() {
   const html = buildWechatHTMLSnippet();
   const btn = $('copyHtmlBtn');
   const done = () => setButtonCopied(btn, '✅ HTML已复制', '复制为 HTML');
+  const fail = () => alert('复制失败，请手动复制');
   if (navigator.clipboard?.write && typeof ClipboardItem !== 'undefined') {
     navigator.clipboard.write([
       new ClipboardItem({
         'text/html': new Blob([html], {type: 'text/html'}),
         'text/plain': new Blob([html], {type: 'text/plain'})
       })
-    ]).then(done).catch(() => {
-      fallbackCopyHTML(html);
-      done();
-    });
+    ]).then(done).catch(() => { fallbackCopyText(html) ? done() : fail(); });
   } else {
-    fallbackCopyHTML(html);
-    done();
+    fallbackCopyText(html) ? done() : fail();
   }
 }
 

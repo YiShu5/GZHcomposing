@@ -436,19 +436,23 @@ function importStyleJSON() {
     reader.onload = ev => {
       try {
         const data = JSON.parse(ev.target.result);
+        let imported = false;
         if (Array.isArray(data.styles)) {
           const existing = getSavedStyles();
           const incoming = data.styles.map(sanitizeSavedStyle).filter(Boolean);
           const merged = [...existing, ...incoming].slice(0, 20);
           setSavedStyles(merged);
           alert(`成功导入 ${incoming.length} 个样式`);
+          imported = true;
         }
         if (data.current) {
           Object.assign(STATE, sanitizeState(data.current));
           updatePreview();
+          imported = true;
         }
+        if (!imported) alert('未识别样式文件，请确认是从本工具导出的 JSON');
       } catch {
-        alert('JSON格式错误');
+        alert('JSON格式错误，文件内容不是合法 JSON');
       }
     };
     reader.readAsText(file);
