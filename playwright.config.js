@@ -8,16 +8,16 @@ module.exports = defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
 
   use: {
-    baseURL: 'http://localhost:3001',
+    baseURL: 'http://127.0.0.1:3001',
     headless: true,
     screenshot: 'only-on-failure',
     video: 'off',
   },
 
   webServer: {
-    command: 'npx serve . --listen 3001 --no-clipboard',
-    url: 'http://localhost:3001',
-    reuseExistingServer: !process.env.CI,
+    command: 'npx serve . --listen tcp://127.0.0.1:3001 --no-clipboard --no-port-switching',
+    url: 'http://127.0.0.1:3001',
+    reuseExistingServer: false,
     timeout: 20_000,
   },
 

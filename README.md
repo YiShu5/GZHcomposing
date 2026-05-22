@@ -135,9 +135,30 @@ GZHcomposing/
 │   ├── layout.js       # 分栏拖拽 / 滚动同步 / 手机预览
 │   └── init.js         # DOMContentLoaded 初始化入口
 ├── README.md           # 你正在看的这个文件
+├── tests/
+│   └── smoke.spec.js   # Playwright 冒烟测试（7 条）
+├── playwright.config.js# 测试配置
+├── package.json        # 开发依赖（仅 Playwright）
 └── assets/
     └── qrcode.jpg      # 公众号二维码
 ```
+
+---
+
+## 本地开发 / 测试
+
+普通用户直接双击 `index.html` 即可使用，无需任何构建步骤。
+
+若要跑自动化测试（需 Node.js ≥ 18）：
+
+```bash
+npm ci                   # 安装依赖（首次）
+npx playwright install chromium   # 安装浏览器（首次）
+npm test                 # 跑 7 条冒烟测试（headless）
+npm run test:headed      # 有头模式，方便调试
+```
+
+> 测试通过 `127.0.0.1:3001` 启动静态服务，运行前请确保该端口未被占用。
 
 ---
 
