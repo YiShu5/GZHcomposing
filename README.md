@@ -120,8 +120,20 @@
 GZHcomposing/
 ├── index.html          # 主页面（编辑器 + 预览）
 ├── style.css           # 样式文件
-├── themes.js           # 预设排版主题配置
-├── app.js              # 核心逻辑
+├── themes.js           # 预设排版主题、配色、字体配置
+├── js/
+│   ├── core.js         # 工具函数（escape / clamp 等）
+│   ├── history.js      # 撤销重做 / 草稿自动保存
+│   ├── sanitize.js     # HTML 安全清洗 / 图片对规范化
+│   ├── wechat-compat.js# 微信公众号兼容层（flex→table 等）
+│   ├── preprocess.js   # 智能预处理（Markdown 解析 / 文本分层）
+│   ├── components.js   # 编辑器组件（图片 / 高亮 / 设计元素 / 结尾）
+│   ├── editor.js       # 编辑器事件 / 粘贴处理 / 工具栏
+│   ├── preview.js      # 预览更新 / 样式应用 / 主题渲染
+│   ├── copy-export.js  # 复制到公众号 / 导出 HTML / 导出 Markdown
+│   ├── settings.js     # 样式面板 / 配色 / 保存与加载
+│   ├── layout.js       # 分栏拖拽 / 滚动同步 / 手机预览
+│   └── init.js         # DOMContentLoaded 初始化入口
 ├── README.md           # 你正在看的这个文件
 └── assets/
     └── qrcode.jpg      # 公众号二维码
