@@ -2550,9 +2550,32 @@ function smartPreprocess() {
   `);
 }
 function runSmartPreprocess(mode = 'clean') {
-  const rawText = editor.innerText || '';
-  if (!rawText.trim()) { alert('编辑器为空，请先输入内容'); return; }
   if (mode === 'outline') mode = 'longform';
+
+  // 保留媒体元素：遍历顶层子节点，把纯媒体块替换为占位符，文本块正常提取
+  const mediaItems = []; // { marker, outerHTML }
+  let rawText = '';
+  for (const node of Array.from(editor.childNodes)) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      rawText += node.textContent;
+      continue;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) continue;
+    const mediaEls = node.matches('img,video,iframe')
+      ? [node]
+      : Array.from(node.querySelectorAll('img,video,iframe'));
+    if (mediaEls.length > 0 && !node.textContent.trim()) {
+      // 纯媒体块：存下来，插一行占位符
+      const marker = `GZHMEDPL${mediaItems.length}`;
+      mediaItems.push({ marker, outerHTML: node.outerHTML });
+      rawText += `\n${marker}\n`;
+    } else {
+      rawText += (node.innerText || '') + '\n';
+    }
+  }
+
+  rawText = rawText.trim();
+  if (!rawText) { alert('编辑器为空，请先输入内容'); return; }
   // If already has markdown, warn
   const hasMd = /^#{1,3}\s/m.test(rawText) || /\*\*/.test(rawText) || /^```/m.test(rawText) || /^[-*+]\s/m.test(rawText) || /^\d+\.\s/m.test(rawText);
   if (hasMd && !confirm('检测到已有Markdown语法，是否继续预处理？')) return;
@@ -2641,7 +2664,20 @@ function runSmartPreprocess(mode = 'clean') {
   const mdText = result.join('\n');
   // Parse MD and set as editor content
   const parsedHtml = parseMD(mdText);
-  editor.innerHTML = sanitizeContentHTML(parsedHtml);
+  let finalHtml = sanitizeContentHTML(parsedHtml);
+
+  // 把占位符还原成原始媒体元素
+  mediaItems.forEach(({ marker, outerHTML }) => {
+    // parseMD 会把占位符包进 <p>，先尝试整段替换
+    finalHtml = finalHtml.replace(
+      new RegExp('<p[^>]*>\\s*' + marker + '\\s*</p>', 'gi'),
+      outerHTML
+    );
+    // 兜底：直接替换裸文本
+    finalHtml = finalHtml.replace(marker, outerHTML);
+  });
+
+  editor.innerHTML = finalHtml;
   hideModal();
   scheduleUpdate();
 }
