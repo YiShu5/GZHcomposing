@@ -349,7 +349,7 @@ function editStyle(i) {
     <div style="display:flex;flex-direction:column;gap:16px">
       <div>
         <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">名称</label>
-        <input type="text" id="editStyleName" value="${escapeHtml(s.name)}" maxlength="40">
+        <input type="text" id="editStyleName" value="${escapeAttr(s.name)}" maxlength="40">
       </div>
       <div>
         <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">排版模式</label>

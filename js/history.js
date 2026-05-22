@@ -55,7 +55,15 @@ function saveDraft() {
     if (chars < 5) return; // 内容太少不存
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ html, chars, savedAt: Date.now() }));
   } catch (err) {
-    // 配额满 / 隐身模式：静默跳过
+    // 配额满 / 隐身模式：提示用户导出
+    if (!saveDraft._warnedQuota) {
+      saveDraft._warnedQuota = true;
+      const t = document.createElement('div');
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,0.25);pointer-events:none';
+      t.textContent = '草稿存储空间已满，请导出 HTML 或压缩图片后再编辑';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 4000);
+    }
   }
 }
 function loadDraft() {

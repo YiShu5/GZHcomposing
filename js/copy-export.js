@@ -94,22 +94,19 @@ function fallbackCopyHTML(html) {
 }
 function copyToWechat() {
   const html = buildWechatHTMLSnippet();
-
-  navigator.clipboard.write([
-    new ClipboardItem({
-      'text/html': new Blob([html], {type: 'text/html'}),
-      'text/plain': new Blob([preview.innerText], {type: 'text/plain'})
-    })
-  ]).then(() => {
-    const btn = $('copyBtn');
-    setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号');
-    showPromote();
-  }).catch(err => {
+  const btn = $('copyBtn');
+  const done = () => { setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号'); showPromote(); };
+  if (navigator.clipboard?.write && typeof ClipboardItem !== 'undefined') {
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], {type: 'text/html'}),
+        'text/plain': new Blob([preview.innerText], {type: 'text/plain'})
+      })
+    ]).then(done).catch(() => { fallbackCopyHTML(html); done(); });
+  } else {
     fallbackCopyHTML(html);
-    const btn = $('copyBtn');
-    setButtonCopied(btn, '✅ 已复制', '🚀 一键复制到公众号');
-    showPromote();
-  });
+    done();
+  }
 }
 function copyHTMLCode() {
   const html = buildWechatHTMLSnippet();

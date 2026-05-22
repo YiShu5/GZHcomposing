@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (draft && draft.html && draft.html.trim() && draft.html !== DEFAULT_HTML) {
     const minutesAgo = Math.max(1, Math.round((Date.now() - draft.savedAt) / 60000));
     const ok = confirm(`检测到 ${minutesAgo} 分钟前的未保存草稿（约 ${draft.chars} 字），是否恢复？\n\n点「确定」恢复草稿。\n点「取消」加载默认范例（草稿会被覆盖）。`);
-    if (ok) editor.innerHTML = draft.html;
+    if (ok) editor.innerHTML = sanitizeContentHTML(draft.html);
     else editor.innerHTML = DEFAULT_HTML;
   } else {
     editor.innerHTML = DEFAULT_HTML;
