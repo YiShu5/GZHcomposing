@@ -602,28 +602,33 @@ function normalizeWechatColorModeCompatibility(root) {
   if (!root.style.background && !root.style.backgroundColor) root.style.backgroundColor = '#FFFFFF';
 
   root.querySelectorAll('p,li,blockquote,pre,code,[data-theme-role="body"],[data-theme-role="meta"]').forEach(el => {
+    if (el.closest('[data-theme-component]')) return;
     if (isWhiteCss(el.style.color) && hasDarkReadableBackgroundForWhite(el)) return;
     if (!isWhiteCss(el.style.color) && hasReadableColorOnBackground(el)) return;
     el.style.color = el.dataset.themeRole === 'meta' ? safe.muted : safe.text;
   });
 
   root.querySelectorAll('strong,b').forEach(el => {
+    if (el.closest('[data-theme-component]')) return;
     if (isWhiteCss(el.style.color) && hasDarkReadableBackgroundForWhite(el)) return;
     el.style.color = safe.emphasis;
     el.style.fontWeight = '700';
   });
 
   root.querySelectorAll('em,i').forEach(el => {
+    if (el.closest('[data-theme-component]')) return;
     if (isWhiteCss(el.style.color) && hasDarkReadableBackgroundForWhite(el)) return;
     el.style.color = safe.emphasis;
   });
 
   root.querySelectorAll('h1,h2,h3,[data-theme-role="title"]').forEach(el => {
+    if (el.closest('[data-theme-component]')) return;
     const preserveWhiteOnColor = isWhiteCss(el.style.color) && hasDarkReadableBackgroundForWhite(el);
     if (!preserveWhiteOnColor) el.style.color = safe.heading;
   });
 
   root.querySelectorAll('span').forEach(el => {
+    if (el.closest('[data-theme-component]')) return;
     if (!el.textContent.trim()) return;
     if (isWhiteCss(el.style.color) && hasDarkReadableBackgroundForWhite(el)) return;
     if (!isWhiteCss(el.style.color) && hasReadableColorOnBackground(el)) return;

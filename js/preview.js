@@ -455,9 +455,9 @@ function applyPreviewStyles() {
     }
   });
 
-  // Strong / em colors
-  preview.querySelectorAll('strong').forEach(s => { s.style.color = c.accent; s.style.fontWeight = '700'; });
-  preview.querySelectorAll('em').forEach(e => { e.style.color = c.main; e.style.fontStyle = 'italic'; });
+  // Strong / em colors (skip design components which manage their own colors)
+  preview.querySelectorAll('strong').forEach(s => { if (s.closest('[data-theme-component]')) return; s.style.color = c.accent; s.style.fontWeight = '700'; });
+  preview.querySelectorAll('em').forEach(e => { if (e.closest('[data-theme-component]')) return; e.style.color = c.main; e.style.fontStyle = 'italic'; });
   preview.querySelectorAll('img').forEach(img => {
     // 跳过 design-intro 的 badge 缩略图：它有自己的固定宽高 + object-fit，
     // 被通用 img 样式（height:auto / margin:8px 0）覆盖会导致缩略图错位甚至消失
