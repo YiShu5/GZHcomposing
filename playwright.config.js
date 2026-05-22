@@ -1,6 +1,10 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
+// 防止系统代理（socks5 / http）拦截 webServer 健康检测请求，导致误判端口已占用
+process.env.NO_PROXY = [process.env.NO_PROXY, '127.0.0.1', 'localhost'].filter(Boolean).join(',');
+process.env.no_proxy = process.env.NO_PROXY;
+
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 15_000,
