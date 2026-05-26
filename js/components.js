@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const show = parseInt(bwInput.value) > 0;
     document.getElementById('imgBorderColors').style.display = show ? 'flex' : 'none';
   });
-});
+}, { once: true });
 function doInsertImage() {
   const layout = $('imgLayout')?.value || 'single';
   const isDouble = layout === 'double';

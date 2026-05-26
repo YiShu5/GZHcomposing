@@ -300,8 +300,9 @@ function toggleStylesDropdown() {
     });
   }
   dd.classList.add('show');
+  if (toggleStylesDropdown._timer) clearTimeout(toggleStylesDropdown._timer);
   if (toggleStylesDropdown._handler) document.removeEventListener('click', toggleStylesDropdown._handler);
-  setTimeout(() => {
+  toggleStylesDropdown._timer = setTimeout(() => {
     const handler = e => {
       if (!dd.contains(e.target) && e.target.id !== 'btnMyStyles') {
         dd.classList.remove('show');

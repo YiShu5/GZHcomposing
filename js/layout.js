@@ -5,7 +5,7 @@
 // ===================================================================
 function setupDivider() {
   let startX, startLeftW;
-  const total = () => panelLeft.parentElement.clientWidth - 5; // minus divider
+  const total = () => (panelLeft && panelLeft.parentElement) ? panelLeft.parentElement.clientWidth - 5 : 800;
 
   divider.addEventListener('mousedown', e => {
     e.preventDefault();

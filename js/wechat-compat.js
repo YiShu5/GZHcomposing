@@ -965,10 +965,11 @@ function parseCssNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
-function getElementFontPx(el, fallback = 15) {
+function getElementFontPx(el, fallback = 15, _depth = 0) {
+  if (_depth > 32) return fallback;
   const inline = parseCssNumber(el.style.fontSize);
   if (inline) return inline;
-  const parent = el.parentElement ? getElementFontPx(el.parentElement, fallback) : fallback;
+  const parent = el.parentElement ? getElementFontPx(el.parentElement, fallback, _depth + 1) : fallback;
   return parent || fallback;
 }
 

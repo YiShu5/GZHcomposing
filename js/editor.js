@@ -50,7 +50,7 @@ function applyTextAlign(align) {
 
 function toggleAlignPanel() {
   const sel = window.getSelection();
-  if (sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+  if (sel && sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
     savedEditorRange = sel.getRangeAt(0).cloneRange();
   }
   const p = $('alignPanel');
