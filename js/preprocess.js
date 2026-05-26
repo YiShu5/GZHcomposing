@@ -515,6 +515,18 @@ function parseMD(text) {
       continue;
     }
 
+    // Standalone image line: ![alt](url)
+    const imgLineMatch = line.trim().match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
+    if (imgLineMatch) {
+      const safeSrc = sanitizeImageSrc(imgLineMatch[2]);
+      if (safeSrc) {
+        html += `<p><img src="${escapeAttr(safeSrc)}" alt="${escapeAttr(imgLineMatch[1])}" style="max-width:100%;display:block;height:auto;"></p>`;
+      } else {
+        html += `<p>${escapeHtml(line)}</p>`;
+      }
+      continue;
+    }
+
     // Paragraph
     html += `<p>${inlineFormat(line)}</p>`;
   }
@@ -526,7 +538,17 @@ function parseMD(text) {
 }
 
 function inlineFormat(t) {
+  // Handle inline images before escaping so URLs stay intact
+  const imgs = [];
+  t = t.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (match, alt, src) => {
+    const safeSrc = sanitizeImageSrc(src.trim());
+    if (!safeSrc) return match;
+    const placeholder = `\x00img${imgs.length}\x00`;
+    imgs.push(`<img src="${escapeAttr(safeSrc)}" alt="${escapeAttr(alt)}" style="max-width:100%;display:block;height:auto;">`);
+    return placeholder;
+  });
   t = escapeHtml(t);
+  imgs.forEach((img, i) => { t = t.replace(`\x00img${i}\x00`, img); });
   t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   t = t.replace(/\*(.+?)\*/g, '<em>$1</em>');
   t = t.replace(/`([^`]+)`/g, '<code>$1</code>');

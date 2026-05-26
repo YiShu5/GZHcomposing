@@ -299,6 +299,7 @@ function setupEditorEvents() {
       /^>\s/m.test(plain) ||
       /^```/m.test(plain) ||
       /^[-*]\s/m.test(plain) ||
+      /!\[[^\]]*\]\(https?:\/\//m.test(plain) ||
       (plain.match(/\*\*[^*\n]+\*\*/g) || []).length >= 2
     );
     if (looksLikeMarkdown) {
