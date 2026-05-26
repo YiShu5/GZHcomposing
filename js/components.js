@@ -206,7 +206,7 @@ function doInsertImage() {
   if (isDouble) {
     const groupMargin = align === 'right' ? '12px 0 12px auto' : align === 'left' ? '12px auto 12px 0' : '12px auto';
     const groupWidth = `${w}%`;
-    const cells = srcList.map((src, idx) => `<td style="width:50%;padding:${idx === 0 ? '0 0.5mm 0 0' : '0 0 0 0.5mm'};vertical-align:top;box-sizing:border-box;"><img src="${escapeAttr(src)}" style="${escapeAttr(baseStyle + 'display:block;width:100%;max-width:100%;margin:0;object-fit:cover;box-sizing:border-box;')}" alt="image ${idx + 1}"></td>`).join('');
+    const cells = srcList.map((src, idx) => `<td style="width:50%;padding:${idx === 0 ? '0 4px 0 0' : '0 0 0 4px'};vertical-align:top;box-sizing:border-box;"><img src="${escapeAttr(src)}" style="${escapeAttr(baseStyle + 'display:block;width:100%;max-width:100%;margin:0;object-fit:cover;box-sizing:border-box;')}" alt="image ${idx + 1}"></td>`).join('');
     imgHtml = `<table data-layout="image-pair" style="width:${groupWidth};max-width:100%;margin:${groupMargin};border-collapse:separate;border-spacing:0;table-layout:fixed;box-sizing:border-box;"><tbody><tr>${cells}</tr></tbody></table><p><br></p>`;
   } else {
     let style = baseStyle;

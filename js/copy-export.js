@@ -1,10 +1,12 @@
 // === 微信复制 / HTML导出 / Markdown导出 ===
 
 // 默认开启：右侧预览始终是「粘到公众号的真实样子」，避免编辑器里好看、粘出来塌房
-let wechatPreviewActive = true;
+const WECHAT_PREVIEW_KEY = 'gzhcomposing.wechatPreview';
+let wechatPreviewActive = localStorage.getItem(WECHAT_PREVIEW_KEY) !== 'false';
 let wechatPreviewBackup = null;
 function toggleWechatPreview() {
   wechatPreviewActive = !wechatPreviewActive;
+  localStorage.setItem(WECHAT_PREVIEW_KEY, wechatPreviewActive);
   $('wechatPreviewToggle').classList.toggle('active', wechatPreviewActive);
   if (wechatPreviewActive) {
     wechatPreviewBackup = preview.innerHTML;

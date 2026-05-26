@@ -14,10 +14,10 @@ function pushHistorySnapshot() {
     historyStack = historyStack.slice(0, historyIndex + 1);
   }
   historyStack.push(html);
+  historyIndex++;
   if (historyStack.length > HISTORY_MAX) {
     historyStack.shift();
-  } else {
-    historyIndex++;
+    historyIndex--;
   }
 }
 function debouncedPushSnapshot() {
