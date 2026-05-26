@@ -445,6 +445,9 @@ function parseMD(text) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
+    // Strip platform-specific TOC tags (@[toc], [TOC], [[toc]], etc.)
+    if (/^@?\[{1,2}[Tt][Oo][Cc]\]{1,2}$/.test(line.trim())) continue;
+
     // Code block
     if (line.trim().startsWith('```')) {
       if (inCode) {
