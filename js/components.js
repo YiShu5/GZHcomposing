@@ -61,7 +61,7 @@ function readImageFiles(files) {
   })));
 }
 function restoreEditorRange(range) {
-  editor.focus();
+  editor.focus({ preventScroll: true });
   const sel = window.getSelection();
   sel.removeAllRanges();
   if (range) {
@@ -128,7 +128,7 @@ function insertSpacer(size) {
   savedEditorRange = null;
   insertSafeHTML(`<div data-theme-role="spacer" style="height:${h}px;line-height:${h}px"><br></div>`);
   $('hrPanel')?.classList.remove('show');
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
 function insertDivider(style) {
@@ -136,7 +136,7 @@ function insertDivider(style) {
   savedEditorRange = null;
   insertSafeHTML(`<hr data-hr-style="${escapeAttr(style)}">`);
   $('hrPanel')?.classList.remove('show');
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
 function switchImgTab(tab, btn) {
@@ -260,7 +260,7 @@ function doInsertImage() {
   }
 
   // Restore focus and cursor to editor before inserting
-  editor.focus();
+  editor.focus({ preventScroll: true });
   const sel = window.getSelection();
   if (savedEditorRange) {
     try {
@@ -309,7 +309,7 @@ function applyTextHighlight() {
   const existing = getIntersectingHighlights(range);
   if (existing.length) {
     existing.forEach(unwrapElement);
-    editor.focus();
+    editor.focus({ preventScroll: true });
     scheduleUpdate();
     updateToolbarStates();
     return;
@@ -318,7 +318,7 @@ function applyTextHighlight() {
   const color = c.main || '#133363';
   const selectedHTML = getRangeHTML(range);
   document.execCommand('insertHTML', false, `<span data-editor-highlight="true" style="color:${color};font-weight:700">${selectedHTML}</span>`);
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
   updateToolbarStates();
 }
@@ -394,7 +394,7 @@ function insertNumberedHeading() {
     </div>
   </div><p><br></p>`;
   document.execCommand('insertHTML', false, html);
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
 
@@ -408,7 +408,7 @@ function insertTipCard() {
     : '';
   const html = buildTipCardHTML(selectedHTML);
   document.execCommand('insertHTML', false, html);
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
 
@@ -501,7 +501,7 @@ function insertDesignHTML(html) {
   savedEditorRange = null;
   insertSafeHTML(html);
   hideModal();
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
 function insertDesignIntro() {
@@ -689,7 +689,7 @@ function insertEnding(type) {
   // Wrap in a container with marker attribute. 用 section 而不是 div，让 WeChat 编辑器保留外层样式
   html = `<section data-ending-block="true" data-theme-component="ending" data-ending-type="${type}" style="display:block;margin-top:2em">${html}</section>`;
   // Insert at end of editor
-  editor.focus();
+  editor.focus({ preventScroll: true });
   const sel = window.getSelection();
   const range = document.createRange();
   range.selectNodeContents(editor);

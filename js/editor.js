@@ -6,7 +6,7 @@ function execCmd(cmd, val) {
     return;
   }
   document.execCommand(cmd, false, val || null);
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
   updateToolbarStates();
 }
@@ -22,7 +22,7 @@ function toggleBlockFormat(tag) {
   } else {
     document.execCommand('formatBlock', false, active ? 'P' : tag);
   }
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
   updateToolbarStates();
 }
@@ -31,7 +31,7 @@ function applyTextAlign(align) {
   const safeAlign = ['left', 'center', 'right'].includes(align) ? align : 'left';
   const range = getSelectionRangeInEditor();
   if (!range) {
-    editor.focus();
+    editor.focus({ preventScroll: true });
     return;
   }
   const targets = getSelectedAlignTargets(range);
@@ -43,7 +43,7 @@ function applyTextAlign(align) {
       el.setAttribute('data-user-align', safeAlign);
     });
   }
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
   updateToolbarStates();
 }
@@ -198,7 +198,7 @@ function insertCodeBlock() {
   const sel = window.getSelection();
   const text = sel.toString() || '// 在此输入代码';
   document.execCommand('insertHTML', false, '<pre><code>' + escapeHtml(text) + '</code></pre><p><br></p>');
-  editor.focus();
+  editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
 
