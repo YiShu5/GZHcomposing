@@ -244,6 +244,36 @@ function movePastePointBeforeEndingIfNeeded() {
   return true;
 }
 
+// 粘贴后自动抓取外链图片并转为 data URL，防止飞书/外部 CDN token 过期后图片消失
+async function fetchAndEmbedExternalImages() {
+  const imgs = Array.from(editor.querySelectorAll('img[src]')).filter(img => {
+    const src = img.getAttribute('src') || '';
+    return src && !src.startsWith('data:');
+  });
+  if (!imgs.length) return;
+  await Promise.all(imgs.map(async img => {
+    const src = img.getAttribute('src');
+    try {
+      const res = await fetch(src, { mode: 'cors' });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      if (!/^image\/(png|jpe?g|gif|webp)$/i.test(blob.type)) return;
+      const dataUrl = await new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(blob);
+      });
+      const compressed = await compressImageDataURL(dataUrl);
+      const safe = sanitizeImageSrc(compressed);
+      if (safe) {
+        img.setAttribute('src', safe);
+        scheduleUpdate();
+      }
+    } catch {}
+  }));
+}
+
 function insertPasteHTML(html, beforeEnding = false) {
   const ending = editor.querySelector('[data-ending-block]');
   if (!beforeEnding || !ending) {
@@ -313,6 +343,7 @@ function setupEditorEvents() {
       insertPasteHTML(html, pasteBeforeEnding);
       ensureEndingBlockAtEnd();
       scheduleUpdate();
+      fetchAndEmbedExternalImages(); // 异步抓取外链图片转 data URL（飞书等 CDN token 还有效时）
       return;
     }
     if (plain) {
