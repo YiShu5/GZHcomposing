@@ -169,6 +169,11 @@ function applyPreviewStyles() {
     openingP.style.opacity = '0.85';
     openingP.style.lineHeight = '1.9';
     openingP.style.marginBottom = (STATE.paraSpacing + 0.3) + 'em';
+    if (mode.id === 'brand-manual') {
+      // 金色强调色在浅底上做正文导语会糊，导语改用正文色，克制收敛
+      openingP.style.color = c.text;
+      openingP.style.opacity = '0.92';
+    }
     if (mode.id === 'mario-theme') {
       openingP.style.background = `radial-gradient(circle at 18px 18px, ${c.accent} 0 5px, transparent 6px), radial-gradient(circle at 50px 18px, ${c.accent} 0 5px, transparent 6px), linear-gradient(180deg, ${c.sub}, #FFFFFF)`;
       openingP.style.border = `2px solid ${alphaColor(c.main, 0.32, '#f3b2b2')}`;
@@ -456,7 +461,8 @@ function applyPreviewStyles() {
   });
 
   // Strong / em colors (skip design components which manage their own colors)
-  preview.querySelectorAll('strong').forEach(s => { if (s.closest('[data-theme-component]')) return; s.style.color = c.accent; s.style.fontWeight = '700'; });
+  // 加粗用深色（品牌深蓝），金色 accent 在浅底上做正文强调会糊
+  preview.querySelectorAll('strong').forEach(s => { if (s.closest('[data-theme-component]')) return; s.style.color = c.deep || c.accent; s.style.fontWeight = '700'; });
   preview.querySelectorAll('em').forEach(e => { if (e.closest('[data-theme-component]')) return; e.style.color = c.main; e.style.fontStyle = 'italic'; });
   preview.querySelectorAll('img').forEach(img => {
     // 跳过 design-intro 的 badge 缩略图：它有自己的固定宽高 + object-fit，
@@ -722,6 +728,16 @@ function applyHeadingStyle(h, style, c, tag) {
   }
 
   switch(style) {
+    case 'left-bar-gold':
+      // 品牌手册：标题左侧一条铃铛金竖线，无渐变无圆角，干净利落
+      h.style.color = c.text;
+      h.style.borderLeft = `3px solid ${c.accent}`;
+      h.style.paddingLeft = '14px';
+      h.style.textAlign = 'left';
+      h.style.letterSpacing = '0.02em';
+      h.style.fontWeight = tag === 'H3' ? '600' : '700';
+      h.style.fontSize = tag === 'H1' ? '22px' : tag === 'H2' ? '20px' : '17px';
+      break;
     case 'underline-blue':
       h.style.color = c.main;
       h.style.paddingBottom = '10px';
@@ -915,6 +931,16 @@ function applyQuoteStyle(bq, style, c) {
   const themeSky = c.sky || c.main;
   const journalPaper = c.paper || c.sub || '#FFF6E8';
   switch(style) {
+    case 'left-bar-blue':
+      // 品牌手册：淡蓝底 + 哆啦A梦蓝竖线，不用渐变不用斜体
+      bq.style.borderLeft = `3px solid ${c.main}`;
+      bq.style.borderImage = 'none';
+      bq.style.background = c.sub;
+      bq.style.color = c.text;
+      bq.style.padding = '16px 16px 16px 20px';
+      bq.style.borderRadius = '4px';
+      bq.style.fontStyle = 'normal';
+      break;
     case 'blue-bar':
       bq.style.borderLeft = 'none';
       bq.style.borderImage = 'none';
@@ -1057,6 +1083,11 @@ function applyHrStyle(hr, style, c) {
   hr.style.overflow = 'visible';
 
   switch(style) {
+    case 'center-gold':
+      // 品牌手册：居中 40px 短金线，2px 高，干干净净一条
+      // 用 section + border-top（而非给 hr 设 background），躲开微信兼容层把 hr 背景刷灰的逻辑
+      hr.outerHTML = `<section style="margin:16px 0;text-align:center;line-height:0;"><span style="display:inline-block;border-top:2px solid ${c.accent};padding:0 20px;line-height:0;font-size:0;vertical-align:middle;">&nbsp;</span></section>`;
+      break;
     case 'basic-line':
       hr.style.height = '1px';
       hr.style.background = alphaColor(c.main, 0.32, '#CBD5E1');

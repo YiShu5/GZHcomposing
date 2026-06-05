@@ -26,7 +26,7 @@
 }
 html{font-size:14px}
 body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);min-width:768px;height:100vh;display:flex;flex-direction:column;overflow:hidden;cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M3 2L3 15L6 12L9 17.5L11 16.5L8 11L12 11Z' fill='%2303ADF0' stroke='white' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2,default}
-button,a,.nav-btn,.nav-btn-icon,.tb-btn,.tb-btn-text,.pocket-btn,.pocket-item,.more-dropdown-item,.hr-option,.align-option,.sd-card,.edit-mode-chip,.color-chip,.tab-btn,.img-insert-btn,.btn-primary,.btn-secondary,.mode-card,.color-preset,.bg-option,.dora-avatar,.door{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M3 2L3 15L6 12L9 17.5L11 16.5L8 11L12 11Z' fill='%23F5C518' stroke='%23016FAD' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2,pointer}
+button,a,.nav-btn,.nav-btn-icon,.tb-btn,.tb-btn-text,.pocket-btn,.pocket-item,.more-dropdown-item,.hr-option,.align-option,.sd-card,.edit-mode-chip,.color-chip,.tab-btn,.img-insert-btn,.btn-primary,.btn-secondary,.mode-card,.color-preset,.bg-option,.dora-avatar{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M3 2L3 15L6 12L9 17.5L11 16.5L8 11L12 11Z' fill='%23F5C518' stroke='%23016FAD' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2,pointer}
 input[type=text],input[type=number],input[type=email],textarea{cursor:text}
 .editor,[contenteditable]{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cpath d='M18 1L21 4L19 6L16 3Z' fill='%23E57373'/%3E%3Cpath d='M16 3L19 6L7 18L4 15Z' fill='%23F5C518' stroke='%23016FAD' stroke-width='0.9' stroke-linejoin='round'/%3E%3Cpath d='M4 15L7 18L4 21L2 20Z' fill='%23BDBDBD'/%3E%3Cpath d='M2 20L4 21L3 22L1 21Z' fill='%23424242'/%3E%3C/svg%3E") 1 21,text}
 select{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M3 2L3 15L6 12L9 17.5L11 16.5L8 11L12 11Z' fill='%23F5C518' stroke='%23016FAD' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2,pointer}
@@ -216,10 +216,6 @@ body::before{
 }
 .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
 .nav-right .nav-btn{font-size:13px}
-/* 任意门按钮 —— 哆啦A梦粉色门 */
-.nav-btn.door{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(145deg,#FFC1DA,#FF8FBF);border:1px solid rgba(255,255,255,0.55);color:#7C2A4F;font-weight:700;box-shadow:0 2px 8px rgba(255,143,191,0.4)}
-.nav-btn.door:hover{background:linear-gradient(145deg,#FFD3E5,#FF9FCB);color:#5A1E3A;transform:translateY(-2px) rotate(-3deg);box-shadow:0 6px 18px rgba(255,143,191,0.55)}
-.nav-btn.door svg{flex-shrink:0}
 /* ===== 口袋扇形样式设置 ===== */
 .pocket-wrap{position:relative}
 .pocket-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;font-size:13px;background:var(--dora-yellow);border:1px solid rgba(245,197,24,0.4);color:var(--dora-deep);font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(0.4,0,0.2,1);white-space:nowrap;box-shadow:0 2px 8px rgba(245,197,24,0.25)}
@@ -312,6 +308,16 @@ body::before{
 .editor:empty::before{content:attr(data-placeholder);color:#CCC;pointer-events:none}
 .editor img{max-width:100%;height:auto;border-radius:12px;margin:8px 0;display:block}
 .editor table[data-theme-component]{background-color:transparent}
+/* ===== 品牌手册：编辑区内容样式提示，与右侧预览保持一致 ===== */
+/* 标题左侧铃铛金竖线（3px），不堆渐变色块 */
+.editor h1,.editor h2,.editor h3{border-left:3px solid #F5C518;padding-left:14px;color:#2B2B2B;font-weight:700;line-height:1.4;margin:1.1em 0 .55em;letter-spacing:.02em}
+.editor h1{font-size:22px}
+.editor h2{font-size:20px}
+.editor h3{font-size:17px;font-weight:600}
+/* 引用：淡蓝底 + 哆啦A梦蓝竖线 */
+.editor blockquote{border-left:3px solid #03ADF0;background:#E0F4FE;color:#2B2B2B;padding:16px 16px 16px 20px;border-radius:4px;margin:1em 0}
+/* 分割线：居中 40px 短金线 */
+.editor hr{border:none;height:2px;width:40px;background:#F5C518;margin:16px auto}
 .editor-footer{display:flex;align-items:center;justify-content:space-between;padding:6px 16px;background:var(--white);border-top:1px solid var(--dora-light);font-size:12px;color:var(--text3);flex-shrink:0}
 
 /* ===== Preview Area ===== */

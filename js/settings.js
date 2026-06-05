@@ -40,11 +40,10 @@ function closeSettings() {
 function renderSettingsTab(tab) {
   const title = $('spTitle');
   const body = $('spBody');
-  const currentTab = tab || 'mode';
+  const currentTab = tab || 'font';
   title.textContent = '样式设置';
   body.innerHTML = `
     <div class="settings-tabs">
-      <button class="settings-tab ${currentTab==='mode'?'active':''}" onclick="renderSettingsTab('mode')">排版</button>
       <button class="settings-tab ${currentTab==='font'?'active':''}" onclick="renderSettingsTab('font')">字体</button>
       <button class="settings-tab ${currentTab==='color'?'active':''}" onclick="renderSettingsTab('color')">配色</button>
       <button class="settings-tab ${currentTab==='spacing'?'active':''}" onclick="renderSettingsTab('spacing')">间距</button>
@@ -54,30 +53,12 @@ function renderSettingsTab(tab) {
   `;
   const content = $('settingsTabContent');
   switch(currentTab) {
-    case 'mode': renderModeSettingsContent(content); break;
     case 'font': renderFontSettingsContent(content); break;
     case 'color': renderColorSettingsContent(content); break;
     case 'spacing': renderSpacingSettingsContent(content); break;
     case 'bg': renderBgSettingsContent(content); break;
+    default: renderFontSettingsContent(content);
   }
-}
-
-function renderModeSettingsContent(content) {
-  let html = '<div class="mode-cards">';
-  MODES.forEach(m => {
-    html += `<div class="mode-card ${STATE.mode === m.id ? 'active' : ''}" onclick="selectMode('${m.id}')">
-      <div class="mc-name">${m.name}</div>
-      <div class="mc-desc">${m.desc}</div>
-    </div>`;
-  });
-  html += '</div>';
-  content.innerHTML = html;
-}
-
-function selectMode(id) {
-  const mode = MODES.find(m => m.id === id);
-  if (mode) applyMode(mode);
-  renderSettingsTab('mode');
 }
 
 function renderFontSettingsContent(content) {
@@ -326,16 +307,6 @@ function applyStyle(i) {
 function editStyle(i) {
   const styles = getSavedStyles();
   const s = styles[i];
-  const modeCards = MODES.map(m => {
-    const meta = MODE_META[m.id] || { emoji:'🎨', color:'#999' };
-    const active = s.state.mode === m.id;
-    return `<div class="edit-mode-chip${active?' active':''}"
-      style="border-color:${active?meta.color:'var(--dora-light)'};background:${active?meta.color+'18':'#fff'}"
-      onclick="selectEditMode(this,'${m.id}','${meta.color}')">
-      <span>${meta.emoji}</span>
-      <span style="font-size:11px;font-weight:600;color:${meta.color}">${m.name}</span>
-    </div>`;
-  }).join('');
   const colorChips = COLOR_SCHEMES.map((cs, idx) => {
     const active = s.state.colorScheme === idx;
     return `<div class="color-chip${active?' active':''}" title="${escapeAttr(cs.name)}"
@@ -353,10 +324,6 @@ function editStyle(i) {
         <input type="text" id="editStyleName" value="${escapeAttr(s.name)}" maxlength="40">
       </div>
       <div>
-        <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">排版模式</label>
-        <div id="editModeGroup" data-val="${escapeAttr(s.state.mode)}" style="display:flex;flex-wrap:wrap;gap:6px">${modeCards}</div>
-      </div>
-      <div>
         <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">配色</label>
         <div id="editColorGroup" data-val="${s.state.colorScheme}" style="display:flex;flex-wrap:wrap;gap:6px">${colorChips}</div>
       </div>
@@ -366,18 +333,6 @@ function editStyle(i) {
       <button class="btn-primary" onclick="doEditStyle(${i})">保存</button>
     </div>
   `);
-}
-function selectEditMode(el, modeId, color) {
-  const group = $('editModeGroup');
-  group.dataset.val = modeId;
-  group.querySelectorAll('.edit-mode-chip').forEach(c => {
-    c.classList.remove('active');
-    c.style.borderColor = 'var(--dora-light)';
-    c.style.background = '#fff';
-  });
-  el.classList.add('active');
-  el.style.borderColor = color;
-  el.style.background = color + '18';
 }
 function selectEditColor(el, idx) {
   const group = $('editColorGroup');
@@ -395,7 +350,6 @@ function doEditStyle(i) {
   if (!name) return;
   const styles = getSavedStyles();
   styles[i].name = name;
-  styles[i].state.mode = $('editModeGroup').dataset.val;
   styles[i].state.colorScheme = parseInt($('editColorGroup').dataset.val);
   setSavedStyles(styles);
   hideModal();
@@ -499,11 +453,11 @@ function showHelp() {
       </ul>
       <h4>🎨 排版样式</h4>
       <ul>
-        <li><strong>排版模式</strong>：${MODES.length} 种预设风格一键切换</li>
-        <li><strong>配色</strong>：${COLOR_SCHEMES.length} 种预设 + 自定义颜色</li>
+        <li><strong>品牌手册</strong>：蓝金克制高级的单一风格，标题金竖线、引用蓝竖线、分割线居中金线，不用反复挑模板</li>
+        <li><strong>配色</strong>：哆啦A梦蓝金预设 + 自定义颜色微调</li>
         <li><strong>字体</strong>：标题和正文字体可独立设置</li>
         <li><strong>行距 / 段距</strong>：5 档预设 + 自定义数值</li>
-        <li><strong>背景纹理</strong>：纯色 / 米色 / 格纹等，公众号兼容</li>
+        <li><strong>背景纹理</strong>：纯白 / 暖米底，公众号兼容</li>
       </ul>
       <h4>🖼️ 图片 & 装饰</h4>
       <ul>

@@ -45,7 +45,6 @@
       </button>
 
       <div class="pocket-fan" id="pocketFan">
-        <button class="pocket-item" onclick="openSettings('mode');closePocket()"><span class="pi-emoji">🖼️</span>排版</button>
         <button class="pocket-item" onclick="openSettings('font');closePocket()"><span class="pi-emoji">✍️</span>字体</button>
         <button class="pocket-item" onclick="openSettings('color');closePocket()"><span class="pi-emoji">🎨</span>配色</button>
         <button class="pocket-item" onclick="openSettings('spacing');closePocket()"><span class="pi-emoji">📐</span>间距</button>
@@ -56,14 +55,6 @@
   <div class="nav-right" style="position:relative">
     <button class="nav-btn" onclick="toggleStylesDropdown()" id="btnMyStyles">我的样式 ▾</button>
     <div class="styles-dropdown" id="stylesDropdown"></div>
-    <button class="nav-btn door" onclick="teleportRandomStyle()" title="任意门 · 随机传送到一套样式 + 配色">
-      <svg viewBox="0 0 24 32" width="18" height="24" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="20" height="28" rx="2" fill="#FF8FBF" stroke="#C71585" stroke-width="1.4"/>
-        <rect x="4" y="4" width="16" height="24" rx="1" fill="#FFC1DA"/>
-        <line x1="4" y1="11" x2="20" y2="11" stroke="#C71585" stroke-width="0.6" opacity="0.4"/>
-        <circle cx="17" cy="17" r="1.5" fill="#FFD700" stroke="#C77700" stroke-width="0.6"/>
-      </svg>任意门
-    </button>
     <button class="nav-btn" onclick="showHelp()">帮助</button>
   </div>
 </nav>
@@ -295,8 +286,8 @@
     <div class="ob-step" data-ob-step="3" style="display:none">
       <div class="ob-icon">🎨</div>
       <div class="ob-step-num">第 2 步</div>
-      <h2 class="ob-title">选风格</h2>
-      <p class="ob-desc">点击顶部「排版模式」按钮，选一个喜欢的风格，右侧会实时预览效果</p>
+      <h2 class="ob-title">微调样式</h2>
+      <p class="ob-desc">排版已是「品牌手册」蓝金风格，点顶部「样式设置」可微调配色、字体、间距和背景，右侧实时预览</p>
       <div class="ob-actions">
         <button class="ob-btn ob-btn-skip" onclick="obSkip()">跳过</button>
         <button class="ob-btn ob-btn-primary" onclick="obNext()">下一步</button>
