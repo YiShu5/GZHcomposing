@@ -506,49 +506,57 @@ function insertDesignHTML(html) {
 }
 function insertDesignIntro() {
   const c = getColors();
-  const main = c.main || '#059669';
-  const accent = c.accent || main;
-  const sub = c.sub || '#ECFDF5';
-  const text = c.text || '#374151';
-  // 用 table 替代所有 flex，chips 用 inline-block，兼容微信公众号
-  const html = `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#fff;border:1.5px solid ${alphaColor(main,0.16,'#d1fae5')};border-radius:16px;overflow:hidden;width:100%;">
-    <section style="padding:24px 20px 20px;">
-      <table style="width:100%;border-collapse:collapse;border-spacing:0;margin-bottom:18px;"><tbody><tr>
+  const main = c.main || '#03ADF0';
+  const accent = c.accent || '#F5C518';
+  const sub = c.sub || '#E0F4FE';
+  const text = c.text || '#2B2B2B';
+  // 哆啦A梦配色 · 品牌手册感开头总结框
+  const html = `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#FEFEFE;border:1.5px solid ${sub};border-radius:16px;overflow:hidden;width:100%;">
+    <section style="padding:24px 20px 0;">
+      <table style="width:100%;border-collapse:collapse;border-spacing:0;margin-bottom:14px;"><tbody><tr>
         <td style="padding:0;vertical-align:middle;border:0;">
-          <span style="display:inline-block;border-radius:50%;background:${main};padding:4px;font-size:0;line-height:0;vertical-align:middle;margin-right:8px;"></span>
-          <span data-theme-role="meta" style="vertical-align:middle;font-size:11px;color:${main};font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">DESIGN · CASE STUDY</span>
+          <span data-theme-role="meta" style="vertical-align:middle;font-size:11px;color:${accent};font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">WORKFLOW · 方法论</span>
         </td>
         <td style="padding:0;text-align:right;vertical-align:middle;border:0;white-space:nowrap;width:100%;">
-          <span style="font-size:11px;color:#9CA3AF;">2026</span>
+          <span style="font-size:11px;color:#9CA3AF;">2026.06</span>
         </td>
       </tr></tbody></table>
+    </section>
+    <section style="padding:0 20px 16px;">
       <table style="width:100%;border-collapse:collapse;border-spacing:0;"><tbody><tr>
         <td style="padding:0;vertical-align:top;border:0;width:100%;">
-          <p style="font-size:13px;color:#D1D5DB;margin:0 0 6px;text-decoration:line-through;letter-spacing:0.5px;">把内容散着写？</p>
-          <p data-theme-role="title" style="font-size:22px;font-weight:900;color:${text};margin:0;line-height:1.1;letter-spacing:0;">一篇文章</p>
-          <p data-theme-role="highlight" style="font-size:22px;font-weight:900;color:${main};margin:0 0 12px;line-height:1.1;letter-spacing:0;">讲清一个流程</p>
+          <p style="font-size:13px;color:#D1D5DB;margin:0 0 8px;text-decoration:line-through;letter-spacing:0.5px;">把内容散着写？</p>
+          <p data-theme-role="title" style="font-size:26px;font-weight:900;color:${text};margin:0;line-height:1.15;letter-spacing:0;">一篇文章</p>
+          <p data-theme-role="highlight" style="font-size:26px;font-weight:900;color:${main};margin:0 0 10px;line-height:1.15;letter-spacing:0;">讲清一个流程</p>
+          <div style="width:40px;height:3px;background:${accent};margin:0 0 10px;border-radius:2px;"></div>
           <p data-theme-role="body" style="font-size:12px;color:#9CA3AF;margin:0;line-height:1.7;letter-spacing:0.5px;">节点 · 关键词 · 结论</p>
         </td>
         <td style="padding:0 0 0 16px;vertical-align:middle;border:0;white-space:nowrap;">
-          <section data-theme-role="badge" style="border-radius:16px;background:linear-gradient(135deg,${alphaColor(main,0.16,sub)},${alphaColor(accent,0.12,'#fff')});border:2px dashed #F5C518;text-align:center;padding:24px 14px;cursor:pointer;box-sizing:border-box;" title="点击这里插入图片">
-            <span style="display:block;font-size:30px;line-height:1;margin-bottom:6px;">📸</span>
-            <span data-badge-text="true" style="display:block;font-size:13px;font-weight:800;color:${main};line-height:1.3;">点这里插图</span>
-            <span style="display:block;font-size:10px;color:#016FAD;opacity:0.6;font-weight:700;letter-spacing:1px;margin-top:3px;">🔔 哆啦提示</span>
+          <section data-theme-role="badge" style="border-radius:16px;background:linear-gradient(135deg,${alphaColor(main,0.10,sub)},rgba(255,255,255,0.9));border:2px solid ${accent};text-align:center;padding:20px 12px;cursor:pointer;box-sizing:border-box;min-width:90px;" title="点击这里插入图片">
+            <span style="display:block;font-size:24px;line-height:1;margin-bottom:4px;">📸</span>
+            <span data-badge-text="true" style="display:block;font-size:11px;font-weight:800;color:${main};line-height:1.3;">点这里插图</span>
+            <span style="display:block;font-size:9px;color:${main};opacity:0.7;font-weight:700;letter-spacing:1px;margin-top:3px;">哆啦提示</span>
           </section>
         </td>
       </tr></tbody></table>
     </section>
-    <section data-theme-role="bar" style="background:linear-gradient(135deg,${main},${accent});padding:11px 20px;border-radius:0 0 14px 14px;">
+    <section data-theme-role="bar" style="background:${main};padding:12px 20px;">
       <table style="width:100%;border-collapse:collapse;border-spacing:0;"><tbody><tr>
         <td style="padding:0;vertical-align:middle;border:0;">
-          <span style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:700;letter-spacing:0.5px;">文章节点</span>
+          <span style="font-size:14px;color:#fff;font-weight:700;letter-spacing:0.5px;">意疏的 AI 口袋</span>
         </td>
         <td style="padding:0;text-align:right;vertical-align:middle;border:0;">
-          <span style="font-size:12px;color:rgba(255,255,255,0.75);letter-spacing:1px;">KEYWORDS</span>
+          <span style="display:inline-block;background:rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;margin-left:6px;">哆啦提示</span>
+          <span style="display:inline-block;background:rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;margin-left:6px;">AI 排版</span>
         </td>
       </tr></tbody></table>
     </section>
-    <section style="padding:14px 18px 18px;"><span data-theme-role="chip-main" style="display:inline-block;background:${main};color:#fff;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;margin:0 6px 6px 0;">PART 01 · 背景</span><span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:${text};margin:0 6px 6px 0;">PART 02 · 方法</span><span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:${text};margin:0 6px 6px 0;">PART 03 · 案例</span><span data-theme-role="chip" style="display:inline-block;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:${text};margin:0 6px 6px 0;">OUTRO · 总结</span></section>
+    <section style="padding:14px 16px 18px;">
+      <span data-theme-role="chip-main" style="display:inline-block;background:${main};color:#fff;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;margin:0 5px 6px 0;min-width:65px;text-align:center;">PART 01 · 背景</span>
+      <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};margin:0 5px 6px 0;min-width:65px;text-align:center;">PART 02 · 方法</span>
+      <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};margin:0 5px 6px 0;min-width:65px;text-align:center;">PART 03 · 案例</span>
+      <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};margin:0 5px 6px 0;min-width:65px;text-align:center;">OUTRO · 总结</span>
+    </section>
   </section><p><br></p>`;
   insertDesignHTML(html);
 }
