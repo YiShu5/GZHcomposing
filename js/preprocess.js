@@ -12,14 +12,6 @@ const PREPROCESS_MODE_CONFIG = {
   tutorial: {
     name: '教程步骤',
     desc: '强化步骤、清单、注意事项和常见问题，适合干货教程。'
-  },
-  recommend: {
-    name: '种草清单',
-    desc: '强化推荐理由、适合人群、亮点和总结，适合产品/内容推荐。'
-  },
-  spoken: {
-    name: '口播转图文',
-    desc: '把口语长段拆成短段，保留原句，阅读节奏更像公众号。'
   }
 };
 
