@@ -532,10 +532,15 @@ function insertDesignIntro() {
           <p data-theme-role="body" style="font-size:12px;color:#9CA3AF;margin:0;line-height:1.7;letter-spacing:0.5px;">节点 · 关键词 · 结论</p>
         </td>
         <td style="padding:0 0 0 16px;vertical-align:middle;border:0;white-space:nowrap;">
-          <section data-theme-role="badge" style="border-radius:16px;background:linear-gradient(135deg,${alphaColor(main,0.10,sub)},rgba(255,255,255,0.9));border:2px solid ${accent};text-align:center;padding:20px 12px;cursor:pointer;box-sizing:border-box;min-width:90px;" title="点击这里插入图片">
-            <span style="display:block;font-size:24px;line-height:1;margin-bottom:4px;">📸</span>
-            <span data-badge-text="true" style="display:block;font-size:11px;font-weight:800;color:${main};line-height:1.3;">点这里插图</span>
-            <span style="display:block;font-size:9px;color:${main};opacity:0.7;font-weight:700;letter-spacing:1px;margin-top:3px;">哆啦提示</span>
+          <section data-theme-role="badge" style="border-radius:16px;border:2px solid ${accent};padding:0;overflow:hidden;cursor:pointer;box-sizing:border-box;min-width:88px;" title="点击这里插入图片">
+            <!-- 内层 wrapper 兜住浅蓝背景：badge 本体 padding:0+overflow:hidden，主题层强刷的渐变被这层盖住，浅蓝始终生效 -->
+            <section style="background:linear-gradient(135deg,#E0F4FE,#F4FBFE);text-align:center;padding:18px 10px;box-sizing:border-box;">
+              <span style="display:block;font-size:8px;color:#016FAD;font-weight:800;letter-spacing:1.2px;margin-bottom:6px;">AI PRODUCTIVITY</span>
+              <span data-badge-text="true" style="display:block;font-size:22px;font-weight:900;color:#016FAD;line-height:1;margin-bottom:2px;font-family:'Source Han Serif SC','Noto Serif SC','STSong','SimSun',serif;">意疏</span>
+              <span style="display:block;font-size:10px;color:#D4A853;font-weight:700;letter-spacing:3px;margin-bottom:4px;">的 AI 口 袋</span>
+              <div style="width:24px;height:1px;background:#7FCBF0;margin:4px auto;"></div>
+              <span style="display:block;font-size:7px;color:#9CA3AF;font-weight:700;letter-spacing:2px;">POCKET EDITION</span>
+            </section>
           </section>
         </td>
       </tr></tbody></table>
@@ -552,10 +557,13 @@ function insertDesignIntro() {
       </tr></tbody></table>
     </section>
     <section style="padding:14px 16px 18px;">
-      <span data-theme-role="chip-main" style="display:inline-block;background:${main};color:#fff;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;margin:0 5px 6px 0;min-width:65px;text-align:center;">PART 01 · 背景</span>
-      <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};margin:0 5px 6px 0;min-width:65px;text-align:center;">PART 02 · 方法</span>
-      <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};margin:0 5px 6px 0;min-width:65px;text-align:center;">PART 03 · 案例</span>
-      <span data-theme-role="chip" style="display:inline-block;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:10px 12px;font-size:12px;font-weight:800;color:${text};margin:0 5px 6px 0;min-width:65px;text-align:center;">OUTRO · 总结</span>
+      <!-- 底部 PART 标签：横向滑动轮播（overflow-x:scroll + white-space:nowrap），公众号里可手指横滑 -->
+      <section data-theme-role="chip-scroll" style="overflow-x:scroll;overflow-y:hidden;white-space:nowrap;width:100%;box-sizing:border-box;font-size:0;">
+        <span data-theme-role="chip-main" style="display:inline-block;vertical-align:middle;white-space:nowrap;background:${main};color:#fff;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;line-height:1.35;margin:0 6px 0 0;min-width:62px;text-align:center;"><span style="font-size:9px;font-weight:700;letter-spacing:0.5px;opacity:0.85;">PART 01</span><br><span style="font-size:13px;font-weight:900;">背景</span></span>
+        <span data-theme-role="chip" style="display:inline-block;vertical-align:middle;white-space:nowrap;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:${text};line-height:1.35;margin:0 6px 0 0;min-width:62px;text-align:center;"><span style="font-size:9px;font-weight:700;letter-spacing:0.5px;opacity:0.7;">PART 02</span><br><span style="font-size:13px;font-weight:900;">方法</span></span>
+        <span data-theme-role="chip" style="display:inline-block;vertical-align:middle;white-space:nowrap;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:${text};line-height:1.35;margin:0 6px 0 0;min-width:62px;text-align:center;"><span style="font-size:9px;font-weight:700;letter-spacing:0.5px;opacity:0.7;">PART 03</span><br><span style="font-size:13px;font-weight:900;">案例</span></span>
+        <span data-theme-role="chip" style="display:inline-block;vertical-align:middle;white-space:nowrap;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:${text};line-height:1.35;margin:0;min-width:62px;text-align:center;"><span style="font-size:9px;font-weight:700;letter-spacing:0.5px;opacity:0.7;">OUTRO</span><br><span style="font-size:13px;font-weight:900;">总结</span></span>
+      </section>
     </section>
   </section><p><br></p>`;
   insertDesignHTML(html);
