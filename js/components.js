@@ -314,10 +314,9 @@ function applyTextHighlight() {
     updateToolbarStates();
     return;
   }
-  const c = getColors();
-  const color = c.main || '#133363';
   const selectedHTML = getRangeHTML(range);
-  document.execCommand('insertHTML', false, `<span data-editor-highlight="true" style="color:${color};font-weight:700">${selectedHTML}</span>`);
+  // 文字高亮：淡哆啦A梦黄底（#F5C518 淡版）+ 加粗，字色不变
+  document.execCommand('insertHTML', false, `<span data-editor-highlight="true" style="background:#FCE38B;font-weight:700">${selectedHTML}</span>`);
   editor.focus({ preventScroll: true });
   scheduleUpdate();
   updateToolbarStates();
@@ -504,14 +503,13 @@ function insertDesignHTML(html) {
   editor.focus({ preventScroll: true });
   scheduleUpdate();
 }
-function insertDesignIntro() {
-  const c = getColors();
+function buildDesignIntroHTML(c) {
   const main = c.main || '#03ADF0';
   const accent = c.accent || '#F5C518';
   const sub = c.sub || '#E0F4FE';
   const text = c.text || '#2B2B2B';
   // 哆啦A梦配色 · 品牌手册感开头总结框
-  const html = `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#FEFEFE;border:1.5px solid ${sub};border-radius:16px;overflow:hidden;width:100%;">
+  return `<section data-theme-component="design-intro" style="margin:0 0 32px;background:#FEFEFE;border:1.5px solid ${sub};border-radius:16px;overflow:hidden;width:100%;">
     <section style="padding:24px 20px 0;">
       <table style="width:100%;border-collapse:collapse;border-spacing:0;margin-bottom:14px;"><tbody><tr>
         <td style="padding:0;vertical-align:middle;border:0;">
@@ -565,19 +563,18 @@ function insertDesignIntro() {
         <span data-theme-role="chip" style="display:inline-block;vertical-align:middle;white-space:nowrap;background:#fff;border:1.5px solid ${sub};border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:${text};line-height:1.35;margin:0;min-width:62px;text-align:center;"><span style="font-size:9px;font-weight:700;letter-spacing:0.5px;opacity:0.7;">OUTRO</span><br><span style="font-size:13px;font-weight:900;">总结</span></span>
       </section>
     </section>
-  </section><p><br></p>`;
-  insertDesignHTML(html);
+  </section>`;
 }
+function insertDesignIntro() { insertDesignHTML(buildDesignIntroHTML(getColors()) + '<p><br></p>'); }
 
-function insertDesignHeading() {
+function buildDesignHeadingHTML(c) {
   _designSectionCounter++;
-  const c = getColors();
   const main = c.main || '#059669';
   const text = c.text || '#111827';
   const num = String(_designSectionCounter).padStart(2, '0');
   // 直接输出 table，微信公众号无需 normalize 即可正确横排
   // 不写 max-width / margin auto / td width:px，避免触发「宽度异常」检测
-  const html = `<table data-theme-component="design-heading" style="width:100%;border-collapse:collapse;border-spacing:0;margin:36px 0 24px;display:table;"><tbody><tr style="display:table-row;">
+  return `<table data-theme-component="design-heading" style="width:100%;border-collapse:collapse;border-spacing:0;margin:36px 0 24px;display:table;"><tbody><tr style="display:table-row;">
     <td style="display:table-cell;text-align:center;vertical-align:middle;padding:0 16px 0 0;border:0;white-space:nowrap;">
       <p data-theme-role="number" style="margin:0;font-size:28px;font-weight:900;color:${main};line-height:1;letter-spacing:-1px;">${num}</p>
       <p data-theme-role="label" style="margin:0;font-size:8px;font-weight:800;color:#D1D5DB;letter-spacing:2px;line-height:1.4;">PART</p>
@@ -587,39 +584,36 @@ function insertDesignHeading() {
       <p data-theme-role="subtitle" style="margin:0;font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;line-height:1.5;">KEYWORD · 在此输入副标题</p>
     </td>
   </tr></tbody></table>`;
-  insertDesignHTML(html);
 }
-function insertDesignEnding() {
+function insertDesignHeading() { insertDesignHTML(buildDesignHeadingHTML(getColors())); }
+// 互动引导卡（与「结尾」面板第 1 种同款）：浅底卡 + 👍❤↗ 三图标 + 关注引导
+// data-theme-component="ending" data-ending-type="1" → 复用现有 ending type1 主题着色
+function buildGuidanceCardHTML(c) {
+  const mainColor = c.main || '#2563EB';
+  const textColor = c.text || '#333';
+  const subColor = c.sub || alphaColor(mainColor, 0.08, '#f5f5f5');
+  const inner = `<section data-ending-type="1" style="background:${subColor};border-radius:16px;padding:32px;text-align:center;margin:2em 0">
+        <section data-theme-role="title" style="display:block;font-size:18px;font-weight:700;color:${mainColor};margin-bottom:8px">既然看到这里了</section>
+        <section data-theme-role="body" style="display:block;font-size:14px;color:${textColor};opacity:0.72;margin-bottom:24px;line-height:1.7">觉得有启发，记得点赞、爱心，<br>转发给同样需要的人。</section>
+        <table style="margin:0 auto 24px;border-collapse:collapse;border-spacing:0;border:0"><tr>
+          <td style="padding:0 12px;vertical-align:middle;border:0"><section data-theme-role="icon-main" style="display:inline-block;padding:14px 13px;line-height:1;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">👍️</section></td>
+          <td style="padding:0 12px;vertical-align:middle;border:0"><section data-theme-role="icon-sub" style="display:inline-block;padding:14px 13px;line-height:1;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">❤️</section></td>
+          <td style="padding:0 12px;vertical-align:middle;border:0"><section data-theme-role="icon-accent" style="display:inline-block;padding:14px 13px;line-height:1;border-radius:50%;background:${alphaColor(mainColor, 0.12, '#eee')};font-size:20px;text-align:center;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">↗️</section></td>
+        </tr></table>
+        <section data-theme-role="meta" style="display:block;font-size:13px;color:${mainColor};opacity:0.62;font-weight:500;line-height:1.7">关注意疏，我们一起把看见的机会，<br>变成撑起自己的能力。</section>
+      </section>`;
+  return `<section data-theme-component="ending" data-ending-type="1" style="display:block;margin-top:2em">${inner}</section>`;
+}
+// 任务一：设计结尾 → 互动引导卡样式
+function insertDesignEnding() { insertDesignHTML(buildGuidanceCardHTML(getColors()) + '<p><br></p>'); }
+
+// 一键套版：开头总结框 + 设计小标题 + 互动引导卡，三段套在一块浅蓝大底上
+function insertFullLayout() {
+  savedEditorRange = null; // 从顶栏点击：插到文末
   const c = getColors();
-  const main = c.main || '#059669';
-  const accent = c.accent || main;
-  const text = c.text || '#111827';
-  const html = `<section data-theme-component="design-ending" style="margin:48px 0 32px;padding:0 4px;">
-    <section style="display:flex;align-items:center;gap:16px;margin-bottom:22px;">
-      <section style="text-align:center;flex-shrink:0;min-width:54px;">
-        <p data-theme-role="number" style="margin:0;font-size:28px;font-weight:900;color:${main};line-height:1;letter-spacing:-1px;">///</p>
-        <p data-theme-role="label" style="margin:0;font-size:8px;font-weight:800;color:#D1D5DB;letter-spacing:2px;">LAST</p>
-      </section>
-      <section style="min-width:0;">
-        <p data-theme-role="title" style="margin:0 0 1px;font-size:17px;font-weight:900;color:${text};letter-spacing:0.3px;line-height:1.45;">写在最后</p>
-        <p data-theme-role="subtitle" style="margin:0;font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:1.5px;line-height:1.5;">OUTRO · 一句话总结</p>
-      </section>
-    </section>
-    <p data-theme-role="quote" style="font-size:14px;margin:0 0 20px;text-align:center;color:${main};font-weight:800;letter-spacing:1px;border-top:1px solid #F3F4F6;border-bottom:1px solid #F3F4F6;padding:12px 0;">把复杂流程，变成可以复用的方法</p>
-    <section data-theme-role="summary" style="background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 4px 16px ${alphaColor(main,0.12,'rgba(0,0,0,0.08)')};margin-bottom:24px;text-align:center;">
-      <p style="font-size:13px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;">说到底</p>
-      <p data-theme-role="summary-title" style="margin:0;line-height:1.6;font-weight:800;color:${text};">这一套设计排版，是为了让读者快速抓住重点</p>
-    </section>
-    <section data-theme-role="action" style="background:radial-gradient(circle at center,#F9FAFB 0%,#FFFFFF 100%);border:1px solid #E5E7EB;border-radius:16px;padding:30px 20px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.03);">
-      <p style="font-size:13px;font-weight:800;color:${text};margin:0 0 20px;line-height:1.6;">既然看到这里了，如果觉得有用，随手点个赞、在看、转发三连吧。</p>
-      <section style="display:flex;justify-content:center;gap:24px;margin-bottom:16px;">
-        <span style="text-align:center;color:#4B5563;font-size:13px;">点赞</span>
-        <span style="text-align:center;color:#4B5563;font-size:13px;">在看</span>
-        <span data-theme-role="share" style="text-align:center;color:${main};font-size:13px;font-weight:800;">转发</span>
-      </section>
-      <p style="font-size:10px;color:#9CA3AF;letter-spacing:1px;margin:0;">THANKS FOR READING</p>
-    </section>
-  </section><p><br></p>`;
+  const sub = c.sub || '#E0F4FE';
+  const inner = buildDesignIntroHTML(c) + buildDesignHeadingHTML(c) + buildGuidanceCardHTML(c);
+  const html = `<section data-theme-component="full-layout" style="background:${sub};border-radius:16px;padding:22px 16px;margin:24px 0;box-sizing:border-box;">${inner}</section><p><br></p>`;
   insertDesignHTML(html);
 }
 
