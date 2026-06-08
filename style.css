@@ -108,52 +108,52 @@ body::before{
 @keyframes take-copter-spin{
   to{transform:rotate(360deg)}
 }
+/* 道具弹出飘走：emoji + 名字凭空出现，转一下，停 0.5s，往上飘走淡出（无边框无背景） */
 .dora-gadget-bubble{
   position:absolute;
-  left:100%;
-  top:50%;
-  margin-left:10px;
-  background:#fff;
-  color:#1565C0;
-  padding:5px 12px;
-  border-radius:14px;
-  font-size:12px;
-  font-weight:700;
-  box-shadow:0 4px 14px rgba(1,111,173,0.4);
-  white-space:nowrap;
+  top:100%;
+  left:50%;
+  transform:translateX(-50%);
+  margin-top:2px;
   pointer-events:none;
-  z-index:20;
-  border:2px solid var(--dora-yellow);
-  opacity:0;
-  transform:translateY(-50%);
-}
-.dora-gadget-bubble.show{
-  animation:dora-gadget-pop 1.7s ease-out forwards;
-}
-@keyframes dora-gadget-pop{
-  0%{opacity:0;transform:translate(-10px,-50%) scale(0.5)}
-  20%{opacity:1;transform:translate(0,-50%) scale(1.1)}
-  40%{transform:translate(0,-50%) scale(1)}
-  100%{opacity:0;transform:translate(24px,-50%) scale(1)}
+  z-index:200;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  animation:dora-pop 1.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
 .dora-gadget-bubble.special{
-  background:linear-gradient(135deg,#FFE082,#FFB74D);
-  color:#BF360C;
-  font-size:13px;
-  padding:6px 14px;
-  border-color:#FF6F00;
-  box-shadow:0 4px 20px rgba(230,90,0,0.55);
+  animation:dora-pop-special 2.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
-.dora-gadget-bubble.special.show{
-  animation:dora-gadget-special 2.4s ease-out forwards;
+.dora-gadget-bubble.special .dora-gadget-icon{
+  font-size:56px;
 }
-@keyframes dora-gadget-special{
-  0%{opacity:0;transform:translate(-12px,-50%) scale(0.4) rotate(-6deg)}
-  12%{opacity:1;transform:translate(0,-50%) scale(1.25) rotate(3deg)}
-  24%{transform:translate(0,-50%) scale(1.1) rotate(-2deg)}
-  36%{transform:translate(0,-50%) scale(1.18) rotate(1deg)}
-  50%{transform:translate(0,-50%) scale(1.1) rotate(0deg)}
-  100%{opacity:0;transform:translate(36px,-50%) scale(1)}
+.dora-gadget-icon{
+  font-size:48px;
+  line-height:1;
+}
+.dora-gadget-name{
+  font-size:12px;
+  font-weight:800;
+  color:#F5C518;
+  letter-spacing:1px;
+  white-space:nowrap;
+}
+/* 头像在左上角：道具往「右下方」飘进编辑区，全程在画面里 */
+@keyframes dora-pop{
+  0%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(0.3) rotate(-20deg)}
+  25%{opacity:1;transform:translateX(-42%) translateY(12px) scale(1.12) rotate(8deg)}
+  45%{transform:translateX(-34%) translateY(22px) scale(1) rotate(0deg)}
+  65%{opacity:1;transform:translateX(-20%) translateY(30px) scale(1) rotate(0deg)}
+  100%{opacity:0;transform:translateX(34px) translateY(86px) scale(0.6) rotate(12deg)}
+}
+@keyframes dora-pop-special{
+  0%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(0.3) rotate(-20deg)}
+  20%{opacity:1;transform:translateX(-42%) translateY(12px) scale(1.22) rotate(8deg)}
+  38%{transform:translateX(-34%) translateY(24px) scale(1) rotate(0deg)}
+  68%{opacity:1;transform:translateX(-20%) translateY(34px) scale(1) rotate(0deg)}
+  100%{opacity:0;transform:translateX(46px) translateY(108px) scale(0.5) rotate(16deg)}
 }
 .dora-avatar.shake{animation:dora-shake 0.5s ease-in-out}
 @keyframes dora-shake{
