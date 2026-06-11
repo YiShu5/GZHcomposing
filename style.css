@@ -216,6 +216,10 @@ body::before{
 }
 .nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
 .nav-right .nav-btn{font-size:13px}
+.quick-style-group{display:flex;align-items:center;gap:4px;padding:3px;border-radius:22px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);backdrop-filter:blur(4px)}
+.quick-style-btn{padding:7px 12px;border-radius:18px;font-size:12px;font-weight:800;line-height:1;color:#fff;background:transparent;border:0;white-space:nowrap;transition:all .2s ease}
+.quick-style-btn:hover{background:rgba(255,255,255,0.18);transform:translateY(-1px)}
+.quick-style-btn.active{background:#fff;color:#059669;box-shadow:0 4px 12px rgba(1,111,173,0.18)}
 /* ===== 口袋扇形样式设置 ===== */
 .pocket-wrap{position:relative}
 .pocket-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;font-size:13px;background:var(--dora-yellow);border:1px solid rgba(245,197,24,0.4);color:var(--dora-deep);font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(0.4,0,0.2,1);white-space:nowrap;box-shadow:0 2px 8px rgba(245,197,24,0.25)}
@@ -513,3 +517,114 @@ body::before{
 .ob-btn-skip:hover{color:var(--dora-deep);background:var(--dora-cream)}
 @keyframes obFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes obSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#020617;
+    --white:#0F172A;
+    --border:#334155;
+    --text:#E5E7EB;
+    --text2:#CBD5E1;
+    --text3:#94A3B8;
+    --brand-soft:#0F2A3A;
+    --shadow:0 2px 12px rgba(0,0,0,0.36);
+  }
+  body{
+    background:#020617;
+    color:#E5E7EB;
+    color-scheme:dark;
+  }
+  body::before{opacity:0.05}
+  .panel-left,.editor-wrap{
+    background:#0F172A;
+  }
+  .panel-right{
+    background:linear-gradient(180deg,#020617 0%,#0F172A 100%);
+  }
+  .editor-toolbar,.preview-toolbar,.editor-footer,.preview-footer,.bottom-bar{
+    background:#0F172A;
+    border-color:#1F2937;
+  }
+  .editor{
+    color:#E5E7EB;
+    border-left:3px solid #059669;
+    border-image:none;
+    background-color:#0B1120;
+    background-image:linear-gradient(160deg,#0B1120 0%,#111827 100%);
+  }
+  .editor:empty::before{color:#64748B}
+  .editor h1,.editor h2,.editor h3{
+    color:#F9FAFB;
+    border-left-color:#10B981;
+  }
+  .editor blockquote{
+    background:#052E24;
+    border-left-color:#10B981;
+    color:#D1FAE5;
+  }
+  .editor hr{background:#10B981}
+  .editor-float-stats{
+    background:rgba(15,23,42,0.92);
+    border-color:#334155;
+    color:#94A3B8;
+  }
+  .preview-wrap{
+    background:radial-gradient(circle at 10% 18%,rgba(16,185,129,0.14) 0%,transparent 38%),radial-gradient(circle at 90% 78%,rgba(3,173,240,0.10) 0%,transparent 34%),#020617;
+  }
+  .preview-frame{
+    background:#FFFFFF;
+    border-color:#1F2937;
+    box-shadow:0 12px 34px rgba(0,0,0,0.42);
+  }
+  .preview-content{
+    background:#FFFFFF !important;
+    color:#374151;
+    color-scheme:light;
+  }
+  .preview-toolbar .label{color:#E5E7EB}
+  .mobile-toggle,.tb-btn,.tb-heading-select,.btn-secondary,.mode-card,.color-chip,.edit-mode-chip,.img-panel .tab-btn,.badge-preset{
+    background:#111827;
+    border-color:#334155;
+    color:#E5E7EB;
+  }
+  .mobile-toggle.active,.btn-save-style{
+    background:#059669;
+    border-color:#059669;
+    color:#FFFFFF;
+  }
+  .tb-btn:hover,.tb-heading-select:hover,.btn-secondary:hover,.mode-card:hover,.more-dropdown-item:hover,.hr-option:hover,.align-option:hover,.align-option.active,.dropdown-menu button:hover,.sd-card-actions button:hover{
+    background:#1F2937;
+    border-color:#10B981;
+    color:#F9FAFB;
+  }
+  .more-dropdown,.dropdown-menu,.styles-dropdown,.img-panel,.hr-panel,.align-panel,.settings-panel,.modal,.ob-card,.help-contact-card{
+    background:#0F172A;
+    border-color:#334155;
+    color:#E5E7EB;
+    box-shadow:0 16px 42px rgba(0,0,0,0.45);
+  }
+  .more-dropdown-item,.dropdown-menu button,.hr-option,.align-option,.sd-card-name,.mode-card .mc-name,.img-panel h4,.modal h3,.help-content h4,.sp-section h4{
+    color:#E5E7EB;
+  }
+  .sd-card,.mode-card,.edit-mode-chip,.help-content kbd,.modal input[type=text],.sp-row select,.sp-row input[type=text],.sp-row input[type=number],.custom-color-grid input[type=text],.img-panel input[type=text],.img-panel .img-options select,.img-panel .img-options input,.img-upload-area{
+    background:#111827;
+    border-color:#334155;
+    color:#E5E7EB;
+  }
+  .mode-card.active{
+    background:#052E24;
+    border-color:#10B981;
+  }
+  .settings-tab{
+    background:#111827;
+    border-color:#334155;
+    color:#A7F3D0;
+  }
+  .settings-tab.active{
+    background:#059669;
+    border-color:#059669;
+    color:#FFFFFF;
+  }
+  .settings-overlay{background:rgba(2,6,23,0.72)}
+  .promote-toast{background:linear-gradient(135deg,#020617,#111827)}
+}

@@ -125,7 +125,7 @@ test('Clipboard API 不可用时一键复制不崩溃', async ({ page }) => {
   expect(errors, `JS 报错：${errors.join('\n')}`).toHaveLength(0);
 });
 
-// ─── 6. 导入内容不是合法 JSON → 弹 JSON 格式错误 ─────────────────────────────
+// ─── 6. 导入内容无法解析为 JSON → 弹 JSON 格式错误 ─────────────────────────────
 test('导入非法 JSON 文件弹格式错误提示', async ({ page }) => {
   const dialogs = [];
   page.on('dialog', async d => { dialogs.push(d.message()); await d.dismiss(); });

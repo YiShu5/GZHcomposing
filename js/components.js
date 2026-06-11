@@ -696,7 +696,7 @@ function insertEnding(type) {
   // Remove any existing ending block first
   const existing = editor.querySelector('[data-ending-block]');
   if (existing) existing.remove();
-  // Wrap in a container with marker attribute. 用 section 而不是 div，让 WeChat 编辑器保留外层样式
+  // Wrap in a container with marker attribute. 用 section 容器提升 WeChat 编辑器的样式保留率
   html = `<section data-ending-block="true" data-theme-component="ending" data-ending-type="${type}" style="display:block;margin-top:2em">${html}</section>`;
   // Insert at end of editor
   editor.focus({ preventScroll: true });

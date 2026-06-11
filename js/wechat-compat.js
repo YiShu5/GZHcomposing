@@ -3,7 +3,7 @@
 function buildWechatListMarker(list, idx, mode, c) {
   const marker = document.createElement('span');
   const isOrdered = list.tagName === 'OL';
-  const isCardMode = mode.id === 'mario-theme' || mode.id === 'coffee-journal' || (mode.id === 'tutorial' && isOrdered);
+  const isCardMode = mode.id === 'mario-theme' || mode.id === 'coffee-journal' || isAiPocketModeId(mode.id) || (mode.id === 'tutorial' && isOrdered);
   marker.textContent = isCardMode ? String(idx + 1).padStart(2, '0') : (isOrdered ? `${idx + 1}.` : '•');
   marker.style.display = 'inline-block';
   marker.style.textAlign = 'center';
@@ -34,9 +34,30 @@ function buildWechatListMarker(list, idx, mode, c) {
     marker.style.lineHeight = '24px';
     marker.style.width = '24px';
     marker.style.height = '24px';
+  } else if (isAiPocketModeId(mode.id)) {
+    marker.style.background = c.sub || '#ECFDF5';
+    marker.style.color = c.main || '#059669';
+    marker.style.borderRadius = '50%';
+    marker.style.fontSize = '12px';
+    marker.style.lineHeight = '24px';
+    marker.style.width = '24px';
+    marker.style.height = '24px';
   }
   return marker;
 }
+
+function isAiPocketQuestionListForWechat(list) {
+  if (!list || !['UL', 'OL'].includes(list.tagName)) return false;
+  const items = Array.from(list.children).filter(child =>
+    child.tagName === 'LI' && child.getAttribute('data-ai-pocket-question-label') !== '1'
+  );
+  return items.length > 0 && items.every(li => /[?？]\s*$/.test((li.textContent || '').trim()));
+}
+
+function isAiPocketNumberedCardListForWechat(list) {
+  return !!list && (list.tagName === 'OL' || isAiPocketQuestionListForWechat(list));
+}
+
 function normalizeWechatLists(root) {
   const c = getColors();
   const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
@@ -44,13 +65,37 @@ function normalizeWechatLists(root) {
   const themeSky = c.sky || c.main;
 
   Array.from(root.querySelectorAll('ul,ol')).forEach(list => {
-    const items = Array.from(list.children).filter(child => child.tagName === 'LI');
+    const items = Array.from(list.children).filter(child =>
+      child.tagName === 'LI' && child.getAttribute('data-ai-pocket-question-label') !== '1'
+    );
     if (!items.length) return;
+    const aiPocket = isAiPocketModeId(mode.id);
+    const questionList = aiPocket && isAiPocketQuestionListForWechat(list);
+    const numberedCard = aiPocket && isAiPocketNumberedCardListForWechat(list);
 
     const wrapper = document.createElement('section');
     wrapper.style.display = 'block';
     wrapper.style.margin = list.style.margin || `1em 0 ${STATE.paraSpacing}em`;
-    wrapper.style.padding = '0';
+    wrapper.style.padding = aiPocket ? (numberedCard ? '24px 22px 14px' : '14px 16px 6px') : '0';
+    if (aiPocket) {
+      wrapper.setAttribute('data-theme-component', numberedCard ? (questionList ? 'ai-pocket-question-list' : 'ai-pocket-step-list') : 'ai-pocket-list');
+      wrapper.style.border = `1px solid ${c.line || '#E5E7EB'}`;
+      wrapper.style.borderRadius = numberedCard ? '14px' : '12px';
+      wrapper.style.background = '#FFFFFF';
+      wrapper.style.boxSizing = 'border-box';
+      wrapper.style.overflow = 'hidden';
+      if (numberedCard) {
+        const label = document.createElement('p');
+        label.style.margin = '0 0 20px';
+        label.style.fontSize = '12px';
+        label.style.fontWeight = '900';
+        label.style.letterSpacing = '3px';
+        label.style.color = c.muted || '#9CA3AF';
+        label.style.lineHeight = '1.2';
+        label.textContent = questionList ? 'QUESTION LIST' : 'STEP LIST';
+        wrapper.appendChild(label);
+      }
+    }
 
     items.forEach((li, idx) => {
       stripGeneratedListMarker(li);
@@ -65,8 +110,8 @@ function normalizeWechatLists(root) {
       item.style.fontSize = li.style.fontSize || '15px';
       item.style.lineHeight = li.style.lineHeight || String(STATE.lineHeight);
       item.style.letterSpacing = li.style.letterSpacing || '0.03em';
-      item.style.paddingLeft = mode.id === 'mario-theme' ? '48px' : mode.id === 'coffee-journal' ? '42px' : '30px';
-      item.style.textIndent = mode.id === 'mario-theme' ? '-38px' : mode.id === 'coffee-journal' ? '-34px' : '-28px';
+      item.style.paddingLeft = mode.id === 'mario-theme' ? '48px' : mode.id === 'coffee-journal' ? '42px' : aiPocket ? '0' : '30px';
+      item.style.textIndent = mode.id === 'mario-theme' ? '-38px' : mode.id === 'coffee-journal' ? '-34px' : '0';
 
       if (mode.id === 'mario-theme') {
         item.style.border = `2px solid ${alphaColor(themeSky, 0.28, '#bbdefb')}`;
@@ -80,17 +125,49 @@ function normalizeWechatLists(root) {
         item.style.background = '#FFFFFF';
         item.style.boxShadow = `0 3px 12px ${alphaColor(c.main, 0.06, 'rgba(200,135,78,0.06)')}`;
         item.style.padding = '9px 12px 9px 42px';
+      } else if (aiPocket) {
+        item.style.margin = numberedCard ? '0 0 18px 0' : '0 0 10px 0';
+        item.style.padding = '0';
+        item.style.border = 'none';
+        item.style.borderRadius = '0';
+        item.style.background = 'transparent';
+        item.style.boxShadow = 'none';
+        item.style.fontSize = numberedCard ? '16px' : '14px';
+        item.style.lineHeight = numberedCard ? '1.6' : '1.75';
+        item.style.letterSpacing = '0.5px';
+        item.style.color = numberedCard ? '#374151' : c.text;
       } else {
         item.style.padding = '0 0 6px 30px';
       }
 
       const marker = buildWechatListMarker(list, idx, mode, c);
       marker.style.verticalAlign = 'middle';
-      marker.style.marginRight = mode.id === 'coffee-journal' ? '10px' : '8px';
+      marker.style.marginRight = numberedCard ? '12px' : (mode.id === 'coffee-journal' || aiPocket ? '10px' : '8px');
       marker.style.textIndent = '0';
+      if (aiPocket && numberedCard) {
+        marker.style.width = '30px';
+        marker.style.minWidth = '30px';
+        marker.style.height = '32px';
+        marker.style.lineHeight = '32px';
+        marker.style.borderRadius = '16px';
+        marker.style.background = c.sub || '#ECFDF5';
+        marker.style.color = c.main || '#059669';
+        marker.style.fontSize = '14px';
+      } else if (aiPocket) {
+        marker.textContent = '';
+        marker.style.width = '6px';
+        marker.style.minWidth = '6px';
+        marker.style.height = '6px';
+        marker.style.lineHeight = '6px';
+        marker.style.borderRadius = '50%';
+        marker.style.background = c.main || '#059669';
+      }
       const content = document.createElement('span');
       content.style.textIndent = '0';
       content.style.color = li.style.color || c.text;
+      content.style.fontSize = numberedCard ? '16px' : '';
+      content.style.fontWeight = numberedCard ? '800' : '400';
+      content.style.verticalAlign = 'middle';
       content.innerHTML = li.innerHTML;
       item.appendChild(marker);
       item.appendChild(content);
@@ -435,68 +512,84 @@ function normalizeWechatTipCards(root) {
 }
 
 function ensureTerminalCodeBar(pre) {
-  if (!pre || pre.querySelector('[data-theme-role="code-window-bar"]')) return;
+  if (!pre) return;
+  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const promptMode = isAiPocketModeId(mode.id);
+  const wanted = promptMode ? 'prompt' : 'terminal';
+  const existing = pre.querySelector('[data-theme-role="code-window-bar"]');
+  if (existing && existing.getAttribute('data-code-bar-mode') === wanted) return;
+  if (existing) existing.remove();
   const bar = document.createElement('section');
   bar.setAttribute('data-theme-role', 'code-window-bar');
+  bar.setAttribute('data-code-bar-mode', wanted);
   bar.style.display = 'block';
-  bar.style.height = '12px';
-  bar.style.lineHeight = '12px';
-  bar.style.margin = '0 0 18px';
+  bar.style.height = promptMode ? 'auto' : '12px';
+  bar.style.lineHeight = promptMode ? '1' : '12px';
+  bar.style.margin = promptMode ? '0' : '0 0 18px';
+  bar.style.padding = promptMode ? '10px 12px' : '0';
+  bar.style.background = promptMode ? '#FAFAFA' : '';
+  bar.style.borderBottom = promptMode ? '1px solid #F3F4F6' : '';
   bar.style.whiteSpace = 'nowrap';
-  ['#FF6B5F', '#F6BE4F', '#59D36A'].forEach(color => {
+  const dots = ['#FF5F56', '#FFBD2E', '#27C93F'];
+  dots.forEach(color => {
     const dot = document.createElement('span');
     dot.style.display = 'inline-block';
-    dot.style.width = '12px';
-    dot.style.height = '12px';
-    dot.style.marginRight = '8px';
+    dot.style.width = promptMode ? '8px' : '12px';
+    dot.style.minWidth = promptMode ? '8px' : '12px';
+    dot.style.height = promptMode ? '8px' : '12px';
+    dot.style.marginRight = promptMode ? '6px' : '8px';
     dot.style.borderRadius = '50%';
     dot.style.background = color;
-    dot.style.verticalAlign = 'top';
+    dot.style.verticalAlign = promptMode ? 'middle' : 'top';
     bar.appendChild(dot);
   });
   pre.insertBefore(bar, pre.firstChild);
 }
 
 function normalizeWechatCodeBlocks(root) {
+  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const promptMode = isAiPocketModeId(mode.id);
   root.querySelectorAll('pre').forEach(pre => {
     ensureTerminalCodeBar(pre);
     pre.style.display = 'block';
     pre.style.width = '100%';
     pre.style.maxWidth = '100%';
     pre.style.boxSizing = 'border-box';
-    pre.style.background = '#252A33';
-    pre.style.border = 'none';
-    pre.style.borderRadius = '8px';
-    pre.style.boxShadow = '0 10px 24px rgba(15,23,42,0.26)';
-    pre.style.padding = '18px 20px 10px';
+    pre.style.background = promptMode ? '#FFFFFF' : '#252A33';
+    pre.style.border = promptMode ? '1.5px solid #E5E7EB' : 'none';
+    pre.style.borderRadius = promptMode ? '10px' : '8px';
+    pre.style.boxShadow = promptMode ? 'none' : '0 10px 24px rgba(15,23,42,0.26)';
+    pre.style.padding = promptMode ? '0' : '18px 20px 10px';
     pre.style.margin = '1.4em auto';
-    pre.style.overflowX = 'auto';
+    pre.style.overflowX = promptMode ? 'hidden' : 'auto';
     pre.style.overflowY = 'hidden';
-    pre.style.overflow = 'auto';
-    pre.style.whiteSpace = 'pre';
-    pre.style.wordWrap = 'normal';
-    pre.style.overflowWrap = 'normal';
-    pre.style.fontSize = '13px';
-    pre.style.lineHeight = '1.8';
-    pre.style.fontFamily = '"SF Mono","Consolas","Menlo",monospace';
-    pre.style.color = '#D7E7FF';
+    pre.style.overflow = promptMode ? 'hidden' : 'auto';
+    pre.style.whiteSpace = promptMode ? 'normal' : 'pre';
+    pre.style.wordWrap = promptMode ? 'break-word' : 'normal';
+    pre.style.overflowWrap = promptMode ? 'break-word' : 'normal';
+    pre.style.fontSize = promptMode ? '13px' : '13px';
+    pre.style.lineHeight = promptMode ? '1.8' : '1.8';
+    pre.style.fontFamily = '"SF Mono","Consolas","Menlo","PingFang SC","Microsoft YaHei",monospace';
+    pre.style.color = promptMode ? '#1F2937' : '#D7E7FF';
 
     pre.querySelectorAll('code').forEach(code => {
       code.style.display = 'block';
-      code.style.minWidth = 'max-content';
-      code.style.width = 'max-content';
-      code.style.maxWidth = 'none';
+      code.style.minWidth = promptMode ? '0' : 'max-content';
+      code.style.width = promptMode ? 'auto' : 'max-content';
+      code.style.maxWidth = promptMode ? '100%' : 'none';
       code.style.background = 'transparent';
-      code.style.padding = '0';
+      code.style.padding = promptMode ? '14px' : '0';
       code.style.margin = '0';
       code.style.border = 'none';
-      code.style.whiteSpace = 'pre';
-      code.style.wordWrap = 'normal';
-      code.style.overflowWrap = 'normal';
-      code.style.fontSize = '13px';
-      code.style.lineHeight = '1.8';
-      code.style.fontFamily = '"SF Mono","Consolas","Menlo",monospace';
-      code.style.color = '#D7E7FF';
+      code.style.whiteSpace = promptMode ? 'pre-wrap' : 'pre';
+      code.style.wordWrap = promptMode ? 'break-word' : 'normal';
+      code.style.overflowWrap = promptMode ? 'break-word' : 'normal';
+      code.style.fontSize = promptMode ? '13px' : '13px';
+      code.style.lineHeight = promptMode ? '1.8' : '1.8';
+      code.style.fontFamily = '"SF Mono","Consolas","Menlo","PingFang SC","Microsoft YaHei",monospace';
+      code.style.color = promptMode ? '#1F2937' : '#D7E7FF';
+      code.style.fontWeight = promptMode ? '600' : '400';
+      code.style.letterSpacing = promptMode ? '0.5px' : '0';
     });
   });
 }
@@ -596,7 +689,17 @@ function hasColoredReadableBackground(el) {
 }
 
 function normalizeWechatColorModeCompatibility(root) {
-  const safe = WECHAT_MODE_SAFE;
+  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const safe = isAiPocketModeId(mode.id)
+    ? {
+        text: '#374151',
+        muted: '#9CA3AF',
+        emphasis: '#059669',
+        heading: '#111827',
+        border: '#E5E7EB',
+        light: '#FFFFFF'
+      }
+    : WECHAT_MODE_SAFE;
 
   root.style.color = safe.text;
   if (!root.style.background && !root.style.backgroundColor) root.style.backgroundColor = '#FFFFFF';

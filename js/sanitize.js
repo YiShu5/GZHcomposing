@@ -83,6 +83,11 @@ function sanitizeElementTree(root) {
         else node.remove();
         return;
       }
+      if (tag === 'IMG' && (name === 'width' || name === 'height')) {
+        if (/^\d{1,4}$/.test(String(value || '').trim())) node.setAttribute(name, String(value).trim());
+        else node.removeAttribute(attr.name);
+        return;
+      }
       if (tag === 'A' && name === 'href') {
         try {
           const u = new URL(value, window.location.href);

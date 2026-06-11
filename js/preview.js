@@ -112,6 +112,101 @@ function triggerGoldenZoneCelebration() {
 // ===================================================================
 // STYLE APPLICATION
 // ===================================================================
+function isAiPocketMode(mode) {
+  return mode && isAiPocketModeId(mode.id);
+}
+
+function isAiPocketQuestionList(list) {
+  if (!list || !['UL', 'OL'].includes(list.tagName)) return false;
+  const items = Array.from(list.children).filter(child =>
+    child.tagName === 'LI' && child.getAttribute('data-ai-pocket-question-label') !== '1'
+  );
+  return items.length > 0 && items.every(li => /[?？]\s*$/.test((li.textContent || '').trim()));
+}
+
+function isAiPocketNumberedCardList(list) {
+  return !!list && (list.tagName === 'OL' || isAiPocketQuestionList(list));
+}
+
+function ensureAiPocketNumberedListLabel(list, c) {
+  if (!list || !isAiPocketNumberedCardList(list)) return;
+  const existing = list.querySelector(':scope > [data-ai-pocket-question-label="1"]');
+  if (existing) return;
+  const label = document.createElement('li');
+  label.setAttribute('data-ai-pocket-question-label', '1');
+  label.textContent = isAiPocketQuestionList(list) ? 'QUESTION LIST' : 'STEP LIST';
+  label.style.cssText = [
+    'display:block',
+    'list-style:none',
+    'margin:0 0 20px',
+    'padding:0',
+    'font-size:12px',
+    'font-weight:900',
+    'letter-spacing:3px',
+    `color:${c.muted || '#9CA3AF'}`,
+    'line-height:1.2'
+  ].join(';');
+  list.insertBefore(label, list.firstChild);
+}
+
+function getAiPocketMonthLabel() {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${now.getFullYear()}.${month}`;
+}
+
+function getAiPocketNavCaption(index) {
+  return ['AI ENTRY', 'INSTALL', 'WECHAT ASK', 'SAFETY'][index] || `PART ${String(index + 1).padStart(2, '0')}`;
+}
+
+function ensureAiPocketPartsNav(root, c) {
+  if (!root || root.querySelector('[data-theme-component="ai-pocket-parts-nav"]')) return;
+  const hero = root.querySelector('h1[data-theme-component="ai-pocket-heading"]');
+  if (!hero) return;
+  const h2s = Array.from(root.querySelectorAll('h2[data-theme-component="ai-pocket-heading"]')).slice(0, 4);
+  if (!h2s.length) return;
+
+  const nav = document.createElement('section');
+  nav.setAttribute('data-theme-component', 'ai-pocket-parts-nav');
+  nav.style.cssText = 'display:block;margin:0 0 38px;padding:0;box-sizing:border-box;color:#374151;background:#FFFFFF;overflow:hidden;';
+
+  const labelTable = document.createElement('table');
+  labelTable.style.cssText = 'width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0 0 14px;';
+  labelTable.innerHTML = `<tbody><tr><td style="border:0;padding:0;vertical-align:middle;text-align:left;"><span style="display:inline-block;font-size:13px;font-weight:900;letter-spacing:3px;color:${c.muted || '#9CA3AF'};">📦 4 PARTS</span></td><td style="border:0;padding:0;vertical-align:middle;text-align:right;"><span style="display:inline-block;font-size:12px;font-weight:800;color:${c.muted || '#9CA3AF'};">👉 滑动</span></td></tr></tbody>`;
+  nav.appendChild(labelTable);
+
+  const scroller = document.createElement('section');
+  scroller.style.cssText = 'display:block;overflow-x:scroll;-webkit-overflow-scrolling:touch;white-space:nowrap;padding:0 0 8px;margin:0;box-sizing:border-box;';
+
+  h2s.forEach((h2, idx) => {
+    const title = (h2.dataset.aiPocketTitle || h2.textContent || '').trim().replace(/\s+/g, ' ');
+    const num = String(idx + 1).padStart(2, '0');
+    const active = idx === 0;
+    const card = document.createElement('section');
+    card.style.cssText = [
+      'display:inline-block',
+      'vertical-align:top',
+      'min-width:132px',
+      'max-width:132px',
+      'height:124px',
+      'box-sizing:border-box',
+      'white-space:normal',
+      'margin:0 12px 0 0',
+      'padding:17px 16px',
+      'border-radius:16px',
+      `background:${active ? c.main : '#FFFFFF'}`,
+      `border:${active ? '1px solid ' + c.main : '1.5px solid ' + (c.line || '#E5E7EB')}`,
+      `box-shadow:${active ? '0 10px 22px rgba(5,150,105,0.18)' : '0 4px 14px rgba(17,24,39,0.045)'}`,
+      'overflow:hidden'
+    ].join(';');
+    card.innerHTML = `<p style="margin:0 0 16px;font-size:12px;font-weight:900;letter-spacing:1.8px;color:${active ? 'rgba(255,255,255,0.78)' : (c.muted || '#9CA3AF')};line-height:1;">PART ${num}</p><p style="margin:0;font-size:16px;font-weight:900;line-height:1.35;letter-spacing:0;color:${active ? '#FFFFFF' : '#111827'};">${escapeHtml(title || `第 ${idx + 1} 部分`)}</p><p style="margin:10px 0 0;font-size:11px;font-weight:800;letter-spacing:1px;color:${active ? 'rgba(255,255,255,0.74)' : (c.muted || '#9CA3AF')};line-height:1.35;">${getAiPocketNavCaption(idx)}</p>`;
+    scroller.appendChild(card);
+  });
+
+  nav.appendChild(scroller);
+  hero.insertAdjacentElement('afterend', nav);
+}
+
 function getColors() {
   if (STATE.customColors) {
     return {
@@ -132,6 +227,7 @@ function applyPreviewStyles() {
   const tf = TITLE_FONTS[STATE.titleFont];
   const bf = BODY_FONTS[STATE.bodyFont];
   const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const aiPocket = isAiPocketMode(mode);
   const themePipe = c.pipe || c.main;
   const themeSky = c.sky || c.main;
   const journalPaper = c.paper || c.sub || '#FFF6E8';
@@ -143,6 +239,13 @@ function applyPreviewStyles() {
   preview.style.lineHeight = STATE.lineHeight;
   preview.style.color = c.text;
   preview.style.background = c.bg;
+  if (aiPocket) {
+    preview.style.fontSize = '14px';
+    preview.style.letterSpacing = '0.5px';
+    preview.style.background = '#FFFFFF';
+    preview.style.backgroundColor = '#FFFFFF';
+    preview.style.colorScheme = 'light';
+  }
 
   // Paragraphs
   const allPs = preview.querySelectorAll('p');
@@ -196,12 +299,23 @@ function applyPreviewStyles() {
       openingP.style.padding = '20px 22px';
       openingP.style.opacity = '1';
     }
+    if (aiPocket) {
+      openingP.style.background = 'transparent';
+      openingP.style.border = 'none';
+      openingP.style.boxShadow = 'none';
+      openingP.style.borderRadius = '0';
+      openingP.style.color = c.text;
+      openingP.style.fontSize = '14px';
+      openingP.style.lineHeight = '1.85';
+      openingP.style.padding = '0';
+      openingP.style.opacity = '1';
+    }
   }
 
   // Closing section style (last p or p after last hr)
   const allElements = Array.from(preview.children);
   const lastHrIdx = allElements.map((el,i) => (el.tagName === 'HR' || (el.tagName === 'DIV' && el.textContent.trim().length < 10)) ? i : -1).filter(i => i > -1).pop();
-  if (lastHrIdx !== undefined && lastHrIdx >= 0) {
+  if (!aiPocket && lastHrIdx !== undefined && lastHrIdx >= 0) {
     for (let i = lastHrIdx + 1; i < allElements.length; i++) {
       const el = allElements[i];
       if (el.tagName === 'P') {
@@ -263,6 +377,7 @@ function applyPreviewStyles() {
 
     applyHeadingStyle(h, mode.headingStyle, c, tag);
   });
+  if (aiPocket) ensureAiPocketPartsNav(preview, c);
 
   // Blockquotes
   preview.querySelectorAll('blockquote').forEach(bq => {
@@ -348,38 +463,40 @@ function applyPreviewStyles() {
     pre.style.width = '100%';
     pre.style.maxWidth = '100%';
     pre.style.boxSizing = 'border-box';
-    pre.style.background = '#252A33';
-    pre.style.borderRadius = '8px';
-    pre.style.padding = '18px 20px 10px';
-    pre.style.overflowX = 'auto';
+    pre.style.background = aiPocket ? '#FFFFFF' : '#252A33';
+    pre.style.borderRadius = aiPocket ? '10px' : '8px';
+    pre.style.padding = aiPocket ? '0' : '18px 20px 10px';
+    pre.style.overflowX = aiPocket ? 'hidden' : 'auto';
     pre.style.overflowY = 'hidden';
-    pre.style.overflow = 'auto';
-    pre.style.whiteSpace = 'pre';
-    pre.style.wordWrap = 'normal';
-    pre.style.overflowWrap = 'normal';
+    pre.style.overflow = aiPocket ? 'hidden' : 'auto';
+    pre.style.whiteSpace = aiPocket ? 'normal' : 'pre';
+    pre.style.wordWrap = aiPocket ? 'break-word' : 'normal';
+    pre.style.overflowWrap = aiPocket ? 'break-word' : 'normal';
     pre.style.fontSize = '13px';
     pre.style.lineHeight = '1.8';
     pre.style.margin = '1.4em auto';
-    pre.style.fontFamily = '"SF Mono","Consolas","Menlo",monospace';
-    pre.style.color = '#D7E7FF';
-    pre.style.border = 'none';
-    pre.style.boxShadow = '0 10px 24px rgba(15,23,42,0.26)';
+    pre.style.fontFamily = aiPocket ? '"SF Mono","Consolas","Menlo","PingFang SC","Microsoft YaHei",monospace' : '"SF Mono","Consolas","Menlo",monospace';
+    pre.style.color = aiPocket ? '#1F2937' : '#D7E7FF';
+    pre.style.border = aiPocket ? '1.5px solid #E5E7EB' : 'none';
+    pre.style.boxShadow = aiPocket ? 'none' : '0 10px 24px rgba(15,23,42,0.26)';
     pre.querySelectorAll('code').forEach(code => {
       code.style.display = 'block';
-      code.style.minWidth = 'max-content';
-      code.style.width = 'max-content';
-      code.style.maxWidth = 'none';
+      code.style.minWidth = aiPocket ? '0' : 'max-content';
+      code.style.width = aiPocket ? 'auto' : 'max-content';
+      code.style.maxWidth = aiPocket ? '100%' : 'none';
       code.style.background = 'transparent';
-      code.style.padding = '0';
+      code.style.padding = aiPocket ? '14px' : '0';
       code.style.margin = '0';
       code.style.border = 'none';
-      code.style.whiteSpace = 'pre';
-      code.style.wordWrap = 'normal';
-      code.style.overflowWrap = 'normal';
+      code.style.whiteSpace = aiPocket ? 'pre-wrap' : 'pre';
+      code.style.wordWrap = aiPocket ? 'break-word' : 'normal';
+      code.style.overflowWrap = aiPocket ? 'break-word' : 'normal';
       code.style.fontSize = '13px';
       code.style.lineHeight = '1.8';
-      code.style.fontFamily = '"SF Mono","Consolas","Menlo",monospace';
-      code.style.color = '#D7E7FF';
+      code.style.fontFamily = aiPocket ? '"SF Mono","Consolas","Menlo","PingFang SC","Microsoft YaHei",monospace' : '"SF Mono","Consolas","Menlo",monospace';
+      code.style.color = aiPocket ? '#1F2937' : '#D7E7FF';
+      code.style.fontWeight = aiPocket ? '600' : '400';
+      code.style.letterSpacing = aiPocket ? '0.5px' : '0';
     });
   });
   preview.querySelectorAll('code').forEach(code => {
@@ -413,8 +530,22 @@ function applyPreviewStyles() {
       list.style.paddingLeft = '0';
       list.style.margin = '1.2em 0';
     }
+    if (aiPocket) {
+      const numberedCard = isAiPocketNumberedCardList(list);
+      ensureAiPocketNumberedListLabel(list, c);
+      list.style.listStyle = 'none';
+      list.style.paddingLeft = '0';
+      list.style.margin = '1.2em 0';
+      list.style.border = `1px solid ${c.line || '#E5E7EB'}`;
+      list.style.borderRadius = numberedCard ? '14px' : '12px';
+      list.style.background = '#FFFFFF';
+      list.style.padding = numberedCard ? '24px 22px 14px' : '14px 16px 6px';
+      list.style.boxSizing = 'border-box';
+      list.style.boxShadow = 'none';
+    }
   });
   preview.querySelectorAll('li').forEach((li, liIdx) => {
+    if (li.getAttribute('data-ai-pocket-question-label') === '1') return;
     li.style.marginBottom = '0.4em';
     li.style.lineHeight = STATE.lineHeight;
     li.style.color = c.text;
@@ -458,6 +589,32 @@ function applyPreviewStyles() {
         li.dataset.coffeeItemAdded = '1';
       }
     }
+    if (aiPocket) {
+      const numberedCard = isAiPocketNumberedCardList(li.parentElement);
+      const itemIndex = Array.from(li.parentElement.children)
+        .filter(child => child.tagName === 'LI' && child.getAttribute('data-ai-pocket-question-label') !== '1')
+        .indexOf(li);
+      li.style.position = 'static';
+      li.style.marginBottom = numberedCard ? '18px' : '10px';
+      li.style.padding = '0';
+      li.style.border = 'none';
+      li.style.borderRadius = '0';
+      li.style.background = 'transparent';
+      li.style.boxShadow = 'none';
+      li.style.color = numberedCard ? '#374151' : c.text;
+      li.style.fontSize = numberedCard ? '16px' : '14px';
+      li.style.fontWeight = numberedCard ? '800' : '400';
+      li.style.lineHeight = numberedCard ? '1.6' : '1.75';
+      li.style.letterSpacing = '0.5px';
+      if (!li.dataset.aiPocketMarkerAdded) {
+        const marker = numberedCard ? String(itemIndex + 1).padStart(2, '0') : '';
+        const markerHtml = numberedCard
+          ? `<span style="display:inline-block;width:30px;min-width:30px;height:32px;line-height:32px;border-radius:16px;background:${c.sub};color:${c.main};font-size:14px;font-weight:900;text-align:center;margin-right:12px;vertical-align:middle;">${marker}</span>`
+          : `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${c.main};margin:0 10px 2px 0;"></span>`;
+        li.innerHTML = `${markerHtml}<span style="vertical-align:middle;">${li.innerHTML}</span>`;
+        li.dataset.aiPocketMarkerAdded = '1';
+      }
+    }
   });
 
   // Strong / em colors (skip design components which manage their own colors)
@@ -465,6 +622,7 @@ function applyPreviewStyles() {
   preview.querySelectorAll('strong').forEach(s => { if (s.closest('[data-theme-component]')) return; s.style.color = c.deep || c.accent; s.style.fontWeight = '700'; });
   preview.querySelectorAll('em').forEach(e => { if (e.closest('[data-theme-component]')) return; e.style.color = c.main; e.style.fontStyle = 'italic'; });
   preview.querySelectorAll('img').forEach(img => {
+    if (img.closest('[data-theme-component="ai-pocket-heading"]')) return;
     // 跳过 design-intro 的 badge 缩略图：它有自己的固定宽高 + object-fit，
     // 被通用 img 样式（height:auto / margin:8px 0）覆盖会导致缩略图错位甚至消失
     if (img.closest('[data-theme-role="badge"]')) return;
@@ -482,6 +640,24 @@ function applyPreviewStyles() {
       img.style.border = `6px solid ${journalPaper}`;
       img.style.boxShadow = `0 8px 22px ${alphaColor(c.main, 0.14, 'rgba(200,135,78,0.14)')}`;
       img.style.background = journalPaper;
+    }
+    if (aiPocket) {
+      img.style.width = img.style.width || '100%';
+      img.style.maxWidth = '100%';
+      img.style.borderRadius = '8px';
+      img.style.border = 'none';
+      img.style.boxShadow = 'none';
+      img.style.background = '#FFFFFF';
+      img.style.margin = '0 auto';
+      const parent = img.parentElement;
+      if (parent && parent.tagName === 'P' && parent.textContent.trim() === '') {
+        parent.style.margin = '0 0 24px';
+        parent.style.padding = '6px';
+        parent.style.border = `1px solid ${c.line || '#F3F4F6'}`;
+        parent.style.borderRadius = '12px';
+        parent.style.background = '#FFFFFF';
+        parent.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.05)';
+      }
     }
   });
   applyThemedComponents(c);
@@ -910,6 +1086,67 @@ function applyHeadingStyle(h, style, c, tag) {
         h.dataset.coffeeBadgeAdded = '1';
       }
       break;
+    case 'ai-pocket':
+      h.setAttribute('data-theme-component', 'ai-pocket-heading');
+      h.querySelectorAll('.heading-bar').forEach(bar => bar.remove());
+      h.style.position = 'static';
+      h.style.display = 'block';
+      h.style.width = '100%';
+      h.style.maxWidth = '100%';
+      h.style.boxSizing = 'border-box';
+      h.style.textAlign = 'left';
+      h.style.letterSpacing = tag === 'H1' ? '-1.2px' : '0.02em';
+      h.style.boxShadow = 'none';
+      h.style.borderImage = 'none';
+      if (tag === 'H1') {
+        if (!h.dataset.aiPocketHeroAdded) {
+          const titleText = h.textContent.trim();
+          h.dataset.aiPocketTitle = titleText;
+          let first = titleText;
+          let second = '';
+          const monthLabel = getAiPocketMonthLabel();
+          if (titleText.includes('，')) {
+            const parts = titleText.split('，');
+            first = parts.shift() || titleText;
+            second = parts.join('，');
+          }
+          h.innerHTML = `<table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr><td style="border:0;padding:28px 24px 0;vertical-align:middle;text-align:left;"><span data-theme-role="meta" style="display:inline-block;margin:0;font-size:11px;font-weight:900;letter-spacing:3px;color:${c.main};line-height:1;">栏目 · 意疏的AI口袋</span><span style="display:inline-block;width:40px;height:1px;background:${alphaColor(c.main, 0.16, '#D1FAE5')};vertical-align:middle;margin-left:12px;"></span></td><td style="border:0;padding:28px 24px 0 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;"><span style="display:inline-block;margin:0;font-size:12px;font-weight:900;letter-spacing:1px;color:#111827;line-height:1;">${monthLabel}</span></td></tr></tbody></table><table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr><td style="vertical-align:middle;padding:34px 18px 28px 24px;border:0;width:100%;"><span data-theme-role="title-main" style="display:block;color:#111827;font-size:30px;font-weight:900;line-height:1.08;letter-spacing:-1px;">${escapeHtml(first)}</span>${second ? `<span data-theme-role="title-accent" style="display:block;margin-top:4px;color:${c.main};font-size:30px;font-weight:900;line-height:1.08;letter-spacing:-1px;">${escapeHtml(second)}</span>` : ''}<span style="display:block;width:56px;height:5px;border-radius:99px;background:${c.main};margin-top:22px;"></span></td><td style="vertical-align:middle;text-align:right;padding:34px 24px 28px 0;border:0;width:1%;white-space:nowrap;"><img src="${AI_POCKET_AVATAR_SRC}" alt="意疏的AI口袋" width="56" height="56" style="display:inline-block;width:56px;min-width:56px;max-width:56px;height:56px;min-height:56px;max-height:56px;border-radius:50%;border:3px solid #ECFDF5;box-shadow:0 8px 18px rgba(5,150,105,0.16);box-sizing:border-box;background:#FFFFFF;vertical-align:middle;"></td></tr></tbody></table><table data-theme-role="bar" style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;background:${c.main};"><tbody><tr><td style="border:0;padding:16px 24px;vertical-align:middle;text-align:left;"><span style="display:inline-block;font-size:15px;font-weight:900;color:#FFFFFF;line-height:1.2;letter-spacing:0;">意疏的AI口袋</span></td><td style="border:0;padding:16px 24px 16px 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;"><span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">AI 入口</span><span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">实测教程</span></td></tr></tbody></table>`;
+          h.dataset.aiPocketHeroAdded = '1';
+        }
+        h.style.margin = '0 0 36px';
+        h.style.padding = '0';
+        h.style.border = `1.5px solid ${alphaColor(c.main, 0.15, 'rgba(5,150,105,0.15)')}`;
+        h.style.borderRadius = '22px';
+        h.style.background = '#FBFEFC';
+        h.style.boxShadow = '0 14px 34px rgba(17,24,39,0.07)';
+        h.style.overflow = 'hidden';
+        h.style.fontSize = '28px';
+      } else if (tag === 'H2') {
+        if (!h.dataset.aiPocketSectionAdded) {
+          const sectionTitle = (h.dataset.aiPocketTitle || h.textContent || '').trim();
+          h.dataset.aiPocketTitle = sectionTitle;
+          const h2s = Array.from(h.parentElement.querySelectorAll('h2'));
+          const num = String(h2s.indexOf(h) + 1).padStart(2, '0');
+          h.innerHTML = `<span data-theme-role="number" style="display:inline-block;vertical-align:middle;margin-right:12px;text-align:center;"><span style="display:block;margin:0;font-size:28px;font-weight:900;line-height:1;color:${c.main};">${num}</span><span style="display:block;margin:2px 0 0;font-size:10px;font-weight:800;letter-spacing:2px;color:${c.muted || '#9CA3AF'};">PART</span></span><span data-theme-role="divider" style="display:inline-block;vertical-align:middle;border-left:1px solid ${c.line || '#E5E7EB'};height:36px;line-height:36px;margin-right:12px;"></span><span data-theme-role="title" style="display:inline-block;vertical-align:middle;font-size:17px;font-weight:900;color:#111827;line-height:1.4;">${escapeHtml(sectionTitle)}</span>`;
+          h.dataset.aiPocketSectionAdded = '1';
+        }
+        h.style.margin = '48px 0 32px';
+        h.style.padding = '0';
+        h.style.border = 'none';
+        h.style.background = 'transparent';
+        h.style.fontSize = '17px';
+      } else {
+        h.style.margin = '28px 0 14px';
+        h.style.padding = '0 0 0 10px';
+        h.style.border = 'none';
+        h.style.borderLeft = `3px solid ${c.main}`;
+        h.style.borderRadius = '0';
+        h.style.background = 'transparent';
+        h.style.color = '#111827';
+        h.style.fontSize = '16px';
+        h.style.fontWeight = '900';
+      }
+      break;
     case 'tag-badge':
       h.style.color = c.accent;
       h.style.fontWeight = '700';
@@ -931,6 +1168,20 @@ function applyQuoteStyle(bq, style, c) {
   const themeSky = c.sky || c.main;
   const journalPaper = c.paper || c.sub || '#FFF6E8';
   switch(style) {
+    case 'ai-pocket-note':
+      bq.style.border = 'none';
+      bq.style.borderLeft = `3px solid ${c.main}`;
+      bq.style.borderImage = 'none';
+      bq.style.borderRadius = '10px';
+      bq.style.background = c.sub || '#ECFDF5';
+      bq.style.padding = '14px 16px';
+      bq.style.color = c.deep || '#065F46';
+      bq.style.boxShadow = 'none';
+      bq.style.fontStyle = 'normal';
+      bq.style.fontSize = '14px';
+      bq.style.lineHeight = '1.8';
+      bq.style.letterSpacing = '0.5px';
+      break;
     case 'left-bar-blue':
       // 品牌手册：淡蓝底 + 哆啦A梦蓝竖线，不用渐变不用斜体
       bq.style.borderLeft = `3px solid ${c.main}`;
@@ -1083,6 +1334,12 @@ function applyHrStyle(hr, style, c) {
   hr.style.overflow = 'visible';
 
   switch(style) {
+    case 'ai-pocket-line':
+      hr.style.border = 'none';
+      hr.style.height = '1px';
+      hr.style.background = `linear-gradient(90deg, rgba(5,150,105,0), ${alphaColor(c.main, 0.35, 'rgba(5,150,105,0.35)')}, rgba(5,150,105,0))`;
+      hr.style.margin = '8px 0 28px';
+      break;
     case 'center-gold':
       // 品牌手册：居中 40px 短金线，2px 高，干干净净一条
       // 用 section + border-top（而非给 hr 设 background），躲开微信兼容层把 hr 背景刷灰的逻辑
@@ -1150,6 +1407,7 @@ function applyMode(mode) {
   STATE.lineHeight = mode.lineHeight;
   STATE.paraSpacing = mode.paraSpacing;
   updatePreview();
+  if (typeof syncQuickStyleButtons === 'function') syncQuickStyleButtons();
 }
 
 // ===================================================================

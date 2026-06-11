@@ -301,8 +301,31 @@ function applyStyle(i) {
   if (!styles[i]) return;
   Object.assign(STATE, sanitizeState(styles[i].state));
   updatePreview();
+  syncQuickStyleButtons();
   $('stylesDropdown').classList.remove('show');
 }
+
+function syncQuickStyleButtons() {
+  document.querySelectorAll('[data-quick-style]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-quick-style') === STATE.mode);
+  });
+}
+
+function applyQuickMode(modeId) {
+  const mode = MODES.find(m => m.id === modeId);
+  if (!mode) return;
+  applyMode(mode);
+  syncQuickStyleButtons();
+  const dropdown = $('stylesDropdown');
+  if (dropdown) dropdown.classList.remove('show');
+}
+
+document.addEventListener('click', event => {
+  const btn = event.target.closest?.('[data-quick-style]');
+  if (!btn) return;
+  event.preventDefault();
+  applyQuickMode(btn.getAttribute('data-quick-style'));
+});
 
 function editStyle(i) {
   const styles = getSavedStyles();
@@ -407,7 +430,7 @@ function importStyleJSON() {
         }
         if (!imported) alert('未识别样式文件，请确认是从本工具导出的 JSON');
       } catch {
-        alert('JSON格式错误，文件内容不是合法 JSON');
+        alert('JSON格式错误，文件内容无法解析为合法 JSON');
       }
     };
     reader.readAsText(file);
@@ -497,7 +520,7 @@ function showHelp() {
       </ul>
       <h4>🔔 小彩蛋</h4>
       <ul>
-        <li>左上角的哆啦A梦戳一下试试，连点更有惊喜</li>
+        <li>左上角的哆啦A梦点一下试试，连点更有惊喜</li>
       </ul>
     </div>
     <div id="helpTabContact" class="help-contact" style="display:none">

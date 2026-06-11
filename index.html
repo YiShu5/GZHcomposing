@@ -11,7 +11,7 @@
 
 <!-- ===== Top Nav ===== -->
 <nav class="top-nav">
-  <div class="dora-avatar" title="戳一下试试" onclick="doraGadget(event)">
+  <div class="dora-avatar" title="点一下试试" onclick="doraGadget(event)">
     <svg class="take-copter" viewBox="0 0 60 30" width="50" height="22" xmlns="http://www.w3.org/2000/svg">
       <rect x="29" y="22" width="2" height="8" fill="#FFC107" rx="1"/>
       <g class="propeller">
@@ -53,6 +53,10 @@
     </div>
   </div>
   <div class="nav-right" style="position:relative">
+    <div class="quick-style-group" aria-label="快速切换样式">
+      <button class="quick-style-btn active" type="button" data-quick-style="ai-pocket-green" title="套用意疏常用公众号样式">意疏的样式</button>
+      <button class="quick-style-btn" type="button" data-quick-style="ai-pocket-card" title="套用终端框、问题列表卡、横滑章节卡">卡片精排</button>
+    </div>
     <button class="nav-btn" onclick="toggleStylesDropdown()" id="btnMyStyles">我的样式 ▾</button>
     <div class="styles-dropdown" id="stylesDropdown"></div>
     <button class="nav-btn" onclick="insertFullLayout()" id="btnFullLayout" title="一键插入完整套版：开头总结框 + 小标题 + 互动引导卡">🧩 一键套版</button>

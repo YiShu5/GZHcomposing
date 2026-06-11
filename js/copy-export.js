@@ -32,6 +32,16 @@ function appendRawStyle(el, styleText) {
   el.setAttribute('style', current ? `${current};${styleText}` : styleText);
 }
 function restoreWechatCodeBlockNoWrap(root) {
+  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  if (isAiPocketModeId(mode.id)) {
+    root.querySelectorAll('pre').forEach(pre => {
+      appendRawStyle(pre, 'white-space:normal;word-wrap:break-word;overflow-wrap:break-word;overflow-x:hidden;overflow-y:hidden');
+    });
+    root.querySelectorAll('pre code').forEach(code => {
+      appendRawStyle(code, 'display:block;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;min-width:0;width:auto;max-width:100%');
+    });
+    return;
+  }
   root.querySelectorAll('pre').forEach(pre => {
     appendRawStyle(pre, 'white-space:pre;word-wrap:normal;overflow-wrap:normal;overflow-x:auto;overflow-y:hidden');
   });
@@ -41,6 +51,8 @@ function restoreWechatCodeBlockNoWrap(root) {
 }
 function buildWechatHTMLFromElement(source, includeBg) {
   const clone = source.cloneNode(true);
+  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const aiPocket = isAiPocketModeId(mode.id);
   inlineAllStyles(clone);
   prepareWechatCompatibility(clone);
   normalizeWechatSpacingParity(clone);
@@ -48,10 +60,11 @@ function buildWechatHTMLFromElement(source, includeBg) {
   restoreWechatCodeBlockNoWrap(clone);
   if (!includeBg) return clone.innerHTML;
   const bg = BG_TEXTURES.find(b => b.id === STATE.bg) || BG_TEXTURES[0];
-  let bgStyle = `background:${bg.css};`;
-  if (bg.cssBgSize) bgStyle += `background-size:${bg.cssBgSize};`;
+  let bgStyle = aiPocket ? 'background:#FFFFFF;background-color:#FFFFFF;' : `background:${bg.css};`;
+  if (!aiPocket && bg.cssBgSize) bgStyle += `background-size:${bg.cssBgSize};`;
   const baseLine = getLineHeightPx(15, STATE.lineHeight);
-  return `<section style="${bgStyle}padding:32px 24px;font-size:15px;line-height:${baseLine}px;color:${WECHAT_MODE_SAFE.text};background-color:#FFFFFF;">${clone.innerHTML}</section>`;
+  const textColor = aiPocket ? '#374151' : WECHAT_MODE_SAFE.text;
+  return `<section style="${bgStyle}padding:32px 24px;font-size:15px;line-height:${baseLine}px;color:${textColor};background-color:#FFFFFF;color-scheme:light;">${clone.innerHTML}</section>`;
 }
 function setButtonCopied(btn, copiedText, originalText, ms = 2000) {
   if (!btn) return;
@@ -220,7 +233,7 @@ function htmlToMarkdown(rootEl) {
     }
     if (tag === 'HR') { lines.push('---', ''); return; }
     if (tag === 'P' || tag === 'DIV' || tag === 'SECTION') {
-      // 判断是不是被装饰过的 hr 占位（包含一根线 + 装饰，不含真实文本）
+      // 判断是否为装饰过的 hr 占位（包含一根线 + 装饰，不含真实文本）
       const txt = node.textContent.trim();
       if (!txt && node.querySelector('img') === null) {
         lines.push(''); return;

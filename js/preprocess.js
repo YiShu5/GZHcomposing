@@ -21,7 +21,7 @@ function isConservativeHeadingLine(text, prevLine = '', nextLine = '') {
   if (s.length > 24) return false;
   if (/[。！？!?；;]/.test(s)) return false;
   if (/[，,]/.test(s)) return false;
-  if (/^(但|但是|而是|而且|所以|因此|如果|因为|同时|然后|好像|这些|这个|这就|于是|不过|其实|只是|甚至)/.test(s)) return false;
+  if (/^(但|但是|而且|所以|因此|如果|因为|同时|然后|好像|这些|这个|这就|于是|不过|其实|只是|甚至)/.test(s)) return false;
 
   const prevBlank = !String(prevLine || '').trim();
   const nextBlank = !String(nextLine || '').trim();
@@ -68,7 +68,7 @@ function summarizeHeadingCandidate(text) {
   const parts = s.split(/[，,；;]/).map(x => x.trim()).filter(Boolean);
   let core = parts.length > 1 ? parts[parts.length - 1] : s;
   core = core
-    .replace(/^(这就|这是|这些|这种|那就是|而是|但是|但|所以|因此|然后|其实|只是|好像)/, '')
+    .replace(/^(这就|这是|这些|这种|那就是|但是|但|所以|因此|然后|其实|只是|好像)/, '')
     .replace(/^(会让人|让人|让我们|让你|让他|让她|产生了?|形成了?|变成了?|带来了?|导致了?)/, '')
     .replace(/^(一个|一种|一件|很强的|很大的|很奇怪的|很明显的|真正的|了一个|了一种|了一件)/, '')
     .replace(/^(的|了|是)/, '')
