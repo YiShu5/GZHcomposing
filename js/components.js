@@ -607,16 +607,6 @@ function buildGuidanceCardHTML(c) {
 // 任务一：设计结尾 → 互动引导卡样式
 function insertDesignEnding() { insertDesignHTML(buildGuidanceCardHTML(getColors()) + '<p><br></p>'); }
 
-// 一键套版：开头总结框 + 设计小标题 + 互动引导卡，三段套在一块浅蓝大底上
-function insertFullLayout() {
-  savedEditorRange = null; // 从顶栏点击：插到文末
-  const c = getColors();
-  const sub = c.sub || '#E0F4FE';
-  const inner = buildDesignIntroHTML(c) + buildDesignHeadingHTML(c) + buildGuidanceCardHTML(c);
-  const html = `<section data-theme-component="full-layout" style="background:${sub};border-radius:16px;padding:22px 16px;margin:24px 0;box-sizing:border-box;">${inner}</section><p><br></p>`;
-  insertDesignHTML(html);
-}
-
 // ===================================================================
 // ENDING STYLES
 // ===================================================================
