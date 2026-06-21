@@ -175,21 +175,6 @@ function convertQuoteLine(trimmed, mode) {
   return '';
 }
 
-function extractCompactHeadingCandidate(text) {
-  let s = String(text || '').trim();
-  if (!s) return '';
-  s = s.split(/[。！？!?；;，,]/)[0] || s;
-  s = s
-    .replace(/^(我觉得|我发现|你会发现|其实|说白了|简单说|换句话说|先说结论|首先|然后|所以|但是|不过)/, '')
-    .replace(/^(这件事|这个问题|这些变化|这种情况|一个很明显的)/, '')
-    .replace(/["""']/g, '')
-    .replace(/\s+/g, '')
-    .trim();
-  if (s.length < 4 || s.length > 10) return '';
-  if (/[吗呢吧啊呀]$/.test(s)) return '';
-  return s;
-}
-
 function inferHeadingForMode(text, mode) {
   const s = String(text || '').trim();
   if (!s || s.length < 18) return '';
@@ -206,7 +191,8 @@ function inferHeadingForMode(text, mode) {
       { re: /方法|做法|路径|策略|建议|可以这样/, title: '可以怎么做' }
     ];
     const matched = rules.find(rule => rule.re.test(s));
-    return matched ? matched.title : extractCompactHeadingCandidate(s);
+    // 只用规则命中或冒号标题；匹配不到就不插，避免抽正文首句当标题导致和正文重复
+    return matched ? matched.title : '';
   }
 
   if (mode === 'tutorial') {
@@ -243,6 +229,7 @@ function shouldInsertAutoHeading(mode, state, text) {
 
   const title = inferHeadingForMode(text, mode);
   if (!title) return '';
+  if (state.usedAutoHeadings && state.usedAutoHeadings.has(title)) return '';
 
   if (mode === 'longform') {
     if (state.paragraphCount === 0 || state.sinceHeading >= 2) return title;
@@ -319,7 +306,8 @@ function runSmartPreprocess(mode = 'clean') {
   const state = {
     paragraphCount: 0,
     sinceHeading: 0,
-    autoHeadingCount: 0
+    autoHeadingCount: 0,
+    usedAutoHeadings: new Set()
   };
 
   for (let i = 0; i < lines.length; i++) {
@@ -386,6 +374,7 @@ function runSmartPreprocess(mode = 'clean') {
       result.push('### ' + autoHeading);
       state.sinceHeading = 0;
       state.autoHeadingCount++;
+      state.usedAutoHeadings.add(autoHeading);
     }
 
     // Regular paragraph

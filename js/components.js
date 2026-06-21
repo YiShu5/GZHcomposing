@@ -457,7 +457,7 @@ function showDesignLayoutPanel() {
   const c = getColors();
   const main = c.main || '#059669';
   showModal(`
-    <h3>插入图片</h3>
+    <h3>设计排版</h3>
     <p style="font-size:12px;color:#999;margin-bottom:16px">复刻品牌实战类文章结构：开头总结框、小标题和结尾。</p>
       <div id="designLayoutChoices" style="display:grid;grid-template-columns:1fr;gap:10px">
       <button type="button" data-design-action="intro" style="border:2px solid #e5e7eb;border-radius:8px;padding:14px;cursor:pointer;transition:all .2s;background:#fff;text-align:left">

@@ -6,7 +6,7 @@ const STATE = {
   mode: DEFAULT_MODE_ID,
   titleFont: 1,
   bodyFont: 0,
-  colorScheme: 1, // index in COLOR_SCHEMES; 1=AI 口袋绿
+  colorScheme: 0, // index in COLOR_SCHEMES; 0=哆啦A梦
   customColors: null,
   lineHeight: 1.85,
   paraSpacing: 1.2,
@@ -57,7 +57,7 @@ const MODES = [
   {
     id:'ai-pocket-green', name:'意疏的样式',
     desc:'AI 口袋 · 稳定日常',
-    titleFont:1, bodyFont:0, color:1,
+    titleFont:1, bodyFont:0, color:0,
     lineHeight:1.85, paraSpacing:1.2,
     headingStyle:'ai-pocket',
     quoteStyle:'ai-pocket-note',
@@ -66,7 +66,7 @@ const MODES = [
   {
     id:'ai-pocket-card', name:'卡片精排',
     desc:'终端框 · 问题卡',
-    titleFont:1, bodyFont:0, color:1,
+    titleFont:1, bodyFont:0, color:0,
     lineHeight:1.85, paraSpacing:1.2,
     headingStyle:'ai-pocket',
     quoteStyle:'ai-pocket-note',
@@ -84,8 +84,8 @@ const MODES = [
 ];
 
 const MODE_META = {
-  'ai-pocket-green': { emoji:'🟢', color:'#059669' },
-  'ai-pocket-card': { emoji:'▣', color:'#10B981' },
+  'ai-pocket-green': { emoji:'🔵', color:'#03ADF0' },
+  'ai-pocket-card': { emoji:'▣', color:'#016FAD' },
   'brand-manual': { emoji:'🔖', color:'#F5C518' },
 };
 
@@ -98,11 +98,11 @@ function isAiPocketModeId(id) {
 // DEFAULT CONTENT
 // ===================================================================
 const DEFAULT_HTML = `<h1>我看个番茄小说的功夫，微信已经变成 AI 入口了</h1>
-<p>这是「意疏的 AI 口袋」公众号排版器。默认使用 AI 绿卡教程风：标题有承诺感，步骤有编号，提示词有终端框，截图有相框。</p>
+<p>这是「意疏的 AI 口袋」公众号排版器。默认使用 哆啦A梦蓝金教程风：标题有承诺感，步骤有编号，提示词有终端框，截图有相框。</p>
 <h2>一种风格，直接写</h2>
-<p>不用在十几种模板里反复横跳。AI 口袋绿卡把字体、配色、标题、引用、分割线一次配齐，你只管写：</p>
+<p>不用在十几种模板里反复横跳。AI 口袋蓝卡把字体、配色、标题、引用、分割线一次配齐，你只管写：</p>
 <ul>
-<li><strong>绿色只标结构和关键概念</strong> — 页面更像移动端产品文档</li>
+<li><strong>蓝金只标结构和关键概念</strong> — 页面更像移动端产品文档</li>
 <li><strong>标题自动变成编号小节</strong> — 读者扫一眼就知道进度</li>
 <li><strong>提示词自动变成终端框</strong> — 适合 AI 教程和 Agent 安装文</li>
 <li><strong>截图自动套相框</strong> — 粘到公众号后台更稳</li>

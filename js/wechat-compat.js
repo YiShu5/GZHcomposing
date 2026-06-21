@@ -694,7 +694,7 @@ function normalizeWechatColorModeCompatibility(root) {
     ? {
         text: '#374151',
         muted: '#9CA3AF',
-        emphasis: '#059669',
+        emphasis: getColors().main || '#059669',
         heading: '#111827',
         border: '#E5E7EB',
         light: '#FFFFFF'

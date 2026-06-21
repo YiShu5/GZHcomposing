@@ -252,7 +252,7 @@ function toggleStylesDropdown() {
   if (dd.classList.contains('show')) { dd.classList.remove('show'); return; }
   const styles = getSavedStyles();
   if (!styles.length) {
-    dd.innerHTML = '<div class="sd-empty">暂无保存的样式<br>点底部「保存为我的样式」添加</div>';
+    dd.innerHTML = '<div class="sd-empty">暂无保存的样式<br>点底部「保存样式」添加</div>';
   } else {
     let html = '';
     styles.forEach((s, i) => {
