@@ -234,11 +234,11 @@ body::before{
 .pocket-item:hover{background:var(--dora-cream);border-color:var(--dora-yellow);box-shadow:0 8px 24px rgba(245,197,24,0.35)}
 .pocket-item .pi-emoji{font-size:22px;line-height:1}
 .pocket-fan.open .pocket-item{opacity:1;pointer-events:auto}
-.pocket-fan.open .pocket-item:nth-child(1){transform:translate(calc(-50% - 88px),calc(-50% + 20px)) scale(1);transition-delay:0ms}
-.pocket-fan.open .pocket-item:nth-child(2){transform:translate(calc(-50% - 48px),calc(-50% + 66px)) scale(1);transition-delay:60ms}
-.pocket-fan.open .pocket-item:nth-child(3){transform:translate(-50%,calc(-50% + 80px)) scale(1);transition-delay:120ms}
-.pocket-fan.open .pocket-item:nth-child(4){transform:translate(calc(-50% + 48px),calc(-50% + 66px)) scale(1);transition-delay:180ms}
-.pocket-fan.open .pocket-item:nth-child(5){transform:translate(calc(-50% + 88px),calc(-50% + 20px)) scale(1);transition-delay:240ms}
+/* 四个项对称扇形：外侧一对在上、内侧一对在下，中心向外依次绽放 */
+.pocket-fan.open .pocket-item:nth-child(1){transform:translate(calc(-50% - 102px),calc(-50% + 34px)) scale(1);transition-delay:70ms}
+.pocket-fan.open .pocket-item:nth-child(2){transform:translate(calc(-50% - 46px),calc(-50% + 76px)) scale(1);transition-delay:0ms}
+.pocket-fan.open .pocket-item:nth-child(3){transform:translate(calc(-50% + 46px),calc(-50% + 76px)) scale(1);transition-delay:0ms}
+.pocket-fan.open .pocket-item:nth-child(4){transform:translate(calc(-50% + 102px),calc(-50% + 34px)) scale(1);transition-delay:70ms}
 /* 任意门 toast */
 .teleport-toast{position:fixed;top:80px;left:50%;background:linear-gradient(145deg,#FFC1DA,#FF8FBF);color:#5A1E3A;padding:12px 24px;border-radius:24px;font-size:14px;font-weight:700;box-shadow:0 8px 32px rgba(255,143,191,0.5);z-index:1000;border:2px solid #FFFFFF;pointer-events:none;opacity:0;transform:translateX(-50%) scale(0.6);transition:all .35s cubic-bezier(0.4,0,0.2,1)}
 .teleport-toast.show{opacity:1;transform:translateX(-50%) scale(1)}
