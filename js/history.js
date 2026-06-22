@@ -50,7 +50,8 @@ function redoEditor() {
 const DRAFT_KEY = 'gzhcomposing.draft.v1';
 function saveDraft() {
   try {
-    const html = editor.innerHTML || '';
+    ensureEditorImagesPersisted();                       // 图片 base64 存进 IndexedDB
+    const html = dehydrateImagesForDraft(editor.innerHTML || ''); // 草稿里只留引用，不存 base64
     const chars = (editor.innerText || '').replace(/\s/g, '').length;
     if (chars < 5) return; // 内容太少不存
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ html, chars, savedAt: Date.now() }));

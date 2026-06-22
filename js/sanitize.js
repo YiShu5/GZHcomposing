@@ -97,7 +97,7 @@ function sanitizeElementTree(root) {
         return;
       }
       if (['alt','title'].includes(name)) return;
-      if (['data-ending-block','data-ending-type','data-theme-component','data-theme-role','data-layout','data-editor-highlight','data-hr-style','data-user-align'].includes(name)) return;
+      if (['data-ending-block','data-ending-type','data-theme-component','data-theme-role','data-layout','data-editor-highlight','data-hr-style','data-user-align','data-img-id'].includes(name)) return;
       node.removeAttribute(attr.name);
     });
 

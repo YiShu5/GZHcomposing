@@ -1,12 +1,13 @@
 // === DOMContentLoaded 初始化入口 ===
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  await initImageStore(); // 先把图片从 IndexedDB 读进缓存，供草稿还原
   // 草稿恢复优先于默认内容
   const draft = loadDraft();
   if (draft && draft.html && draft.html.trim() && draft.html !== DEFAULT_HTML) {
     const minutesAgo = Math.max(1, Math.round((Date.now() - draft.savedAt) / 60000));
     const ok = confirm(`检测到 ${minutesAgo} 分钟前的未保存草稿（约 ${draft.chars} 字），是否恢复？\n\n点「确定」恢复草稿。\n点「取消」加载默认范例（草稿会被覆盖）。`);
-    if (ok) editor.innerHTML = sanitizeContentHTML(draft.html);
+    if (ok) editor.innerHTML = sanitizeContentHTML(rehydrateImagesFromStore(draft.html)); // 先还原 base64 再清洗
     else editor.innerHTML = DEFAULT_HTML;
   } else {
     editor.innerHTML = DEFAULT_HTML;
