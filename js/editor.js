@@ -1,5 +1,12 @@
 // === 编辑器命令 / 工具栏状态 / 粘贴处理 / 富文本复制 ===
 
+// 内置范例标题特征串：用于判断编辑器里是否仍是未动过的范例内容（粘贴时据此清空，避免范例标题占住题头 H1）
+const DEMO_TITLE_TEXT = (() => {
+  const tpl = document.createElement('template');
+  tpl.innerHTML = DEFAULT_HTML;
+  return (tpl.content.querySelector('h1')?.textContent || '').trim();
+})();
+
 function execCmd(cmd, val) {
   if (cmd === 'formatBlock') {
     toggleBlockFormat(String(val || 'P').toUpperCase());
@@ -186,6 +193,8 @@ function updateToolbarStates() {
   } catch (e) {}
   setToolbarActive('btnQuote', isSelectionInBlockFormat('BLOCKQUOTE'));
   setToolbarActive('btnHighlight', isSelectionInEditorHighlight());
+  setToolbarActive('btnGreen', isSelectionInEditorGreen());
+  setToolbarActive('btnGreenInline', isSelectionInEditorGreen());
   const align = getCurrentUserAlign();
   setToolbarActive('btnAlign', !!align);
   setToolbarActive('alignOptionLeft', align === 'left');
@@ -295,7 +304,8 @@ function plainTextToParagraphHTML(text) {
 
 function setupEditorEvents() {
   editor.addEventListener('paste', e => {
-    if (editor.innerHTML.trim() === DEFAULT_HTML.trim()) {
+    // 仍是内置范例（范例标题原封未动）时，首次粘贴直接清空，避免范例标题占住题头 H1
+    if (DEMO_TITLE_TEXT && editor.textContent.includes(DEMO_TITLE_TEXT)) {
       editor.innerHTML = '';
     }
     const pasteBeforeEnding = movePastePointBeforeEndingIfNeeded();

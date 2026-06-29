@@ -49,17 +49,11 @@
         <button class="pocket-item" onclick="openSettings('color');closePocket()"><span class="pi-emoji">🎨</span>配色</button>
         <button class="pocket-item" onclick="openSettings('spacing');closePocket()"><span class="pi-emoji">📐</span>间距</button>
         <button class="pocket-item" onclick="openSettings('bg');closePocket()"><span class="pi-emoji">🌈</span>背景</button>
+        <button class="pocket-item" onclick="openSettings('header');closePocket()"><span class="pi-emoji">🪧</span>题头</button>
       </div>
     </div>
   </div>
   <div class="nav-right" style="position:relative">
-    <div class="quick-style-group" aria-label="快速切换样式">
-      <button class="quick-style-btn active" type="button" data-quick-style="ai-pocket-green" title="套用意疏常用公众号样式">意疏的样式</button>
-      <button class="quick-style-btn" type="button" data-quick-style="ai-pocket-card" title="套用终端框、问题列表卡、横滑章节卡">卡片精排</button>
-      <button class="quick-style-btn" type="button" data-quick-style="brand-manual" title="蓝金克制高级风：左金标题、蓝引用、居中分割线">品牌手册</button>
-    </div>
-    <button class="nav-btn" onclick="toggleStylesDropdown()" id="btnMyStyles">我的样式 ▾</button>
-    <div class="styles-dropdown" id="stylesDropdown"></div>
     <button class="nav-btn" onclick="showHelp()">帮助</button>
   </div>
 </nav>
@@ -69,9 +63,7 @@
   <!-- Left: Editor -->
   <div class="panel panel-left" id="panelLeft">
     <div class="editor-toolbar">
-      <!-- 图形按钮区 -->
-      <button class="tb-btn" id="btnBold" title="加粗" onclick="execCmd('bold')"><b>B</b></button>
-      <button class="tb-btn" id="btnItalic" title="斜体" onclick="execCmd('italic')"><i>I</i></button>
+      <!-- 图形按钮区（加粗/斜体已移到选中文字时的悬浮快捷栏）-->
       <select class="tb-heading-select" onchange="execHeading(this.value);this.value=''" title="标题级别">
         <option value="">标题</option>
         <option value="P">正文</option>
@@ -82,6 +74,7 @@
       <button class="tb-btn" id="btnUl" title="无序列表" onclick="execCmd('insertUnorderedList')">•≡</button>
       <button class="tb-btn" id="btnOl" title="有序列表" onclick="execCmd('insertOrderedList')">1.</button>
       <button class="tb-btn" title="文字高亮" onclick="applyTextHighlight()" id="btnHighlight">🖍</button>
+      <button class="tb-btn" title="变绿（绿色强调）" onclick="applyTextGreen()" id="btnGreen"><span style="color:#059669;font-weight:900">绿</span></button>
       <!-- 分隔 -->
       <span class="tb-sep"></span>
       <!-- 文字按钮区（按写作流程顺序：先预处理 → 中间设计 → 最后结尾）-->
@@ -92,7 +85,7 @@
       <span class="tb-sep"></span>
       <!-- 更多区 -->
       <div style="position:relative" id="pocketDropdownWrap" onmouseenter="clearTimeout(this._lt)" onmouseleave="this._lt=setTimeout(()=>$('moreDropdown').classList.remove('show'),320)">
-        <button class="tb-btn-text pocket" id="btnMore" title="哆啦A梦的口袋 · 更多工具" onclick="toggleMoreDropdown()"><svg viewBox="0 0 26 18" width="22" height="15" style="display:inline-block;vertical-align:middle;margin-right:6px;flex-shrink:0" xmlns="http://www.w3.org/2000/svg"><path d="M 2 5 L 24 5 A 11 8 0 0 1 2 5 Z" fill="#FFFFFF" stroke="#016FAD" stroke-width="1.6" stroke-linejoin="round"/><path d="M 4.5 6 L 21.5 6 A 8.5 5.5 0 0 1 4.5 6 Z" fill="#016FAD" fill-opacity="0.35"/><circle cx="8" cy="3" r="0.8" fill="#FFFFFF" opacity="0.95"/><circle cx="19" cy="2.2" r="1" fill="#FFFFFF" opacity="0.95"/></svg>哆啦A梦的口袋 ▾</button>
+        <button class="tb-btn-text pocket" id="btnMore" title="插入元素 · 引用/卡片/代码/图片/分割线" onclick="toggleMoreDropdown()"><svg viewBox="0 0 26 18" width="22" height="15" style="display:inline-block;vertical-align:middle;margin-right:6px;flex-shrink:0" xmlns="http://www.w3.org/2000/svg"><path d="M 2 5 L 24 5 A 11 8 0 0 1 2 5 Z" fill="#FFFFFF" stroke="#016FAD" stroke-width="1.6" stroke-linejoin="round"/><path d="M 4.5 6 L 21.5 6 A 8.5 5.5 0 0 1 4.5 6 Z" fill="#016FAD" fill-opacity="0.35"/><circle cx="8" cy="3" r="0.8" fill="#FFFFFF" opacity="0.95"/><circle cx="19" cy="2.2" r="1" fill="#FFFFFF" opacity="0.95"/></svg>插入元素 ▾</button>
         <div class="more-dropdown" id="moreDropdown">
           <!-- 文本块 -->
           <button class="more-dropdown-item" onclick="execCmd('formatBlock','BLOCKQUOTE');toggleMoreDropdown()"><span class="icon">❝</span>引用</button>
@@ -201,6 +194,26 @@
 
   <!-- Right: Preview -->
   <div class="panel panel-right" id="panelRight">
+    <!-- 首屏视觉焦点：先选样式 -->
+    <div class="style-cards" role="radiogroup" aria-label="选择排版样式">
+      <span class="sc-label">① 先选个样式</span>
+      <button class="style-card active" type="button" data-quick-style="ai-pocket-green" title="意疏的样式 · 绿卡教程风">
+        <span class="sc-thumb"><span class="sc-bar" style="background:#03ADF0"></span><span class="sc-lines"><i style="width:72%"></i><i style="width:92%"></i><i style="width:54%"></i></span></span>
+        <span class="sc-name">意疏的样式</span>
+      </button>
+      <button class="style-card" type="button" data-quick-style="ai-pocket-card" title="卡片精排 · 终端框 / 问题卡">
+        <span class="sc-thumb sc-thumb-card"><span class="sc-dots"><i></i><i></i><i></i></span><span class="sc-lines"><i style="width:84%"></i><i style="width:62%"></i></span></span>
+        <span class="sc-name">卡片精排</span>
+      </button>
+      <button class="style-card" type="button" data-quick-style="brand-manual" title="品牌手册 · 蓝金克制高级">
+        <span class="sc-thumb"><span class="sc-bar" style="background:#F5C518"></span><span class="sc-lines"><i style="width:66%"></i><i style="width:88%"></i></span><span class="sc-divider"></span></span>
+        <span class="sc-name">品牌手册</span>
+      </button>
+      <span class="sc-mystyles" style="position:relative;margin-left:auto;flex-shrink:0">
+        <button class="mobile-toggle" onclick="toggleStylesDropdown()" id="btnMyStyles">⭐ 我的样式 ▾</button>
+        <div class="styles-dropdown" id="stylesDropdown"></div>
+      </span>
+    </div>
     <div class="preview-toolbar">
       <span class="label">预览效果</span>
       <span class="spacer"></span>
@@ -237,12 +250,27 @@
       </div>
     </div>
   </div>
-  <span class="spacer"></span>
   <div class="btn-group-right">
     <button class="btn-secondary" onclick="exportHTML()">导出 HTML</button>
     <button class="btn-secondary" id="copyHtmlBtn" onclick="copyHTMLCode()">复制为 HTML</button>
     <button class="btn-primary btn-publish" id="copyBtn" onclick="copyToWechat()">🚀 一键复制到公众号</button>
   </div>
+</div>
+
+<!-- ===== Inline floating toolbar (选中文字时弹出) ===== -->
+<div class="inline-toolbar" id="inlineToolbar" role="toolbar" aria-label="文字快捷栏">
+  <button class="inline-tb-btn" id="btnBold" title="加粗" onclick="execCmd('bold');afterInlineFormat()"><b>B</b></button>
+  <button class="inline-tb-btn" id="btnItalic" title="斜体" onclick="execCmd('italic');afterInlineFormat()"><i>I</i></button>
+  <button class="inline-tb-btn" id="btnGreenInline" title="变绿（绿色强调）" onclick="applyTextGreen();afterInlineFormat()"><span style="color:#059669;font-weight:900">绿</span></button>
+  <span class="inline-tb-sep"></span>
+  <button class="inline-tb-btn" title="引用" onclick="execCmd('formatBlock','BLOCKQUOTE');hideInlineToolbar()">❝</button>
+  <button class="inline-tb-btn" title="提示卡片" onclick="insertTipCard();hideInlineToolbar()">📋</button>
+  <button class="inline-tb-btn" title="代码块" onclick="insertCodeBlock();hideInlineToolbar()">⟨/⟩</button>
+  <button class="inline-tb-btn" title="编号标题" onclick="insertNumberedHeading();hideInlineToolbar()">01§</button>
+  <span class="inline-tb-sep"></span>
+  <button class="inline-tb-btn" title="对齐方式" onclick="toggleAlignPanel();hideInlineToolbar()">↔</button>
+  <button class="inline-tb-btn" title="插入图片" onclick="toggleImgPanel();hideInlineToolbar()">📷</button>
+  <button class="inline-tb-btn" title="分割线" onclick="toggleHrPanel();hideInlineToolbar()">─</button>
 </div>
 
 <!-- ===== Settings Side Panel ===== -->
@@ -324,6 +352,7 @@
 <script src="js/copy-export.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/layout.js"></script>
+<script src="js/inline-toolbar.js"></script>
 <script src="js/init.js"></script>
 </body>
 </html>
