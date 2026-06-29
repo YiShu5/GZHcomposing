@@ -295,6 +295,54 @@ function doInsertImage() {
   scheduleUpdate();
 }
 
+// 给选区套标记 span（高光/变绿共用）。跨块时在每个块内部分别包，避免 <span><p></p></span> 非法结构；
+// 单块/纯行内仍整体包一个 span（保持原有行为）。
+function wrapRangeWithMarkSpan(range, dataAttr, styleText) {
+  const BLOCK = /^(P|H1|H2|H3|UL|OL|LI|BLOCKQUOTE|PRE|DIV|SECTION|TABLE|THEAD|TBODY|TR|TD)$/;
+  const mkSpan = () => {
+    const s = document.createElement('span');
+    s.setAttribute(dataAttr, 'true');
+    s.setAttribute('style', styleText);
+    return s;
+  };
+  const tpl = document.createElement('template');
+  tpl.innerHTML = getRangeHTML(range);
+  const hasTopBlock = Array.from(tpl.content.childNodes)
+    .some(n => n.nodeType === Node.ELEMENT_NODE && BLOCK.test(n.tagName));
+  if (!hasTopBlock) {
+    const s = mkSpan();
+    while (tpl.content.firstChild) s.appendChild(tpl.content.firstChild);
+    tpl.content.appendChild(s);
+  } else {
+    markBlockwise(tpl.content, mkSpan, BLOCK);
+  }
+  document.execCommand('insertHTML', false, tpl.innerHTML);
+}
+
+function markBlockwise(container, mkSpan, BLOCK) {
+  Array.from(container.childNodes).forEach(node => {
+    if (node.nodeType === Node.ELEMENT_NODE && BLOCK.test(node.tagName)) {
+      const hasChildBlock = Array.from(node.children).some(c => BLOCK.test(c.tagName));
+      if (hasChildBlock) {
+        markBlockwise(node, mkSpan, BLOCK);          // 容器块（ul/table/blockquote 套 p 等）继续往里钻
+      } else if (node.childNodes.length) {
+        const s = mkSpan();                          // 叶子块：只包它的行内内容
+        while (node.firstChild) s.appendChild(node.firstChild);
+        node.appendChild(s);
+      }
+    } else if (node.nodeType === Node.TEXT_NODE) {
+      if (!node.textContent) return;
+      const s = mkSpan();
+      node.parentNode.insertBefore(s, node);
+      s.appendChild(node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const s = mkSpan();                            // 行内元素（strong/em 等）整体包
+      node.parentNode.insertBefore(s, node);
+      s.appendChild(node);
+    }
+  });
+}
+
 // ===================================================================
 // TEXT HIGHLIGHT (Navy bold)
 // ===================================================================
@@ -314,9 +362,8 @@ function applyTextHighlight() {
     updateToolbarStates();
     return;
   }
-  const selectedHTML = getRangeHTML(range);
   // 文字高亮：淡哆啦A梦黄底（#F5C518 淡版）+ 加粗，字色不变
-  document.execCommand('insertHTML', false, `<span data-editor-highlight="true" style="background:#FCE38B;font-weight:700">${selectedHTML}</span>`);
+  wrapRangeWithMarkSpan(range, 'data-editor-highlight', 'background:#FCE38B;font-weight:700');
   editor.focus({ preventScroll: true });
   scheduleUpdate();
   updateToolbarStates();
@@ -349,6 +396,61 @@ function getIntersectingHighlights(range) {
     } catch (e) {}
   });
   return Array.from(highlights);
+}
+
+// ===================================================================
+// TEXT GREEN（绿色强调：题头副标题 / 正文关键概念）
+// 选中文字 → 包成绿色 span；再点一次取消。题头标题默认全黑，靠它显式标绿。
+// ===================================================================
+function applyTextGreen() {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) {
+    alert('请先选中要变绿的文字');
+    return;
+  }
+  const range = getSelectionRangeInEditor();
+  if (!range) return;
+  const existing = getIntersectingGreens(range);
+  if (existing.length) {
+    existing.forEach(unwrapElement);
+    editor.focus({ preventScroll: true });
+    scheduleUpdate();
+    updateToolbarStates();
+    return;
+  }
+  wrapRangeWithMarkSpan(range, 'data-editor-green', 'color:#059669');
+  editor.focus({ preventScroll: true });
+  scheduleUpdate();
+  updateToolbarStates();
+}
+
+function getEditorGreen(node) {
+  let el = getElementFromNode(node);
+  while (el && el !== editor) {
+    if (el.getAttribute('data-editor-green') === 'true') return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+
+function isSelectionInEditorGreen() {
+  const range = getSelectionRangeInEditor();
+  if (!range) return false;
+  return !!getEditorGreen(range.startContainer) && !!getEditorGreen(range.endContainer);
+}
+
+function getIntersectingGreens(range) {
+  const greens = new Set();
+  const start = getEditorGreen(range.startContainer);
+  const end = getEditorGreen(range.endContainer);
+  if (start) greens.add(start);
+  if (end) greens.add(end);
+  editor.querySelectorAll('[data-editor-green="true"]').forEach(el => {
+    try {
+      if (range.intersectsNode(el)) greens.add(el);
+    } catch (e) {}
+  });
+  return Array.from(greens);
 }
 
 function getRangeHTML(range) {

@@ -155,6 +155,14 @@ function getAiPocketMonthLabel() {
   return `${now.getFullYear()}.${month}`;
 }
 
+// 题头配置（含默认值兜底，旧草稿/旧样式没有 aiPocket 字段也安全）
+function getAiPocket() {
+  return Object.assign({
+    card: true, brand: true, column: '意疏的AI口袋', month: '',
+    footer: '意疏的AI口袋', tag1: 'AI 入口', tag2: '实测教程', avatar: ''
+  }, (typeof STATE !== 'undefined' && STATE.aiPocket) || {});
+}
+
 function getAiPocketNavCaption(index) {
   return ['AI ENTRY', 'INSTALL', 'WECHAT ASK', 'SAFETY'][index] || `PART ${String(index + 1).padStart(2, '0')}`;
 }
@@ -377,7 +385,8 @@ function applyPreviewStyles() {
 
     applyHeadingStyle(h, mode.headingStyle, c, tag);
   });
-  if (aiPocket) ensureAiPocketPartsNav(preview, c);
+  // PARTS 横滑导航属于题头品牌件：题头卡或品牌件任一关掉就不出
+  if (aiPocket && getAiPocket().card && getAiPocket().brand) ensureAiPocketPartsNav(preview, c);
 
   // Blockquotes
   preview.querySelectorAll('blockquote').forEach(bq => {
@@ -1099,18 +1108,48 @@ function applyHeadingStyle(h, style, c, tag) {
       h.style.boxShadow = 'none';
       h.style.borderImage = 'none';
       if (tag === 'H1') {
+        // 空标题不渲染题头卡片：删掉标题文字后整张题头随之消失，不留空白卡
+        if (!h.textContent.trim()) { h.style.display = 'none'; break; }
+        // 只有第一个非空 H1 才是题头大卡；其余 H1 按普通小节标题排
+        const firstHeroH1 = Array.from(preview.querySelectorAll('h1')).find(x => x.textContent.trim());
+        if (h !== firstHeroH1) {
+          h.style.margin = '28px 0 14px';
+          h.style.padding = '0 0 0 10px';
+          h.style.borderLeft = `3px solid ${c.main}`;
+          h.style.borderRadius = '0';
+          h.style.background = 'transparent';
+          h.style.color = '#111827';
+          h.style.fontSize = '16px';
+          h.style.fontWeight = '900';
+          break;
+        }
+        const ap = getAiPocket();
+        // 关掉整张题头卡：第一个 H1 也按普通大标题排，不出大卡（标题里的「变绿」仍保留）
+        if (!ap.card) {
+          h.style.margin = '8px 0 24px';
+          h.style.padding = '0 0 0 12px';
+          h.style.borderLeft = `4px solid ${c.main}`;
+          h.style.borderRadius = '0';
+          h.style.background = 'transparent';
+          h.style.color = '#111827';
+          h.style.fontSize = '24px';
+          h.style.fontWeight = '900';
+          h.style.lineHeight = '1.2';
+          break;
+        }
         if (!h.dataset.aiPocketHeroAdded) {
-          const titleText = h.textContent.trim();
-          h.dataset.aiPocketTitle = titleText;
-          let first = titleText;
-          let second = '';
-          const monthLabel = getAiPocketMonthLabel();
-          if (titleText.includes('，')) {
-            const parts = titleText.split('，');
-            first = parts.shift() || titleText;
-            second = parts.join('，');
-          }
-          h.innerHTML = `<table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr><td style="border:0;padding:28px 24px 0;vertical-align:middle;text-align:left;"><span data-theme-role="meta" style="display:inline-block;margin:0;font-size:11px;font-weight:900;letter-spacing:3px;color:${c.main};line-height:1;">栏目 · 意疏的AI口袋</span><span style="display:inline-block;width:40px;height:1px;background:${alphaColor(c.main, 0.16, '#D1FAE5')};vertical-align:middle;margin-left:12px;"></span></td><td style="border:0;padding:28px 24px 0 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;"><span style="display:inline-block;margin:0;font-size:12px;font-weight:900;letter-spacing:1px;color:#111827;line-height:1;">${monthLabel}</span></td></tr></tbody></table><table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr><td style="vertical-align:middle;padding:34px 18px 28px 24px;border:0;width:100%;"><span data-theme-role="title-main" style="display:block;color:#111827;font-size:30px;font-weight:900;line-height:1.08;letter-spacing:-1px;">${escapeHtml(first)}</span>${second ? `<span data-theme-role="title-accent" style="display:block;margin-top:4px;color:${c.main};font-size:30px;font-weight:900;line-height:1.08;letter-spacing:-1px;">${escapeHtml(second)}</span>` : ''}<span style="display:block;width:56px;height:5px;border-radius:99px;background:${c.main};margin-top:22px;"></span></td><td style="vertical-align:middle;text-align:right;padding:34px 24px 28px 0;border:0;width:1%;white-space:nowrap;"><img src="${AI_POCKET_AVATAR_SRC}" alt="意疏的AI口袋" width="56" height="56" style="display:inline-block;width:56px;min-width:56px;max-width:56px;height:56px;min-height:56px;max-height:56px;border-radius:50%;border:3px solid ${c.sub || '#ECFDF5'};box-shadow:0 8px 18px ${alphaColor(c.main, 0.16, 'rgba(5,150,105,0.16)')};box-sizing:border-box;background:#FFFFFF;vertical-align:middle;"></td></tr></tbody></table><table data-theme-role="bar" style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;background:${c.main};"><tbody><tr><td style="border:0;padding:16px 24px;vertical-align:middle;text-align:left;"><span style="display:inline-block;font-size:15px;font-weight:900;color:#FFFFFF;line-height:1.2;letter-spacing:0;">意疏的AI口袋</span></td><td style="border:0;padding:16px 24px 16px 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;"><span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">AI 入口</span><span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">实测教程</span></td></tr></tbody></table>`;
+          // 保留标题里手动「变绿」的部分（span color），默认整行黑；不再按逗号自动分色
+          const titleHtml = h.innerHTML.trim();
+          h.dataset.aiPocketTitle = h.textContent.trim();
+          const monthLabel = ap.month || getAiPocketMonthLabel();
+          const avatarSrc = ap.avatar || AI_POCKET_AVATAR_SRC;
+          // 品牌件（栏目行 / 头像 / 底部署名标签条）整体由 ap.brand 开关控制
+          const metaRow = ap.brand ? `<table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr><td style="border:0;padding:28px 24px 0;vertical-align:middle;text-align:left;"><span data-theme-role="meta" style="display:inline-block;margin:0;font-size:11px;font-weight:900;letter-spacing:3px;color:${c.main};line-height:1;">${ap.column ? '栏目 · ' + escapeHtml(ap.column) : ''}</span><span style="display:inline-block;width:40px;height:1px;background:${alphaColor(c.main, 0.16, '#D1FAE5')};vertical-align:middle;margin-left:12px;"></span></td><td style="border:0;padding:28px 24px 0 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;"><span style="display:inline-block;margin:0;font-size:12px;font-weight:900;letter-spacing:1px;color:#111827;line-height:1;">${escapeHtml(monthLabel)}</span></td></tr></tbody></table>` : '';
+          const avatarCell = ap.brand ? `<td style="vertical-align:middle;text-align:right;padding:34px 24px 28px 0;border:0;width:1%;white-space:nowrap;"><img src="${avatarSrc}" alt="${escapeAttr(ap.column || '题头')}" width="56" height="56" style="display:inline-block;width:56px;min-width:56px;max-width:56px;height:56px;min-height:56px;max-height:56px;border-radius:50%;border:3px solid ${c.sub || '#ECFDF5'};box-shadow:0 8px 18px ${alphaColor(c.main, 0.16, 'rgba(5,150,105,0.16)')};box-sizing:border-box;background:#FFFFFF;vertical-align:middle;"></td>` : '';
+          const titlePad = ap.brand ? '34px 18px 28px 24px' : '30px 24px 26px 24px';
+          const titleTable = `<table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr><td style="vertical-align:middle;padding:${titlePad};border:0;width:100%;"><span data-theme-role="title-main" style="display:block;color:#111827;font-size:30px;font-weight:900;line-height:1.08;letter-spacing:-1px;">${titleHtml}</span><span style="display:block;width:56px;height:5px;border-radius:99px;background:${c.main};margin-top:22px;"></span></td>${avatarCell}</tr></tbody></table>`;
+          const bottomBar = ap.brand ? `<table data-theme-role="bar" style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;background:${c.main};"><tbody><tr><td style="border:0;padding:16px 24px;vertical-align:middle;text-align:left;"><span style="display:inline-block;font-size:15px;font-weight:900;color:#FFFFFF;line-height:1.2;letter-spacing:0;">${escapeHtml(ap.footer)}</span></td><td style="border:0;padding:16px 24px 16px 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;">${ap.tag1 ? `<span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">${escapeHtml(ap.tag1)}</span>` : ''}${ap.tag2 ? `<span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">${escapeHtml(ap.tag2)}</span>` : ''}</td></tr></tbody></table>` : '';
+          h.innerHTML = metaRow + titleTable + bottomBar;
           h.dataset.aiPocketHeroAdded = '1';
         }
         h.style.margin = '0 0 36px';

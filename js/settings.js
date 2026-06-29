@@ -48,6 +48,7 @@ function renderSettingsTab(tab) {
       <button class="settings-tab ${currentTab==='color'?'active':''}" onclick="renderSettingsTab('color')">配色</button>
       <button class="settings-tab ${currentTab==='spacing'?'active':''}" onclick="renderSettingsTab('spacing')">间距</button>
       <button class="settings-tab ${currentTab==='bg'?'active':''}" onclick="renderSettingsTab('bg')">背景</button>
+      <button class="settings-tab ${currentTab==='header'?'active':''}" onclick="renderSettingsTab('header')">题头</button>
     </div>
     <div id="settingsTabContent"></div>
   `;
@@ -57,8 +58,48 @@ function renderSettingsTab(tab) {
     case 'color': renderColorSettingsContent(content); break;
     case 'spacing': renderSpacingSettingsContent(content); break;
     case 'bg': renderBgSettingsContent(content); break;
+    case 'header': renderHeaderSettingsContent(content); break;
     default: renderFontSettingsContent(content);
   }
+}
+
+function renderHeaderSettingsContent(content) {
+  const ap = getAiPocket();
+  let html = '<div class="sp-section"><h4>题头开关</h4>';
+  html += `<div class="sp-row"><label style="flex:1">整张题头卡</label><input type="checkbox" ${ap.card?'checked':''} onchange="setAiPocket('card',this.checked);renderSettingsTab('header')"></div>`;
+  html += `<div class="sp-row"><label style="flex:1">显示品牌件（栏目/月份/头像/标签）</label><input type="checkbox" ${ap.brand?'checked':''} ${ap.card?'':'disabled'} onchange="setAiPocket('brand',this.checked);renderSettingsTab('header')"></div>`;
+  html += '</div>';
+  if (ap.card && ap.brand) {
+    html += '<div class="sp-section"><h4>品牌文字</h4>';
+    html += `<div class="sp-row"><label style="width:64px">栏目名</label><input type="text" value="${escapeAttr(ap.column)}" oninput="setAiPocket('column',this.value)" style="flex:1"></div>`;
+    html += `<div class="sp-row"><label style="width:64px">月份</label><input type="text" placeholder="留空=自动 ${escapeAttr(getAiPocketMonthLabel())}" value="${escapeAttr(ap.month)}" oninput="setAiPocket('month',this.value)" style="flex:1"></div>`;
+    html += `<div class="sp-row"><label style="width:64px">底部署名</label><input type="text" value="${escapeAttr(ap.footer)}" oninput="setAiPocket('footer',this.value)" style="flex:1"></div>`;
+    html += `<div class="sp-row"><label style="width:64px">标签 1</label><input type="text" value="${escapeAttr(ap.tag1)}" oninput="setAiPocket('tag1',this.value)" style="flex:1"></div>`;
+    html += `<div class="sp-row"><label style="width:64px">标签 2</label><input type="text" value="${escapeAttr(ap.tag2)}" oninput="setAiPocket('tag2',this.value)" style="flex:1"></div>`;
+    html += '</div>';
+    html += '<div class="sp-section"><h4>头像</h4>';
+    html += `<div class="sp-row"><img src="${escapeAttr(ap.avatar || AI_POCKET_AVATAR_SRC)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid #E5E7EB;flex:0 0 auto"><input type="file" accept="image/*" onchange="uploadAiPocketAvatar(this)" style="flex:1;margin-left:10px"></div>`;
+    if (ap.avatar) html += `<div class="sp-row"><button onclick="setAiPocket('avatar','');renderSettingsTab('header')" style="font-size:12px">恢复默认头像</button></div>`;
+    html += '</div>';
+  }
+  content.innerHTML = html;
+}
+
+function setAiPocket(key, val) {
+  if (!STATE.aiPocket) STATE.aiPocket = {};
+  STATE.aiPocket[key] = val;
+  updatePreview();
+}
+
+function uploadAiPocketAvatar(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  readImageFiles([file]).then(items => {
+    const src = items && items[0] && items[0].src;
+    if (!src) { alert('图片读取失败或格式不安全'); return; }
+    setAiPocket('avatar', src);
+    renderSettingsTab('header');
+  });
 }
 
 function renderFontSettingsContent(content) {
@@ -199,7 +240,24 @@ function sanitizeState(raw) {
     lineHeight: clampNumber(src.lineHeight, 1.2, 3.0, 1.75),
     paraSpacing: clampNumber(src.paraSpacing, 0.2, 3.0, 1.0),
     isMobile: Boolean(src.isMobile),
-    bg
+    bg,
+    aiPocket: sanitizeAiPocket(src.aiPocket)
+  };
+}
+
+// 题头配置清洗：undefined 字段回落默认值，空字符串保留（允许用户清空），头像走图片安全校验
+function sanitizeAiPocket(raw) {
+  const ap = (raw && typeof raw === 'object') ? raw : {};
+  const str = (v, def, max) => (v === undefined || v === null) ? def : String(v).trim().slice(0, max);
+  return {
+    card: ap.card !== false,
+    brand: ap.brand !== false,
+    column: str(ap.column, '意疏的AI口袋', 24),
+    month: str(ap.month, '', 16),
+    footer: str(ap.footer, '意疏的AI口袋', 24),
+    tag1: str(ap.tag1, 'AI 入口', 12),
+    tag2: str(ap.tag2, '实测教程', 12),
+    avatar: (typeof ap.avatar === 'string' && ap.avatar) ? (sanitizeImageSrc(ap.avatar) || '') : ''
   };
 }
 function sanitizeSavedStyle(item) {
