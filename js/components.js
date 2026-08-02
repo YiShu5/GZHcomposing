@@ -317,6 +317,37 @@ function wrapRangeWithMarkSpan(range, dataAttr, styleText) {
     markBlockwise(tpl.content, mkSpan, BLOCK);
   }
   document.execCommand('insertHTML', false, tpl.innerHTML);
+  restoreMarkAttr(dataAttr, styleText);
+}
+
+// 取一段内联样式的「有效声明」指纹：{ 属性: 归一化后的值 }。
+// 简写会被浏览器展开成一堆 initial 的长写，这里滤掉，只留真正设了值的。
+function markStyleSignature(styleText) {
+  const probe = document.createElement('span');
+  probe.setAttribute('style', styleText || '');
+  const sig = {};
+  Array.from(probe.style).forEach(prop => {
+    const v = probe.style.getPropertyValue(prop).trim();
+    if (v && v !== 'initial') sig[prop] = v;
+  });
+  return sig;
+}
+
+// execCommand('insertHTML') 把内容并回「只选中一部分」的块时，Chrome 会重新序列化边界上的
+// span：style 留着，data-* 全丢。取消标记(getIntersectingGreens/Highlights)靠 data 属性找元素，
+// 属性一丢首尾块就取消不掉。这里按 style 指纹把属性补回去。
+function restoreMarkAttr(dataAttr, styleText) {
+  const sig = markStyleSignature(styleText);
+  const props = Object.keys(sig);
+  if (!props.length) return;
+  editor.querySelectorAll('span[style]').forEach(span => {
+    // 已经带任一标记的不动，避免把变绿的 span 误认成高光（或反之）
+    if (span.hasAttribute('data-editor-green') || span.hasAttribute('data-editor-highlight')) return;
+    // 必须逐条对上指纹里的每个属性，值也要一致，才认定是刚才被剥掉属性的那个 span
+    if (props.every(p => span.style.getPropertyValue(p).trim() === sig[p])) {
+      span.setAttribute(dataAttr, 'true');
+    }
+  });
 }
 
 function markBlockwise(container, mkSpan, BLOCK) {
@@ -556,6 +587,11 @@ function showDesignLayoutPanel() {
   if (sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
     savedEditorRange = sel.getRangeAt(0).cloneRange();
   }
+  // 品牌手册有自己一套组件库（js/brand-components.js），走独立面板
+  if (STATE.mode === 'brand-manual' && typeof showBrandComponentPanel === 'function') {
+    showBrandComponentPanel();
+    return;
+  }
   const c = getColors();
   const main = c.main || '#059669';
   showModal(`
@@ -595,6 +631,44 @@ function setupDesignLayoutPanelEvents(main) {
       if (action === 'ending') insertDesignEnding();
     });
   });
+}
+
+// ===================================================================
+// 品牌手册组件面板
+// ===================================================================
+function showBrandComponentPanel() {
+  const c = getColors();
+  const main = c.main || '#03ADF0';
+  const items = BRAND_COMPONENTS.map(comp => `
+      <button type="button" data-brand-component="${escapeAttr(comp.id)}" style="border:2px solid #e5e7eb;border-radius:8px;padding:14px;cursor:pointer;transition:all .2s;background:#fff;text-align:left">
+        <div style="font-size:13px;font-weight:700;color:${main};margin-bottom:4px">${escapeHtml(comp.name)}</div>
+        <div style="font-size:11px;color:#999">${escapeHtml(comp.desc)}</div>
+      </button>`).join('');
+  showModal(`
+    <h3>品牌手册组件</h3>
+    <p style="font-size:12px;color:#999;margin-bottom:16px">插入后直接在编辑器里改文字。配色跟随当前配色方案。</p>
+    <div id="brandComponentChoices" style="display:grid;grid-template-columns:1fr;gap:10px">${items}</div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="hideModal()">取消</button>
+    </div>
+  `);
+  const panel = $('brandComponentChoices');
+  if (!panel) return;
+  panel.querySelectorAll('[data-brand-component]').forEach(btn => {
+    btn.addEventListener('mouseenter', () => { btn.style.borderColor = main; });
+    btn.addEventListener('mouseleave', () => { btn.style.borderColor = '#e5e7eb'; });
+    btn.addEventListener('click', () => insertBrandComponent(btn.dataset.brandComponent));
+  });
+}
+
+function insertBrandComponent(id) {
+  // 署名卡一篇只该有一个：已经有了就问一次，避免重复插
+  if (id === 'signature' && editor.querySelector('[data-theme-component="brand-signature"]')) {
+    if (!confirm('文章里已经有一个署名卡了，通常一篇只放一个。仍要再插一个吗？')) return;
+  }
+  const html = buildBrandComponentHTML(id);
+  if (!html) return;
+  insertDesignHTML(html);
 }
 
 function insertDesignHTML(html) {

@@ -382,7 +382,7 @@ function normalizeWechatInlineLayouts(root) {
     }
   });
 
-  Array.from(root.querySelectorAll('[data-theme-component="tip-card"], [data-theme-component="design-heading"], [data-theme-component="design-intro"], [data-theme-component="design-ending"]')).forEach(el => {
+  Array.from(root.querySelectorAll('[data-theme-component="tip-card"], [data-theme-component="design-heading"], [data-theme-component="design-intro"], [data-theme-component="design-ending"], [data-theme-component="brand-toc"], [data-theme-component="brand-quote"], [data-theme-component="brand-terminal"], [data-theme-component="brand-datacard"], [data-theme-component="brand-notice"], [data-theme-component="brand-enddiv"], [data-theme-component="brand-signature"]')).forEach(el => {
     if ((el.style.display || '').toLowerCase().includes('flex')) el.style.display = 'block';
     el.style.width = '100%';
     // 强制 max-width:100%，避免 600px 在 Word 中转后被转写为 width:600px 触发微信「宽度异常」

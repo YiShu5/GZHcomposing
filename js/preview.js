@@ -791,7 +791,9 @@ function applyThemedComponents(c) {
     if (badge && !badge.hasAttribute('data-badge-has-image')) {
       badge.style.background = `linear-gradient(135deg, ${alphaColor(main,0.14,sub)}, ${alphaColor(accent,0.12,'#fff')})`;
     }
-    if (bar) bar.style.background = grad;
+    // 底栏保持组件自己写的纯色（与题头蓝条统一）：这里只在组件没写背景时兜底，
+    // 不再无条件刷渐变——之前强刷 grad 会把纯蓝条变成蓝金渐变，和题头对不上
+    if (bar && !(bar.getAttribute('style') || '').includes('background')) bar.style.background = main;
     if (chipMain) {
       chipMain.style.background = main;
       chipMain.style.color = '#fff';
