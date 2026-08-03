@@ -424,6 +424,17 @@ function setupEditorEvents() {
       document.execCommand('insertText', false, '    ');
       return;
     }
+    // 实时 Markdown：中文输入法组字期间不能动 DOM，否则候选框错位
+    if (!e.isComposing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (e.key === ' ' && typeof tryLiveMarkdownBlock === 'function' && tryLiveMarkdownBlock()) {
+        e.preventDefault();
+        return;
+      }
+      if (e.key === 'Enter' && typeof tryLiveMarkdownHr === 'function' && tryLiveMarkdownHr()) {
+        e.preventDefault();
+        return;
+      }
+    }
     if (e.key === 'Backspace' || e.key === 'Delete') {
       const sel = window.getSelection();
       if (!sel || sel.rangeCount === 0) return;
