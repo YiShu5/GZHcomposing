@@ -476,6 +476,17 @@ body::before{
 .img-upload-area:hover{border-color:var(--dora-yellow);color:var(--dora-deep);background:var(--dora-cream)}
 .img-upload-area input[type=file]{display:none}
 .img-layout-note{font-size:11px;color:var(--text3);line-height:1.5;margin:-2px 0 10px}
+/* 插图面板的样式微调区：默认折叠，常用路径只剩布局/选图/对齐/宽度 */
+.img-advanced{margin:0 0 10px;border-top:1px dashed var(--dora-light);padding-top:8px}
+/* .img-panel .img-options 带显式 display:flex，折叠时后代仍会渲染 —— 收起时显式压掉 */
+.img-advanced:not([open]) .img-options{display:none}
+.img-advanced>summary{list-style:none;cursor:pointer;font-size:12px;font-weight:700;color:var(--dora-deep);padding:4px 2px;display:flex;align-items:center;gap:6px}
+.img-advanced>summary::-webkit-details-marker{display:none}
+.img-advanced>summary::before{content:'▸';font-size:10px;color:var(--dora-blue);transition:transform .15s}
+.img-advanced[open]>summary::before{transform:rotate(90deg)}
+.img-advanced>summary:hover{color:var(--dora-blue)}
+.img-advanced-hint{margin-left:auto;font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.3px}
+.img-advanced[open]>summary .img-advanced-hint{opacity:0}
 .hr-panel{position:absolute;top:100%;left:0;background:var(--white);border:2px solid var(--dora-light);border-radius:16px;box-shadow:0 8px 32px rgba(1,111,173,0.15);width:220px;padding:12px;z-index:240;display:none}
 .hr-panel.show{display:block}
 .hr-option{width:100%;padding:10px 12px;border-radius:12px;color:var(--dora-deep);font-size:12px;text-align:left;display:block;transition:all .15s}

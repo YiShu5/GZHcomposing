@@ -135,21 +135,26 @@
           <input type="number" id="imgWidth" placeholder="宽度%" value="100" min="10" max="100" style="width:70px">
           <span style="font-size:11px;color:#999">%</span>
         </div>
-        <div class="img-options" style="margin-top:8px">
-          <label style="font-size:11px;color:#666;margin-right:6px">圆角</label>
-          <input type="number" id="imgRadius" placeholder="12" value="12" min="0" max="50" style="width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">
-          <span style="font-size:11px;color:#999;margin-right:8px">px</span>
-          <label style="font-size:11px;color:#666;margin-right:6px">边框</label>
-          <input type="number" id="imgBorderW" placeholder="0" value="0" min="0" max="10" style="width:40px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">
-          <span style="font-size:11px;color:#999">px</span>
-        </div>
-        <div class="img-options" id="imgBorderColors" style="margin-top:6px;display:none">
-          <label style="font-size:11px;color:#666;margin-right:4px">边框色1</label>
-          <input type="color" id="imgBorderC1" value="#E5E7EB" style="width:28px;height:24px;border:1px solid #ddd;border-radius:4px;padding:1px;cursor:pointer">
-          <label style="font-size:11px;color:#666;margin:0 4px 0 8px">色2</label>
-          <input type="color" id="imgBorderC2" value="#0066FF" style="width:28px;height:24px;border:1px solid #ddd;border-radius:4px;padding:1px;cursor:pointer">
-          <span style="font-size:10px;color:#999;margin-left:4px">渐变混合</span>
-        </div>
+        <!-- 样式微调：默认折叠。圆角/边框跟随当前配色方案，多数插图无需展开 -->
+        <details class="img-advanced" id="imgAdvanced">
+          <summary>样式微调<span class="img-advanced-hint">圆角 · 边框</span></summary>
+          <div class="img-options" style="margin-top:8px">
+            <label style="font-size:11px;color:#666;margin-right:6px">圆角</label>
+            <input type="number" id="imgRadius" placeholder="12" value="12" min="0" max="50" style="width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">
+            <span style="font-size:11px;color:#999;margin-right:8px">px</span>
+            <label style="font-size:11px;color:#666;margin-right:6px">边框</label>
+            <input type="number" id="imgBorderW" placeholder="0" value="0" min="0" max="10" style="width:40px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">
+            <span style="font-size:11px;color:#999">px</span>
+          </div>
+          <div class="img-options" id="imgBorderColors" style="margin-top:6px;display:none">
+            <label style="font-size:11px;color:#666;margin-right:4px">边框色1</label>
+            <input type="color" id="imgBorderC1" value="#E5E7EB" style="width:28px;height:24px;border:1px solid #ddd;border-radius:4px;padding:1px;cursor:pointer">
+            <label style="font-size:11px;color:#666;margin:0 4px 0 8px">色2</label>
+            <input type="color" id="imgBorderC2" value="#0066FF" style="width:28px;height:24px;border:1px solid #ddd;border-radius:4px;padding:1px;cursor:pointer">
+            <span style="font-size:10px;color:#999;margin-left:4px">渐变混合</span>
+          </div>
+        </details>
+        <!-- badge 尺寸只在点击题头 badge 进入时出现，此时它是主要决定，不进折叠 -->
         <div class="img-options" id="imgBadgeSizeRow" style="display:none;margin-top:8px;flex-wrap:wrap;gap:6px">
           <label style="font-size:11px;color:#666;margin-right:2px">badge 尺寸</label>
           <input type="number" id="imgBadgeW" value="120" min="40" max="320" style="width:54px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">
