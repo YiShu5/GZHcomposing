@@ -741,7 +741,58 @@ function buildDesignIntroHTML(c) {
     </section>
   </section>`;
 }
-function insertDesignIntro() { insertDesignHTML(buildDesignIntroHTML(getColors()) + '<p><br></p>'); }
+// 「意疏的样式」下的开头框：改用题头（ai-pocket-heading）的设计语言，
+// 品牌件（栏目行 / 头像 / 底部署名标签条）沿用题头那一套，配置也复用 getAiPocket()，
+// 这样改题头设置开头框跟着变，两者不会各写一份对不上。
+function buildAiPocketIntroHTML(c) {
+  const main = c.main || '#059669';
+  const sub = c.sub || '#ECFDF5';
+  const muted = c.muted || '#9CA3AF';
+  const ap = typeof getAiPocket === 'function' ? getAiPocket() : { brand: true, column: '意疏的AI口袋', month: '', footer: '意疏的AI口袋', tag1: 'AI 入口', tag2: '实测教程', avatar: '' };
+  const monthLabel = ap.month || (typeof getAiPocketMonthLabel === 'function' ? getAiPocketMonthLabel() : '');
+  const avatarSrc = ap.avatar || (typeof AI_POCKET_AVATAR_SRC !== 'undefined' ? AI_POCKET_AVATAR_SRC : '');
+  const soft = typeof alphaColor === 'function' ? alphaColor(main, 0.16, sub) : sub;
+  const border = typeof alphaColor === 'function' ? alphaColor(main, 0.15, 'rgba(5,150,105,0.15)') : sub;
+
+  // 栏目行：和题头 metaRow 同构（左栏目名 + 细横线，右月份）
+  const metaRow = ap.brand ? `<table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr>
+        <td style="border:0;padding:28px 24px 0;vertical-align:middle;text-align:left;"><span data-theme-role="meta" style="display:inline-block;margin:0;font-size:11px;font-weight:900;letter-spacing:3px;color:${main};line-height:1;">${ap.column ? '栏目 · ' + escapeHtml(ap.column) : ''}</span><span style="display:inline-block;width:40px;height:1px;background:${soft};vertical-align:middle;margin-left:12px;"></span></td>
+        <td style="border:0;padding:28px 24px 0 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;"><span style="display:inline-block;margin:0;font-size:12px;font-weight:900;letter-spacing:1px;color:#111827;line-height:1;">${escapeHtml(monthLabel)}</span></td>
+      </tr></tbody></table>` : '';
+
+  // 头像：沿用题头的 56px 圆形 + 描边（宽高三件套锁死，公众号不会拉伸）
+  const avatarCell = ap.brand && avatarSrc ? `<td style="vertical-align:middle;text-align:right;padding:22px 24px 18px 0;border:0;width:1%;white-space:nowrap;"><img src="${avatarSrc}" alt="${escapeAttr(ap.column || '开头')}" data-theme-avatar="1" width="56" height="56" style="display:inline-block;width:56px;min-width:56px;max-width:56px;height:56px;min-height:56px;max-height:56px;border-radius:50%;border:3px solid ${sub};box-sizing:border-box;background:#FFFFFF;vertical-align:middle;"></td>` : '';
+
+  // 主行：删除线旧句 + 两行大标题 + 题头那根 56x5 圆角色条 + 关键词行
+  const mainRow = `<table style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;"><tbody><tr>
+        <td style="vertical-align:middle;padding:22px 18px 18px 24px;border:0;width:100%;">
+          <p data-theme-role="title" style="margin:0;font-size:30px;font-weight:900;color:#111827;line-height:1.08;letter-spacing:-1px;">一篇文章</p>
+          <p data-theme-role="highlight" style="margin:0;font-size:30px;font-weight:900;color:${main};line-height:1.08;letter-spacing:-1px;">讲清一个流程</p>
+          <span style="display:block;width:56px;height:5px;border-radius:99px;background:${main};margin-top:22px;"></span>
+          <p data-theme-role="body" style="margin:16px 0 0;font-size:12px;color:${muted};line-height:1.7;letter-spacing:0.5px;">节点 · 关键词 · 结论</p>
+        </td>${avatarCell}
+      </tr></tbody></table>`;
+
+  // 底栏：题头 bottomBar 同构，纯色 main + 两个半透明标签
+  const bottomBar = ap.brand ? `<table data-theme-role="bar" style="width:100%;border-collapse:collapse;border-spacing:0;border:0;margin:0;background:${main};"><tbody><tr>
+        <td style="border:0;padding:16px 24px;vertical-align:middle;text-align:left;"><span style="display:inline-block;font-size:15px;font-weight:900;color:#FFFFFF;line-height:1.2;">${escapeHtml(ap.footer || '')}</span></td>
+        <td style="border:0;padding:16px 24px 16px 8px;vertical-align:middle;text-align:right;width:1%;white-space:nowrap;">${ap.tag1 ? `<span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">${escapeHtml(ap.tag1)}</span>` : ''}${ap.tag2 ? `<span style="display:inline-block;margin-left:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,0.18);font-size:11px;font-weight:900;color:#FFFFFF;line-height:1;letter-spacing:1px;">${escapeHtml(ap.tag2)}</span>` : ''}</td>
+      </tr></tbody></table>` : '';
+
+  return `<section data-theme-component="design-intro" data-intro-variant="ai-pocket" style="margin:0 0 36px;background:#FBFEFC;border:1.5px solid ${border};border-radius:22px;overflow:hidden;width:100%;box-sizing:border-box;">
+    ${metaRow}
+    ${mainRow}
+    ${bottomBar}
+  </section>`;
+}
+
+function insertDesignIntro() {
+  // 意疏的样式走题头设计语言；卡片精排保持原来的哆啦A梦蓝金开头框不动
+  const build = (typeof STATE !== 'undefined' && STATE.mode === 'ai-pocket-green')
+    ? buildAiPocketIntroHTML
+    : buildDesignIntroHTML;
+  insertDesignHTML(build(getColors()) + '<p><br></p>');
+}
 
 function buildDesignHeadingHTML(c) {
   _designSectionCounter++;

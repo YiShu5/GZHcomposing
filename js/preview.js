@@ -635,6 +635,9 @@ function applyPreviewStyles() {
     // 跳过 design-intro 的 badge 缩略图：它有自己的固定宽高 + object-fit，
     // 被通用 img 样式（height:auto / margin:8px 0）覆盖会导致缩略图错位甚至消失
     if (img.closest('[data-theme-role="badge"]')) return;
+    // 题头变体开头框的圆形头像：和题头头像同款，56px 圆形 + 描边，
+    // 走下面的通用/aiPocket 分支会被改成 height:auto + 圆角 8px + 去描边，圆形塌成圆角方块
+    if (img.hasAttribute('data-theme-avatar')) return;
     img.style.maxWidth = img.style.maxWidth || '100%';
     if (!img.style.borderRadius) img.style.borderRadius = '12px';
     img.style.height = 'auto';
