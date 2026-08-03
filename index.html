@@ -239,20 +239,25 @@
       <button class="btn-secondary" onclick="toggleDropdown('exportDropdown')">📤 导出 ▾</button>
       <div class="dropdown-menu" id="exportDropdown">
         <button onclick="exportMarkdown();closeDropdowns()">📝 导出 Markdown</button>
-        <button onclick="exportStyleJSON();closeDropdowns()">⚙️ 导出样式 JSON</button>
+        <button onclick="exportStyleJSON();closeDropdowns()">⚙️ 样式 JSON（开发者）</button>
       </div>
     </div>
     <div class="dropdown-wrap">
       <button class="btn-secondary" onclick="toggleDropdown('importDropdown')">📥 导入 ▾</button>
       <div class="dropdown-menu" id="importDropdown">
         <button onclick="importMarkdown();closeDropdowns()">📄 导入 Markdown</button>
-        <button onclick="importStyleJSON();closeDropdowns()">⚙️ 导入样式 JSON</button>
+        <button onclick="importStyleJSON();closeDropdowns()">⚙️ 样式 JSON（开发者）</button>
       </div>
     </div>
   </div>
   <div class="btn-group-right">
-    <button class="btn-secondary" onclick="exportHTML()">导出 HTML</button>
-    <button class="btn-secondary" id="copyHtmlBtn" onclick="copyHTMLCode()">复制为 HTML</button>
+    <div class="dropdown-wrap">
+      <button class="btn-secondary" onclick="toggleDropdown('moreExportDropdown')" title="其他导出方式">⋯ 更多</button>
+      <div class="dropdown-menu dropdown-menu-right" id="moreExportDropdown">
+        <button id="copyHtmlBtn" onclick="copyHTMLCode();closeDropdowns()">复制为 HTML</button>
+        <button onclick="exportHTML();closeDropdowns()">导出 HTML 文件</button>
+      </div>
+    </div>
     <button class="btn-primary btn-publish" id="copyBtn" onclick="copyToWechat()">🚀 一键复制到公众号</button>
   </div>
 </div>

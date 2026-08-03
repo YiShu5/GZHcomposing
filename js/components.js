@@ -671,9 +671,39 @@ function insertBrandComponent(id) {
   insertDesignHTML(html);
 }
 
+// 设计组件是块级 section/table，必须落在 editor 的直接子层。
+// 若光标在某个段落里，插进去会变成 <p><section>…</section></p> —— 段落包着块级元素，
+// 浏览器无法把光标放到它前后，表现为「删不掉的空框」。插入前先把光标提到顶层。
+function liftRangeToEditorTopLevel() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  let node = range.startContainer.nodeType === Node.ELEMENT_NODE
+    ? range.startContainer
+    : range.startContainer.parentElement;
+  if (!node || !editor.contains(node)) return;
+  while (node && node.parentElement !== editor) node = node.parentElement;
+  if (!node || node === editor) return;
+
+  const lifted = document.createRange();
+  const isEmpty = !(node.textContent || '').trim() && !node.querySelector('img');
+  if (isEmpty) {
+    // 空段落本身没内容，直接顶掉它，避免插入后留一个空壳
+    lifted.setStartBefore(node);
+    lifted.collapse(true);
+    node.remove();
+  } else {
+    lifted.setStartAfter(node);
+    lifted.collapse(true);
+  }
+  sel.removeAllRanges();
+  sel.addRange(lifted);
+}
+
 function insertDesignHTML(html) {
   restoreEditorRange(savedEditorRange);
   savedEditorRange = null;
+  liftRangeToEditorTopLevel();
   insertSafeHTML(html);
   hideModal();
   editor.focus({ preventScroll: true });

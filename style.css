@@ -377,6 +377,8 @@ body::before{
 .dropdown-wrap{position:relative}
 .dropdown-menu{display:none;position:absolute;bottom:calc(100% + 8px);left:0;min-width:168px;background:#fff;border:1.5px solid var(--dora-light);border-radius:14px;box-shadow:0 4px 20px rgba(1,111,173,0.14);padding:6px;z-index:300}
 .dropdown-menu.open{display:block}
+/* 底栏右侧的「⋯ 更多」贴着窗口右缘，向左展开避免溢出 */
+.dropdown-menu-right{left:auto;right:0}
 .dropdown-menu button{display:block;width:100%;text-align:left;padding:9px 14px;border:none;background:none;border-radius:9px;font-size:13px;color:var(--dora-deep);cursor:pointer;white-space:nowrap}
 .dropdown-menu button:hover{background:var(--dora-cream)}
 /* 一键复制：页面最高视觉权重的 CTA —— 蓝色实心、白字、拉满编辑器底部 */

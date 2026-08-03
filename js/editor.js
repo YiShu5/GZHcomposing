@@ -231,6 +231,39 @@ function ensureEndingBlockAtEnd() {
   }
 }
 
+// 光标塌缩时，找出紧邻它的设计组件整块并删除。
+// Backspace 看光标前一个块，Delete 看后一个块。返回是否删掉了东西。
+const DESIGN_COMPONENT_SELECTOR = '[data-theme-component],[data-ending-block]';
+function deleteAdjacentDesignComponent(range, key) {
+  // 先看光标是不是就落在组件内部（组件里没有可编辑文本，点进去只能停在边缘）
+  const startEl = range.startContainer.nodeType === Node.ELEMENT_NODE
+    ? range.startContainer
+    : range.startContainer.parentElement;
+  if (!startEl || !editor.contains(startEl)) return false;
+  const inside = startEl.closest(DESIGN_COMPONENT_SELECTOR);
+  if (inside && editor.contains(inside)) {
+    inside.remove();
+    return true;
+  }
+
+  // 光标在编辑器顶层的某个块里，且该块为空 —— 取相邻的兄弟块
+  const block = topLevelBlockOf(startEl);
+  if (!block) return false;
+  if ((block.textContent || '').trim()) return false;
+  if (block.querySelector('img')) return false;
+
+  const sibling = key === 'Backspace' ? block.previousElementSibling : block.nextElementSibling;
+  if (!sibling) return false;
+  if (!sibling.matches(DESIGN_COMPONENT_SELECTOR)) return false;
+  sibling.remove();
+  return true;
+}
+function topLevelBlockOf(el) {
+  let node = el;
+  while (node && node.parentElement !== editor) node = node.parentElement;
+  return node && editor.contains(node) ? node : null;
+}
+
 function movePastePointBeforeEndingIfNeeded() {
   const ending = editor.querySelector('[data-ending-block]');
   const range = getSelectionRangeInEditor();
@@ -395,6 +428,13 @@ function setupEditorEvents() {
       const sel = window.getSelection();
       if (!sel || sel.rangeCount === 0) return;
       const range = sel.getRangeAt(0);
+      // 设计组件（开头框 / 小标题 / 结尾）是整块 section/table，内部没有可编辑文本节点
+      // 光标停在它前后时浏览器无处可删，表现为「删不掉的空框」。这里整块删掉。
+      if (range.collapsed && deleteAdjacentDesignComponent(range, e.key)) {
+        e.preventDefault();
+        editor.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
       if (range.collapsed) return;
       if (range.startContainer !== range.endContainer) return;
       if (range.endOffset - range.startOffset !== 1) return;
