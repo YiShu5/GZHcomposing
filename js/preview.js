@@ -1447,6 +1447,7 @@ function applyMode(mode) {
   STATE.titleFont = mode.titleFont;
   STATE.bodyFont = mode.bodyFont;
   STATE.colorScheme = mode.color;
+  STATE.brandTheme = null; // 切模式回到该模式的原版配色
   STATE.customColors = null;
   STATE.lineHeight = mode.lineHeight;
   STATE.paraSpacing = mode.paraSpacing;

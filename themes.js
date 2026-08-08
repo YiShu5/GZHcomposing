@@ -7,6 +7,7 @@ const STATE = {
   titleFont: 1,
   bodyFont: 0,
   colorScheme: 0, // index in COLOR_SCHEMES; 0=哆啦A梦
+  brandTheme: null, // 品牌手册模式下选中的子主题 id，null=蓝金原版
   customColors: null,
   lineHeight: 1.85,
   paraSpacing: 1.2,
@@ -58,7 +59,14 @@ const BODY_FONTS = [
 // ===================================================================
 const COLOR_SCHEMES = [
   { name:'哆啦A梦', main:'#03ADF0', sub:'#E0F4FE', accent:'#F5C518', deep:'#016FAD', text:'#2B2B2B', bg:'#F5F3F0', gradient:'linear-gradient(135deg, #016FAD 0%, #03ADF0 50%, #F5C518 100%)' },
-  { name:'AI 口袋绿', main:'#059669', sub:'#ECFDF5', accent:'#10B981', deep:'#065F46', text:'#374151', bg:'#FFFFFF', muted:'#9CA3AF', line:'#E5E7EB', paper:'#FAFAFA', gradient:'linear-gradient(90deg, #059669, #10B981)' }
+  { name:'AI 口袋绿', main:'#059669', sub:'#ECFDF5', accent:'#10B981', deep:'#065F46', text:'#374151', bg:'#FFFFFF', muted:'#9CA3AF', line:'#E5E7EB', paper:'#FAFAFA', gradient:'linear-gradient(90deg, #059669, #10B981)' },
+  // ↓ 品牌手册子主题配色（索引 2-7），供 BRAND_THEMES 引用
+  { name:'摸鱼绿', brandOnly:true, main:'#2F6B4F', sub:'#EAF2ED', accent:'#7FA98B', deep:'#1F4A37', text:'#2C332E', bg:'#FFFFFF', muted:'#8B9790', line:'#DDE7E1', paper:'#F7FAF8', gradient:'linear-gradient(90deg, #1F4A37, #7FA98B)' },
+  { name:'红白', brandOnly:true, main:'#C8322B', sub:'#FDECEA', accent:'#E8574E', deep:'#8E211C', text:'#262626', bg:'#FFFFFF', muted:'#9C8F8E', line:'#F0DEDC', paper:'#FCF8F7', gradient:'linear-gradient(90deg, #8E211C, #E8574E)' },
+  { name:'石墨极简', brandOnly:true, main:'#3A3F45', sub:'#F1F2F4', accent:'#6B7280', deep:'#1F2328', text:'#24282D', bg:'#FFFFFF', muted:'#9AA1A9', line:'#E3E5E8', paper:'#FAFAFB', gradient:'linear-gradient(90deg, #1F2328, #6B7280)' },
+  { name:'留白禅意', brandOnly:true, main:'#6B6255', sub:'#F6F3EC', accent:'#A89C88', deep:'#463F35', text:'#33302B', bg:'#FFFDF9', muted:'#A39B8E', line:'#E8E2D6', paper:'#FBF9F4', gradient:'linear-gradient(90deg, #463F35, #A89C88)' },
+  { name:'摸鱼票据', brandOnly:true, main:'#8A5A2B', sub:'#FBF3E7', accent:'#C98A3E', deep:'#5C3A17', text:'#2E2A25', bg:'#FFFCF6', muted:'#A89578', line:'#EDE0CB', paper:'#FCF7EC', gradient:'linear-gradient(90deg, #5C3A17, #C98A3E)' },
+  { name:'橄榄手记', brandOnly:true, main:'#5B6B3A', sub:'#F0F2E6', accent:'#8CA05E', deep:'#3B4726', text:'#2F332A', bg:'#FFFFFC', muted:'#96A07E', line:'#E2E7D3', paper:'#F9FAF3', gradient:'linear-gradient(90deg, #3B4726, #8CA05E)' }
 ];
 
 // ===================================================================
@@ -99,6 +107,22 @@ const MODE_META = {
   'ai-pocket-card': { emoji:'▣', color:'#016FAD' },
   'brand-manual': { emoji:'🔖', color:'#F5C518' },
 };
+
+// ===================================================================
+// BRAND MANUAL SUB-THEMES
+// 品牌手册模式下的 6 套子主题。color 指向 COLOR_SCHEMES 的索引，
+// 其余字段留空则沿用 brand-manual 模式本身的值。
+// 配色与字体组合为本项目自行实现，未复制任何第三方代码。
+// ===================================================================
+const BRAND_THEMES = [
+  { id:'moyu-green',   name:'摸鱼绿',   desc:'低饱和绿 · 上班能看',   color:2, titleFont:1, bodyFont:0 },
+  { id:'red-white',    name:'红白',     desc:'正红留白 · 干脆利落',   color:3, titleFont:1, bodyFont:0 },
+  { id:'graphite',     name:'石墨极简', desc:'灰阶 · 只剩结构',       color:4, titleFont:3, bodyFont:1 },
+  { id:'zen-space',    name:'留白禅意', desc:'宋体 · 呼吸感',         color:5, titleFont:2, bodyFont:2, lineHeight:2.0, paraSpacing:1.5 },
+  { id:'moyu-receipt', name:'摸鱼票据', desc:'牛皮暖棕 · 小票质感',   color:6, titleFont:1, bodyFont:1 },
+  { id:'olive-notes',  name:'橄榄手记', desc:'橄榄 + 楷体 · 手写感',  color:7, titleFont:2, bodyFont:3 }
+];
+const BRAND_THEME_MODE_ID = 'brand-manual';
 
 const AI_POCKET_MODE_IDS = ['ai-pocket-green', 'ai-pocket-card'];
 function isAiPocketModeId(id) {

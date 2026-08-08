@@ -119,6 +119,8 @@ function renderFontSettingsContent(content) {
 function renderColorSettingsContent(content) {
   let html = '<div class="sp-section"><h4>预设配色</h4><div class="color-row">';
   COLOR_SCHEMES.forEach((cs,i) => {
+    // 品牌手册子主题配色只在品牌手册模式下露出，避免污染其他模式的配色选择
+    if (cs.brandOnly && STATE.mode !== BRAND_THEME_MODE_ID) return;
     const active = (!STATE.customColors && STATE.colorScheme === i) ? 'active' : '';
     html += `<div class="color-chip ${active}" title="${escapeAttr(cs.name)}" onclick="selectColorScheme(${i})"><span style="background:${escapeAttr(cs.main)}"></span><span style="background:${escapeAttr(cs.accent)}"></span><span style="background:${escapeAttr(cs.sub)}"></span></div>`;
   });
@@ -142,6 +144,12 @@ function renderColorSettingsContent(content) {
 function selectColorScheme(i) {
   STATE.colorScheme = i;
   STATE.customColors = null;
+  // 手动改配色后，子主题高亮跟着走：命中就高亮，没命中就取消
+  if (STATE.mode === BRAND_THEME_MODE_ID) {
+    const hit = BRAND_THEMES.find(t => t.color === i);
+    STATE.brandTheme = hit ? hit.id : null;
+    syncBrandThemeRow();
+  }
   updatePreview();
   renderSettingsTab('color');
 }
@@ -231,8 +239,11 @@ function sanitizeState(raw) {
   }
   const mode = MODES.some(m => m.id === src.mode) ? src.mode : STATE.mode;
   const bg = BG_TEXTURES.some(b => b.id === src.bg) ? src.bg : 'plain';
+  const brandTheme = (mode === BRAND_THEME_MODE_ID && BRAND_THEMES.some(t => t.id === src.brandTheme))
+    ? src.brandTheme : null;
   return {
     mode,
+    brandTheme,
     titleFont: Math.round(clampNumber(src.titleFont, 0, TITLE_FONTS.length - 1, STATE.titleFont)),
     bodyFont: Math.round(clampNumber(src.bodyFont, 0, BODY_FONTS.length - 1, STATE.bodyFont)),
     colorScheme: Math.round(colorIdx),
@@ -367,7 +378,65 @@ function syncQuickStyleButtons() {
   document.querySelectorAll('[data-quick-style]').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-quick-style') === STATE.mode);
   });
+  syncBrandThemeRow();
 }
+
+// ===================================================================
+// 品牌手册子主题（6 套）
+// ===================================================================
+function renderBrandThemeRow() {
+  const row = $('brandThemeRow');
+  if (!row || row.dataset.rendered === '1') return;
+  let html = '<span class="btr-label">② 品牌子主题<span class="btr-hint">点上方卡片回蓝金原版</span></span>';
+  BRAND_THEMES.forEach(t => {
+    const cs = COLOR_SCHEMES[t.color] || COLOR_SCHEMES[0];
+    html += `<button class="brand-theme-chip" type="button" role="radio" aria-checked="false"
+      data-brand-theme="${escapeAttr(t.id)}" title="${escapeAttr(t.name + ' · ' + t.desc)}">
+      <span class="btc-swatch"><i style="background:${escapeAttr(cs.main)}"></i><i style="background:${escapeAttr(cs.accent)}"></i><i style="background:${escapeAttr(cs.sub)}"></i></span>
+      <span class="btc-name">${escapeAttr(t.name)}</span></button>`;
+  });
+  row.innerHTML = html;
+  row.dataset.rendered = '1';
+}
+
+function syncBrandThemeRow() {
+  const row = $('brandThemeRow');
+  if (!row) return;
+  const on = STATE.mode === BRAND_THEME_MODE_ID;
+  if (on) renderBrandThemeRow();
+  row.hidden = !on;
+  if (!on) return;
+  row.querySelectorAll('[data-brand-theme]').forEach(btn => {
+    const active = btn.getAttribute('data-brand-theme') === STATE.brandTheme;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-checked', active ? 'true' : 'false');
+  });
+}
+
+function applyBrandTheme(id) {
+  const t = BRAND_THEMES.find(x => x.id === id);
+  if (!t) return;
+  if (STATE.mode !== BRAND_THEME_MODE_ID) {
+    const mode = MODES.find(m => m.id === BRAND_THEME_MODE_ID);
+    if (mode) applyMode(mode); // 会把 brandTheme 置空，下面再写回
+  }
+  STATE.brandTheme = t.id;
+  STATE.colorScheme = t.color;
+  STATE.customColors = null;
+  if (t.titleFont != null) STATE.titleFont = t.titleFont;
+  if (t.bodyFont != null) STATE.bodyFont = t.bodyFont;
+  if (t.lineHeight != null) STATE.lineHeight = t.lineHeight;
+  if (t.paraSpacing != null) STATE.paraSpacing = t.paraSpacing;
+  updatePreview();
+  syncBrandThemeRow();
+}
+
+document.addEventListener('click', event => {
+  const chip = event.target.closest?.('[data-brand-theme]');
+  if (!chip) return;
+  event.preventDefault();
+  applyBrandTheme(chip.getAttribute('data-brand-theme'));
+});
 
 function applyQuickMode(modeId) {
   const mode = MODES.find(m => m.id === modeId);

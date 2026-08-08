@@ -347,6 +347,17 @@ body::before{
 .sc-thumb-card .sc-dots i{width:5px;height:5px;border-radius:50%;background:#C3CDD9;display:block}
 .sc-divider{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);width:30px;height:2px;background:#F5C518;border-radius:2px}
 .sc-name{font-size:12px;font-weight:800;color:var(--dora-deep);white-space:nowrap;text-align:center}
+/* 品牌手册子主题行：仅在品牌手册模式下显示 */
+.brand-theme-row{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#FBFDFF;border-bottom:1px solid var(--dora-light);flex-shrink:0;overflow-x:auto}
+.brand-theme-row[hidden]{display:none}
+.btr-label{display:flex;flex-direction:column;line-height:1.25;font-size:12px;font-weight:800;color:var(--dora-deep);white-space:nowrap;margin-right:2px}
+.btr-hint{font-size:10px;font-weight:600;color:#9AA7B4}
+.brand-theme-chip{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:5px 9px;background:#fff;border:2px solid #E5E7EB;border-radius:999px;cursor:pointer;transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
+.brand-theme-chip:hover{border-color:var(--dora-blue);transform:translateY(-1px)}
+.brand-theme-chip.active{border-color:#1677FF;box-shadow:0 0 0 3px rgba(22,119,255,0.16)}
+.btc-swatch{display:flex;gap:2px}
+.btc-swatch i{display:block;width:8px;height:14px;border-radius:2px}
+.btc-name{font-size:12px;font-weight:800;color:var(--dora-deep);white-space:nowrap}
 /* ===== 选中文字悬浮快捷栏 ===== */
 .inline-toolbar{position:fixed;z-index:1200;display:none;align-items:center;gap:2px;padding:5px 6px;background:#1E293B;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.3);opacity:0;transform:translateY(6px) scale(.96);transition:opacity .14s ease,transform .16s cubic-bezier(0.34,1.56,0.64,1)}
 .inline-toolbar.show{display:flex;opacity:1;transform:translateY(0) scale(1)}
@@ -528,6 +539,7 @@ body::before{
 @media(max-width:900px){
   .mode-cards{grid-template-columns:1fr}
   .settings-panel{width:320px}
+  .btr-hint{display:none}
 }
 
 /* ===== Brand promotion toast ===== */
