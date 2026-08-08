@@ -114,15 +114,31 @@ const MODE_META = {
 // 其余字段留空则沿用 brand-manual 模式本身的值。
 // 配色与字体组合为本项目自行实现，未复制任何第三方代码。
 // ===================================================================
+// headingStyle:'ai-pocket' 让题头卡（栏目行/头像/大标题/底部署名条）继续渲染，
+// 颜色由该套配色的 main 驱动，所以六套各自呈现自己的主色。
 const BRAND_THEMES = [
-  { id:'moyu-green',   name:'摸鱼绿',   desc:'低饱和绿 · 上班能看',   color:2, titleFont:1, bodyFont:0 },
-  { id:'red-white',    name:'红白',     desc:'正红留白 · 干脆利落',   color:3, titleFont:1, bodyFont:0 },
-  { id:'graphite',     name:'石墨极简', desc:'灰阶 · 只剩结构',       color:4, titleFont:3, bodyFont:1 },
-  { id:'zen-space',    name:'留白禅意', desc:'宋体 · 呼吸感',         color:5, titleFont:2, bodyFont:2, lineHeight:2.0, paraSpacing:1.5 },
-  { id:'moyu-receipt', name:'摸鱼票据', desc:'牛皮暖棕 · 小票质感',   color:6, titleFont:1, bodyFont:1 },
-  { id:'olive-notes',  name:'橄榄手记', desc:'橄榄 + 楷体 · 手写感',  color:7, titleFont:2, bodyFont:3 }
+  { id:'moyu-green',   name:'摸鱼绿',   desc:'低饱和绿 · 上班能看',   color:2, titleFont:1, bodyFont:0, headingStyle:'ai-pocket', quoteStyle:'ai-pocket-note', hrStyle:'ai-pocket-line' },
+  { id:'red-white',    name:'红白',     desc:'正红留白 · 干脆利落',   color:3, titleFont:1, bodyFont:0, headingStyle:'ai-pocket', quoteStyle:'ai-pocket-note', hrStyle:'ai-pocket-line' },
+  { id:'graphite',     name:'石墨极简', desc:'灰阶 · 只剩结构',       color:4, titleFont:3, bodyFont:1, headingStyle:'ai-pocket', quoteStyle:'left-bar-gray',   hrStyle:'thin-line' },
+  { id:'zen-space',    name:'留白禅意', desc:'宋体 · 呼吸感',         color:5, titleFont:2, bodyFont:2, lineHeight:2.0, paraSpacing:1.5, headingStyle:'ai-pocket', quoteStyle:'italic-indent', hrStyle:'center-short' },
+  { id:'moyu-receipt', name:'摸鱼票据', desc:'牛皮暖棕 · 小票质感',   color:6, titleFont:1, bodyFont:1, headingStyle:'ai-pocket', quoteStyle:'dashed-warm',     hrStyle:'dot-line' },
+  { id:'olive-notes',  name:'橄榄手记', desc:'橄榄 + 楷体 · 手写感',  color:7, titleFont:2, bodyFont:3, headingStyle:'ai-pocket', quoteStyle:'italic-quotes',   hrStyle:'basic-line' }
 ];
 const BRAND_THEME_MODE_ID = 'brand-manual';
+
+// 当前生效的模式：品牌手册选了子主题时，把该套的排版样式叠加在模式之上。
+// 返回新对象，不改动 MODES 里的原始定义。
+function resolveMode() {
+  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  if (mode.id !== BRAND_THEME_MODE_ID || !STATE.brandTheme) return mode;
+  const t = BRAND_THEMES.find(x => x.id === STATE.brandTheme);
+  if (!t) return mode;
+  const out = Object.assign({}, mode);
+  ['headingStyle', 'quoteStyle', 'hrStyle'].forEach(k => {
+    if (t[k]) out[k] = t[k];
+  });
+  return out;
+}
 
 const AI_POCKET_MODE_IDS = ['ai-pocket-green', 'ai-pocket-card'];
 function isAiPocketModeId(id) {

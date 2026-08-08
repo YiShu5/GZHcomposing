@@ -234,7 +234,7 @@ function applyPreviewStyles() {
   const c = getColors();
   const tf = TITLE_FONTS[STATE.titleFont];
   const bf = BODY_FONTS[STATE.bodyFont];
-  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const mode = resolveMode();
   const aiPocket = isAiPocketMode(mode);
   const themePipe = c.pipe || c.main;
   const themeSky = c.sky || c.main;
@@ -681,7 +681,7 @@ function applyThemedComponents(c) {
   const sub = c.sub || alphaColor(main, 0.08, '#f5f5f5');
   const text = c.text || '#333333';
   const grad = c.gradient || `linear-gradient(135deg, ${main}, ${accent})`;
-  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const mode = resolveMode();
   const journalPaper = c.paper || c.sub || '#FFF6E8';
 
   preview.querySelectorAll('[data-theme-component="numbered-heading"]').forEach(el => {

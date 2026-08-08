@@ -179,7 +179,7 @@ function normalizeWechatLists(root) {
 }
 function getWechatThemeBasics() {
   const c = getColors();
-  const mode = MODES.find(m => m.id === STATE.mode) || MODES[0];
+  const mode = resolveMode();
   return {
     c,
     mode,

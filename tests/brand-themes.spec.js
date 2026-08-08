@@ -135,3 +135,59 @@ test('手动换配色时子主题高亮跟着走', async ({ page }) => {
   await expect(page.locator('[data-brand-theme].active')).toHaveCount(0);
   expect(page.errors).toEqual([]);
 });
+
+// 关掉微信预览管道：它会二次重写 #preview 并剥掉 data-ai-pocket-* 私有标记，挡住题头结构断言
+async function setEditor(page, html) {
+  await page.evaluate(h => {
+    wechatPreviewActive = false;
+    editor.innerHTML = h;
+    updatePreview();
+  }, html);
+  await page.waitForTimeout(250);
+}
+
+test('六套子主题都保留题头大卡与小标题，且各自上色', async ({ page }) => {
+  await pickStyleCard(page, 'brand-manual');
+  await setEditor(page, '<h1>子主题题头</h1><p>正文</p><h2>第一节</h2><p>正文</p>');
+
+  const barColors = new Set();
+  for (const id of THEME_IDS) {
+    await page.click(`[data-brand-theme="${id}"]`);
+    await page.waitForTimeout(200);
+
+    // 题头大卡：栏目行 / 大标题 / 头像 / 底部署名条 一个都不能少
+    const hero = page.locator('#preview h1').first();
+    await expect(hero, id).toHaveAttribute('data-ai-pocket-hero-added', '1');
+    const heroHtml = await hero.innerHTML();
+    expect(heroHtml, id).toContain('子主题题头');
+    expect(heroHtml, id).toContain('data-theme-role="bar"');
+    expect(heroHtml, id).toContain('<img');
+    await expect(hero, id).not.toHaveCSS('display', 'none');
+
+    // 小标题：编号 + 分隔线 + 标题文字
+    const h2 = page.locator('#preview h2').first();
+    await expect(h2, id).toHaveAttribute('data-theme-component', 'ai-pocket-heading');
+    const h2Html = await h2.innerHTML();
+    expect(h2Html, id).toContain('data-theme-role="number"');
+    expect(h2Html, id).toContain('第一节');
+
+    // 底部署名条走该套配色的 main，六套颜色应各不相同
+    barColors.add(await page.locator('#preview [data-theme-role="bar"]').first()
+      .evaluate(el => getComputedStyle(el).backgroundColor));
+  }
+
+  expect(barColors.size).toBe(6);
+  expect(page.errors).toEqual([]);
+});
+
+test('导出管道读到的题头样式与预览一致', async ({ page }) => {
+  await pickStyleCard(page, 'brand-manual');
+  const styles = await page.evaluate(() => BRAND_THEMES.map(t => {
+    applyBrandTheme(t.id);
+    return { id: t.id, heading: resolveMode().headingStyle, wechat: getWechatThemeBasics().mode.headingStyle };
+  }));
+  for (const s of styles) {
+    expect(s.heading, s.id).toBe('ai-pocket');
+    expect(s.wechat, s.id).toBe('ai-pocket');
+  }
+});
